@@ -146,9 +146,9 @@ void drawmenu() {
 
 void calcengine() {
   tft.drawRect(0, inc, 160, 1, ST7735_BLACK);  // Use `inc` here
-  bool newt = false;
 
-  if(newt) {
+
+  if(buttonPin == HIGH) {
    inc = 2 * inc;  // Modify `inc`
   tft.drawRect(0, inc, 160, 1, ST7735_BLACK);  // Use updated `inc`
   }
