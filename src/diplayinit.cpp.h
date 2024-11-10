@@ -9,11 +9,11 @@
 #include <Fonts/FreeSerifBold9pt7b.h>
 
 // Pin definitions
-#define TFT_CS 21
-#define TFT_RST 1
-#define TFT_DC 20
-#define TFT_MOSI 5
-#define TFT_SCLK 8
+#define TFT_CS 8
+#define TFT_RST 14
+#define TFT_DC 15
+#define TFT_MOSI 7
+#define TFT_SCLK 6
 
 // Button and potentiometer configuration
 extern const int buttonPin;

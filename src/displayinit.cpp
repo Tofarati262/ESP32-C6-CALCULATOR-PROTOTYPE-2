@@ -33,7 +33,6 @@ void cleanscreen(){
 // Initialize displays and setup
 void setupDisplay() {
     Serial.begin(9600);
-    u8g2.begin();
     tft.initR(INITR_BLACKTAB);
     tft.setFont(&FreeSerifBold9pt7b);
     tft.setRotation(3);
