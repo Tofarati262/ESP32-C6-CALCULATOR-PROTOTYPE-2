@@ -5,7 +5,7 @@
 
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7735.h>
-#include <U8g2lib.h>
+//t removed U8G2 code since we upgraded the board 
 #include <Fonts/FreeSerifBold9pt7b.h>
 
 // Pin definitions
@@ -35,7 +35,7 @@ extern int currentpage;
 extern void (*pages[])(); // Declare as extern, define in DisplayInit.cpp
 
 // Display objects
-extern U8G2_SSD1306_72X40_ER_F_SW_I2C u8g2;
+
 extern Adafruit_ST7735 tft;
 
 // Function declarations
