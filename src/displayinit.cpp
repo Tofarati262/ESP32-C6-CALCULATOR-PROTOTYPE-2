@@ -19,7 +19,7 @@ int mappedValue = 0;
 int lastMappedValue = -1;
 const int minPotValue = 500;
 const int maxPotValue = 4095;
-int inc = 20;
+int screenline = 20;
 int currentpage = 0;
 bool buttonpressed = false;
 
@@ -145,12 +145,27 @@ void drawmenu() {
 }
 
 void calcengine() {
-  while(true){
-    tft.drawRect(0, inc, 160, 1, ST7735_BLACK);  // Use `inc` here
-    if(buttonPin == LOW) {
-    inc = 2 * inc;  // Modify `inc`
-    tft.drawRect(0, inc, 160, 1, ST7735_BLACK);  // Use updated `inc`
-  }
+while (true) {
+    // Only draw a new line when the button is pressed
+    if (digitalRead(buttonPin) == LOW) {
+      // Clear the previous line
+      tft.drawRect(0, screenline, 160, 1, ST7735_BLACK);
+
+      // Update `screenline` by moving it down
+      screenline += 10;
+
+      // Draw the new line
+      tft.drawRect(0, screenline, 160, 1, ST7735_BLACK);
+      Serial.println("Button pressed");
+
+      // Add a delay to debounce the button press
+      delay(200);  // Adjust delay as needed
+    }
+
+    // Optional: Reset `screenline` if it goes beyond the display height
+    if (screenline > 128) {  // Replace 128 with your screen height if different
+      screenline = 0;
+    }
   }
 }
 
