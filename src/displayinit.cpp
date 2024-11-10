@@ -27,7 +27,7 @@ bool buttonpressed = false;
 U8G2_SSD1306_72X40_ER_F_SW_I2C u8g2(U8G2_R0, /* clock=*/6, /* data=*/5, /* reset=*/U8X8_PIN_NONE);
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
 
-// to clear display inbetween page changes
+// to clear displays inbetween page changes
 void cleanscreen(){
     tft.fillScreen(ST7735_WHITE);
 }

@@ -6,7 +6,7 @@ void setup() {
 }
 
 void loop() {
-    // Call the current page function
+    // Call the curresnt page funsction
     (*pages[currentpage])();
 
     // Increment the page index

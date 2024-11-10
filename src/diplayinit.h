@@ -31,7 +31,7 @@ extern int inc;
 extern bool buttonpressed;
 extern int currentpage;
 
-// Array of function pointers for page handling
+// Array of function pointerss for page handling
 extern void (*pages[])(); // Declare as extern, define in DisplayInit.cpp
 
 // Display objects
