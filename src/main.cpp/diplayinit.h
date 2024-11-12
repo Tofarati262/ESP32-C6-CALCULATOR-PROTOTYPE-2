@@ -1,11 +1,8 @@
-// DisplayInit.h
-
 #ifndef DISPLAY_INIT_H
 #define DISPLAY_INIT_H
 
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7735.h>
-//t removed U8G2 code since we upgraded the board 
 #include <Fonts/FreeSerifBold9pt7b.h>
 
 // Pin definitions
@@ -31,11 +28,10 @@ extern int inc;
 extern bool buttonpressed;
 extern int currentpage;
 
-// Array of function pointerss for page handling
+// Array of function pointers for page handling
 extern void (*pages[])(); // Declare as extern, define in DisplayInit.cpp
 
 // Display objects
-
 extern Adafruit_ST7735 tft;
 
 // Function declarations

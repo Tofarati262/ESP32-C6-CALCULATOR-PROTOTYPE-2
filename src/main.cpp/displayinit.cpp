@@ -1,10 +1,11 @@
 #include <diplayinit.h>
+#include <Keypad.h>
 
 // DisplayInit.cpp
 
 
 // Pin definitions
-const int buttonPin = 3;
+const int buttonPin = 21;
 const int potPin = 4;
 
 // Button state variables
@@ -25,6 +26,22 @@ bool buttonpressed = false;
 
 // Display objects
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
+
+//keypad for calculator 
+
+const byte rows = 9;
+const byte columns = 5;
+
+char hexaKeys[rows][columns] = {
+  {'C', 'E', 'M', 'R', '=', 'B'},    // C: Clear, E: Clear Entry, M: Mode, R: Recall, =: Equals, B: Backspace
+  {'L', '(', ')', 'T', 'F', 'P'},    // L: Logarithm, (: Open Parenthesis, ): Close Parenthesis, T: Trigonometric, F: Factorial, P: Pi
+  {'7', '8', '9', 'X', '/', 'S'},    // Numbers 7, 8, 9, X: Multiplication, /: Division, S: Square root
+  {'4', '5', '6', '+', '-', '^'},    // Numbers 4, 5, 6, +: Addition, -: Subtraction, ^: Exponentiation
+  {'1', '2', '3', 'A', 'B', 'C'},    // Numbers 1, 2, 3, A: Sine, B: Cosine, C: Tangent
+  {'0', '.', 'G', 'N', 'D', 'Q'},    // 0: Zero, .: Decimal, G: Log base-10, N: Natural Log, D: Degrees toggle, Q: Constant (e.g., Euler's number)
+  {'E', 'Y', 'X', 'M', 'R', 'A'},    // E: Euler’s number, Y: Previous Answer, X: Exponential, M: Modulus, R: Square root, A: Absolute Value
+  {'D', 'R', 'S', 'F', '%', 'O'}     // D: Degrees, R: Radians, S: Scientific notation, F: Fix decimal, %: Percentage, O: Power off
+};
 
 // to clear displays inbetween page changes
 void cleanscreen(){
