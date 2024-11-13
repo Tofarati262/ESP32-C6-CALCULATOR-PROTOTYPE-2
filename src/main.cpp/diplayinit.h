@@ -4,6 +4,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7735.h>
 #include <Fonts/FreeSerifBold9pt7b.h>
+#include <Keypad.h>
 
 // Pin definitions
 #define TFT_CS 8
@@ -27,6 +28,8 @@ extern const int maxPotValue;
 extern int inc;
 extern bool buttonpressed;
 extern int currentpage;
+extern byte rows;
+extern byte columns;
 
 // Array of function pointers for page handling
 extern void (*pages[])(); // Declare as extern, define in DisplayInit.cpp

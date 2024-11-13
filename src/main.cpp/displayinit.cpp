@@ -1,6 +1,4 @@
 #include <diplayinit.h>
-#include <Keypad.h>
-
 // DisplayInit.cpp
 
 
@@ -23,14 +21,15 @@ const int maxPotValue = 4095;
 int screenline = 20;
 int currentpage = 0;
 bool buttonpressed = false;
+const byte rows = 8;
+const byte columns = 5;
 
 // Display objects
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
 
 //keypad for calculator 
 
-const byte rows = 9;
-const byte columns = 5;
+
 
 char hexaKeys[rows][columns] = {
   {'C', 'E', 'M', 'R', '=', 'B'},    // C: Clear, E: Clear Entry, M: Mode, R: Recall, =: Equals, B: Backspace
@@ -42,6 +41,9 @@ char hexaKeys[rows][columns] = {
   {'E', 'Y', 'X', 'M', 'R', 'A'},    // E: Euler’s number, Y: Previous Answer, X: Exponential, M: Modulus, R: Square root, A: Absolute Value
   {'D', 'R', 'S', 'F', '%', 'O'}     // D: Degrees, R: Radians, S: Scientific notation, F: Fix decimal, %: Percentage, O: Power off
 };
+
+byte [rows] = {21,22,23,2,3,1,0};
+byte [columns] = {7,9,18,19,20};
 
 // to clear displays inbetween page changes
 void cleanscreen(){
