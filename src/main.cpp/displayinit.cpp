@@ -42,8 +42,8 @@ char hexaKeys[rows][columns] = {
   {'Y', 'X', 'M', 'R', 'A'}       // Row 8: Previous Answer, Exponential, Modulus, Square root, Absolute Value
 };
 
-byte rowPins[rows] = {21,22,23,2,3,1,0,TCA9554_EXIO1};
-byte colPins[columns] = {7,9,18,19,20};
+byte rowPins[rows] = {21,7,9,2,3,1,0,TCA9554_EXIO1};
+byte colPins[columns] = {22,23,18,19,20};
 
 // to clear displays inbetween page changes
 void cleanscreen(){
