@@ -5,6 +5,7 @@
 #include <Adafruit_ST7735.h>
 #include <Fonts/FreeSerifBold9pt7b.h>
 #include <Keypad.h>
+#include "TCA9554PWR.h"
 
 // Pin definitions
 #define TFT_CS 8

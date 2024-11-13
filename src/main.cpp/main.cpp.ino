@@ -1,4 +1,4 @@
-#include "diplayinit.h"  // Ensure the correct path
+#include "DisplayInit.h"  // Ensure the correct path
 
 void setup() {
     setupDisplay();  // Initialize displays and setup the initial screen

@@ -1,4 +1,4 @@
-#include <diplayinit.h>
+#include "DisplayInit.h"
 // DisplayInit.cpp
 
 
@@ -30,20 +30,20 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RS
 //keypad for calculator 
 
 
-
 char hexaKeys[rows][columns] = {
-  {'C', 'E', 'M', 'R', '=', 'B'},    // C: Clear, E: Clear Entry, M: Mode, R: Recall, =: Equals, B: Backspace
-  {'L', '(', ')', 'T', 'F', 'P'},    // L: Logarithm, (: Open Parenthesis, ): Close Parenthesis, T: Trigonometric, F: Factorial, P: Pi
-  {'7', '8', '9', 'X', '/', 'S'},    // Numbers 7, 8, 9, X: Multiplication, /: Division, S: Square root
-  {'4', '5', '6', '+', '-', '^'},    // Numbers 4, 5, 6, +: Addition, -: Subtraction, ^: Exponentiation
-  {'1', '2', '3', 'A', 'B', 'C'},    // Numbers 1, 2, 3, A: Sine, B: Cosine, C: Tangent
-  {'0', '.', 'G', 'N', 'D', 'Q'},    // 0: Zero, .: Decimal, G: Log base-10, N: Natural Log, D: Degrees toggle, Q: Constant (e.g., Euler's number)
-  {'E', 'Y', 'X', 'M', 'R', 'A'},    // E: Euler’s number, Y: Previous Answer, X: Exponential, M: Modulus, R: Square root, A: Absolute Value
-  {'D', 'R', 'S', 'F', '%', 'O'}     // D: Degrees, R: Radians, S: Scientific notation, F: Fix decimal, %: Percentage, O: Power off
+ 
+  {'C', 'E', 'M', 'R', '='},      // Row 1: Clear, Clear Entry, Mode, Recall, Equals
+  {'B', 'L', '(', ')', 'T'},      // Row 2: Backspace, Logarithm, Open Parenthesis, Close Parenthesis, Trigonometric
+  {'F', 'P', '7', '8', '9'},      // Row 3: Factorial, Pi, 7, 8, 9
+  {'X', '/', 'S', '4', '5'},      // Row 4: Multiplication, Division, Square root, 4, 5
+  {'6', '+', '-', '^', '1'},      // Row 5: 6, Addition, Subtraction, Exponentiation, 1
+  {'2', '3', 'A', '0', '.'},      // Row 6: 2, 3, Trig Functions, 0, Decimal
+  {'G', 'N', 'D', 'Q', 'E'},      // Row 7: Log base-10, Natural Log, Degrees toggle, Constant (Euler's number), Euler's number
+  {'Y', 'X', 'M', 'R', 'A'}       // Row 8: Previous Answer, Exponential, Modulus, Square root, Absolute Value
 };
 
-byte [rows] = {21,22,23,2,3,1,0};
-byte [columns] = {7,9,18,19,20};
+byte rowPins[rows] = {21,22,23,2,3,1,0,TCA9554_EXIO1};
+byte colPins[columns] = {7,9,18,19,20};
 
 // to clear displays inbetween page changes
 void cleanscreen(){
