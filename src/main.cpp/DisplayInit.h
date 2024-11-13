@@ -29,8 +29,7 @@ extern const int maxPotValue;
 extern int inc;
 extern bool buttonpressed;
 extern int currentpage;
-extern byte rows;
-extern byte columns;
+
 
 // Array of function pointers for page handling
 extern void (*pages[])(); // Declare as extern, define in DisplayInit.cpp
