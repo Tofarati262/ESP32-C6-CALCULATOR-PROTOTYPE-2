@@ -1,10 +1,9 @@
-#include <diplayinit.h>
-
+#include "DisplayInit.h"
 // DisplayInit.cpp
 
 
 // Pin definitions
-const int buttonPin = 3;
+const int buttonPin = 21;
 const int potPin = 4;
 
 // Button state variables
@@ -19,13 +18,32 @@ int mappedValue = 0;
 int lastMappedValue = -1;
 const int minPotValue = 500;
 const int maxPotValue = 4095;
-int inc = 20;
+int screenline = 20;
 int currentpage = 0;
 bool buttonpressed = false;
+const byte rows = 8;
+const byte columns = 5;
 
 // Display objects
-U8G2_SSD1306_72X40_ER_F_SW_I2C u8g2(U8G2_R0, /* clock=*/6, /* data=*/5, /* reset=*/U8X8_PIN_NONE);
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
+
+//keypad for calculator 
+
+
+char hexaKeys[rows][columns] = {
+ 
+  {'C', 'E', 'M', 'R', '='},      // Row 1: Clear, Clear Entry, Mode, Recall, Equals
+  {'B', 'L', '(', ')', 'T'},      // Row 2: Backspace, Logarithm, Open Parenthesis, Close Parenthesis, Trigonometric
+  {'F', 'P', '7', '8', '9'},      // Row 3: Factorial, Pi, 7, 8, 9
+  {'X', '/', 'S', '4', '5'},      // Row 4: Multiplication, Division, Square root, 4, 5
+  {'6', '+', '-', '^', '1'},      // Row 5: 6, Addition, Subtraction, Exponentiation, 1
+  {'2', '3', 'A', '0', '.'},      // Row 6: 2, 3, Trig Functions, 0, Decimal
+  {'G', 'N', 'D', 'Q', 'E'},      // Row 7: Log base-10, Natural Log, Degrees toggle, Constant (Euler's number), Euler's number
+  {'Y', 'X', 'M', 'R', 'A'}       // Row 8: Previous Answer, Exponential, Modulus, Square root, Absolute Value
+};
+
+byte rowPins[rows] = {21,22,23,2,3,1,0,TCA9554_EXIO1};
+byte colPins[columns] = {7,9,18,19,20};
 
 // to clear displays inbetween page changes
 void cleanscreen(){
@@ -34,7 +52,6 @@ void cleanscreen(){
 // Initialize displays and setup
 void setupDisplay() {
     Serial.begin(9600);
-    u8g2.begin();
     tft.initR(INITR_BLACKTAB);
     tft.setFont(&FreeSerifBold9pt7b);
     tft.setRotation(3);
@@ -145,12 +162,27 @@ void drawmenu() {
 }
 
 void calcengine() {
-  while(true){
-    tft.drawRect(0, inc, 160, 1, ST7735_BLACK);  // Use `inc` here
-    if(buttonPin == LOW) {
-    inc = 2 * inc;  // Modify `inc`
-    tft.drawRect(0, inc, 160, 1, ST7735_BLACK);  // Use updated `inc`
-  }
+while (true) {
+    // Only draw a new line when the button is pressed
+    if (digitalRead(buttonPin) == LOW) {
+      // Clear the previous line
+      tft.drawRect(0, screenline, 160, 1, ST7735_BLACK);
+
+      // Update `screenline` by moving it down
+      screenline += 10;
+
+      // Draw the new line
+      tft.drawRect(0, screenline, 160, 1, ST7735_BLACK);
+      Serial.println("Button pressed");
+
+      // Add a delay to debounce the button press
+      delay(200);  // Adjust delay as needed
+    }
+
+    // Optional: Reset `screenline` if it goes beyond the display height
+    if (screenline > 128) {  // Replace 128 with your screen height if different
+      screenline = 0;
+    }
   }
 }
 
