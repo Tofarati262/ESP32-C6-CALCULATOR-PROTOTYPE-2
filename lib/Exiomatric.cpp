@@ -1,44 +1,44 @@
 #include "Exiomatrix.h"
 
+void Setupkeypad() {
+    // INITIALIZING columns as outputs
+    Mode_EXIO(TCA9554_EXIO1, 0);  // Set EXIO1 as 0
+    Mode_EXIO(TCA9554_EXIO2, 0);  // Set EXIO2 as 0
+    Mode_EXIO(TCA9554_EXIO3, 0);  // Set EXIO3 as 0
+    Mode_EXIO(TCA9554_EXIO4, 0);  // Set EXIO4 as 0
+    Mode_EXIO(TCA9554_EXIO5, 0);  // Set EXIO5 as output
 
-void Setupkeypad(){
-    //INITIALIZING columns
-    Set_EXIO(TCA9554_EXIO1,1)
-    Set_EXIO(TCA9554_EXIO2,1)
-    Set_EXIO(TCA9554_EXIO3,1)
-    Set_EXIO(TCA9554_EXIO4,1)
-    Set_EXIO(TCA9554_EXIO5,1)
-
-    //initializing rows 
-    pinMode(3,INPUT);
-    pinMode(4,INPUT);
-    pinMode(7,INPUT);
-    pinMode(14,INPUT);
-    pinMode(8,INPUT);
-    pinMode(15,INPUT);
-    pinMode(18,INPUT);
-    pinMode(19,INPUT);
+    // INITIALIZING rows as inputs
+    pinMode(3, INPUT);   // Row 1
+    pinMode(4, INPUT);   // Row 2
+    pinMode(7, INPUT);   // Row 3
+    pinMode(14, INPUT);  // Row 4
+    pinMode(8, INPUT);   // Row 5
+    pinMode(15, INPUT);  // Row 6
+    pinMode(18, INPUT);  // Row 7
+    pinMode(19, INPUT);  // Row 8
 }
 
-char Scankeypad(){
-
+char Scankeypad() {
+    // Define the keypad keys layout (1 row, 5 columns)
     char hexaKeys[1][5] = {
- 
-        {'C', 'O', 'M', 'R', '='},      // Row 1: Clear and hold to clear entry, math button: {degrees, absolute value,modulus}, Mode, Recall, Equals
-        /*({'B', 'L', '(', ')', 'T'},      // Row 2: Backspace, Logarithm, Open Parenthesis, Close Parenthesis, Trigonometric
-        {'F', 'P', '7', '8', '9'},      // Row 3: Factorial, Pi, 7, 8, 9
-        {'X', '/', 'S', '4', '5'},      // Row 4: Multiplication, Division, Square root, 4, 5
-        {'6', '+', '-', '^', '1'},      // Row 5: 6, Addition, Subtraction, Exponentiation, 1
-        {'2', '3', 'A', '0', '.'},      // Row 6: 2, 3, Trig Functions, 0, Decimal
-        {'G', 'N', 'D', 'Q', 'R'},      // Row 7: Log base-10, Natural Log, Degrees toggle, Constant (Euler's number), square root)*/ 
+        {'C', 'O', 'M', 'R', '='}  // Row 1: Clear, Mode, Recall, Equals
+        /* Uncomment and define additional rows if needed:
+        {'B', 'L', '(', ')', 'T'},      // Row 2
+        {'F', 'P', '7', '8', '9'},      // Row 3
+        {'X', '/', 'S', '4', '5'},      // Row 4
+        {'6', '+', '-', '^', '1'},      // Row 5
+        {'2', '3', 'A', '0', '.'},      // Row 6
+        {'G', 'N', 'D', 'Q', 'R'}       // Row 7
+        */
     };
-    for(int i = 0, i < 1, ++ ){
-
-        for(int j = 0, j < 5, j++){
-            if(TCA9554_EXIO0+j == 0 ){
-                return[i][j];
+    // Scan through columns (assuming 5 columns defined here)
+    for (int i = 0; i < 1; i++) {  // Only 1 row defined in hexaKeys
+        for (int j = 0; j < 5; j++) {  // Check all 5 columns
+            if (Read_EXIO(TCA9554_EXIO1 + j) == 0) {  // Assuming LOW means button press
+                return hexaKeys[i][j];  // Return the pressed key
             }
         }
     }
-
-};
+    return '0';  // Default return value if no key is pressed
+}
