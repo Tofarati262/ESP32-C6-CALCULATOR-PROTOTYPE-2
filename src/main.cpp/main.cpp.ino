@@ -1,7 +1,8 @@
 #include "DisplayInit.h"  // Ensure the correct path
 
 void setup() {
-    setupDisplay();  // Initialize displays and setup the initial screen
+  TCA9554PWR_Init(0x00); 
+  setupDisplay();  // Initialize displays and setup the initial screen
 }
 
 void loop() {
