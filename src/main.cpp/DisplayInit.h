@@ -4,7 +4,6 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7735.h>
 #include <Fonts/FreeSerifBold9pt7b.h>
-#include <Exiomatrix.h>
 #include "TCA9554PWR.h"
 
 // Pin definitions
@@ -38,12 +37,12 @@ extern void (*pages[])(); // Declare as extern, define in DisplayInit.cpp
 extern Adafruit_ST7735 tft;
 
 // Function declarations
-void setupDisplay();
-void Startup();
-void knob();
-void button();
-void drawmenu();
-void calcengine();
-void cleanscreen();
+extern void setupDisplay();
+extern void Startup();
+extern void knob();
+extern void button();
+extern void drawmenu();
+extern void calcengine();
+extern void cleanscreen();
 
 #endif // DISPLAY_INIT_H

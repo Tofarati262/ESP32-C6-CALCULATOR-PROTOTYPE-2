@@ -1,9 +1,10 @@
 #include "DisplayInit.h"
+#include "Exiomatrix.h"
 // DisplayInit.cpp
 
 
 // Pin definitions
-
+const int buttonPin = 21;
 const int potPin = 4;
 
 // Button state variables
@@ -41,12 +42,8 @@ char hexaKeys[rows][columns] = {
   {'G', 'N', 'D', 'Q', 'R'},      // Row 7: Log base-10, Natural Log, Degrees toggle, Constant (Euler's number), square root)*/ 
 };
 
-
-
-byte rowPins[rows] = {TCA9554_EXIO2};
-byte colPins[columns] = {9,18,19, 7,20};
-
-Keypad keypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, rows, columns);
+byte rowPins[rows] = {TCA9554_EXIO5};
+byte colPins[columns] = {9,20,18,19, TCA9554_EXIO7};
 
 // to clear displays inbetween page changes
 void cleanscreen(){
@@ -61,12 +58,12 @@ void setupDisplay() {
     tft.fillScreen(ST7735_WHITE);
     tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
     tft.setTextSize(1);
-   
+    pinMode(buttonPin, INPUT_PULLUP);
 }
 
 // Implement the rest of your functions here
 void Startup() {
-    while (Read_EXIO(TCA9554_EXIO6)== 1) {
+    while (digitalRead(buttonPin) == HIGH) {
         tft.drawRect(25, 40, 120, 35, ST7735_WHITE);
         tft.setFont(&FreeSerifBold9pt7b);
         tft.setTextSize(2);
@@ -104,11 +101,23 @@ void knob() {
   }
 }
 
+void button() {
+   int reading = digitalRead(buttonPin);
+  if (reading == LOW && lastButtonState == HIGH && (millis() - lastPressTime) > debounceDelay) {
+    Serial.println("Button Pressed");
+    lastPressTime = millis();
+    value = (value + 1) % 2;
+    buttonpressed = true;
+  } else {
+    buttonpressed = false;
+  }
+  lastButtonState = reading;
+}
 
 void drawmenu() {
     // Continuously loop until the user performs an action
     while (true) {
-        uint8_t buttonState = Read_EXIO(TCA9554_EXIO6);
+        int buttonState = digitalRead(buttonPin);
         
         // Read potentiometer to update mappedValue
         int potValue = analogRead(potPin);  // Read potentiometer
@@ -128,7 +137,7 @@ void drawmenu() {
             tft.setCursor(90, 100);
             tft.print("Return");
 
-            if (buttonState == 0) {  // Button pressed
+            if (buttonState == LOW) {  // Button pressed
                 cleanscreen();
                 currentpage--;  // Decrement page
                 break;  // Exit the loop and update the page
@@ -141,7 +150,7 @@ void drawmenu() {
             tft.setCursor(90, 100);
             tft.print("Return");
 
-            if (buttonState == 0) {  // Button pressed
+            if (buttonState == LOW) {  // Button pressed
                 currentpage++;  // Increment page
                 cleanscreen();
                 break;  // Exit the loop and update the page
@@ -153,12 +162,9 @@ void drawmenu() {
 }
 
 void calcengine() {
-    while (true) {
-        char key = keypad.getKey();  // Use the keypad instance here
-        if (key) {  // Only print if a key is pressed
-            Serial.println(key);
-        }
-    }
+while (true) {
+   char but = Scankeypad();
+  }
 }
 
 
