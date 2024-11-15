@@ -3,7 +3,7 @@
 
 
 // Pin definitions
-const int buttonPin = 21;
+
 const int potPin = 4;
 
 // Button state variables
@@ -21,7 +21,7 @@ const int maxPotValue = 4095;
 int screenline = 20;
 int currentpage = 0;
 bool buttonpressed = false;
-const byte rows = 8;
+const byte rows = 1;
 const byte columns = 5;
 
 // Display objects
@@ -32,18 +32,21 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RS
 
 char hexaKeys[rows][columns] = {
  
-  {'C', 'E', 'M', 'R', '='},      // Row 1: Clear, Clear Entry, Mode, Recall, Equals
-  {'B', 'L', '(', ')', 'T'},      // Row 2: Backspace, Logarithm, Open Parenthesis, Close Parenthesis, Trigonometric
+  {'C', 'O', 'M', 'R', '='},      // Row 1: Clear and hold to clear entry, math button: {degrees, absolute value,modulus}, Mode, Recall, Equals
+ /*({'B', 'L', '(', ')', 'T'},      // Row 2: Backspace, Logarithm, Open Parenthesis, Close Parenthesis, Trigonometric
   {'F', 'P', '7', '8', '9'},      // Row 3: Factorial, Pi, 7, 8, 9
   {'X', '/', 'S', '4', '5'},      // Row 4: Multiplication, Division, Square root, 4, 5
   {'6', '+', '-', '^', '1'},      // Row 5: 6, Addition, Subtraction, Exponentiation, 1
   {'2', '3', 'A', '0', '.'},      // Row 6: 2, 3, Trig Functions, 0, Decimal
-  {'G', 'N', 'D', 'Q', 'E'},      // Row 7: Log base-10, Natural Log, Degrees toggle, Constant (Euler's number), Euler's number
-  {'Y', 'X', 'M', 'R', 'A'}       // Row 8: Previous Answer, Exponential, Modulus, Square root, Absolute Value
+  {'G', 'N', 'D', 'Q', 'R'},      // Row 7: Log base-10, Natural Log, Degrees toggle, Constant (Euler's number), square root)*/ 
 };
 
-byte rowPins[rows] = {21,22,23,2,3,1,0,TCA9554_EXIO1};
-byte colPins[columns] = {7,9,18,19,20};
+
+
+byte rowPins[rows] = {TCA9554_EXIO2};
+byte colPins[columns] = {9,18,19, 7,20};
+
+Keypad keypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, rows, columns);
 
 // to clear displays inbetween page changes
 void cleanscreen(){
@@ -58,12 +61,12 @@ void setupDisplay() {
     tft.fillScreen(ST7735_WHITE);
     tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
     tft.setTextSize(1);
-    pinMode(buttonPin, INPUT_PULLUP);
+   
 }
 
 // Implement the rest of your functions here
 void Startup() {
-    while (digitalRead(buttonPin) == HIGH) {
+    while (Read_EXIO(TCA9554_EXIO6)== 1) {
         tft.drawRect(25, 40, 120, 35, ST7735_WHITE);
         tft.setFont(&FreeSerifBold9pt7b);
         tft.setTextSize(2);
@@ -101,23 +104,11 @@ void knob() {
   }
 }
 
-void button() {
-   int reading = digitalRead(buttonPin);
-  if (reading == LOW && lastButtonState == HIGH && (millis() - lastPressTime) > debounceDelay) {
-    Serial.println("Button Pressed");
-    lastPressTime = millis();
-    value = (value + 1) % 2;
-    buttonpressed = true;
-  } else {
-    buttonpressed = false;
-  }
-  lastButtonState = reading;
-}
 
 void drawmenu() {
     // Continuously loop until the user performs an action
     while (true) {
-        int buttonState = digitalRead(buttonPin);
+        uint8_t buttonState = Read_EXIO(TCA9554_EXIO6);
         
         // Read potentiometer to update mappedValue
         int potValue = analogRead(potPin);  // Read potentiometer
@@ -137,7 +128,7 @@ void drawmenu() {
             tft.setCursor(90, 100);
             tft.print("Return");
 
-            if (buttonState == LOW) {  // Button pressed
+            if (buttonState == 0) {  // Button pressed
                 cleanscreen();
                 currentpage--;  // Decrement page
                 break;  // Exit the loop and update the page
@@ -150,7 +141,7 @@ void drawmenu() {
             tft.setCursor(90, 100);
             tft.print("Return");
 
-            if (buttonState == LOW) {  // Button pressed
+            if (buttonState == 0) {  // Button pressed
                 currentpage++;  // Increment page
                 cleanscreen();
                 break;  // Exit the loop and update the page
@@ -162,28 +153,12 @@ void drawmenu() {
 }
 
 void calcengine() {
-while (true) {
-    // Only draw a new line when the button is pressed
-    if (digitalRead(buttonPin) == LOW) {
-      // Clear the previous line
-      tft.drawRect(0, screenline, 160, 1, ST7735_BLACK);
-
-      // Update `screenline` by moving it down
-      screenline += 10;
-
-      // Draw the new line
-      tft.drawRect(0, screenline, 160, 1, ST7735_BLACK);
-      Serial.println("Button pressed");
-
-      // Add a delay to debounce the button press
-      delay(200);  // Adjust delay as needed
+    while (true) {
+        char key = keypad.getKey();  // Use the keypad instance here
+        if (key) {  // Only print if a key is pressed
+            Serial.println(key);
+        }
     }
-
-    // Optional: Reset `screenline` if it goes beyond the display height
-    if (screenline > 128) {  // Replace 128 with your screen height if different
-      screenline = 0;
-    }
-  }
 }
 
 

@@ -4,15 +4,15 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7735.h>
 #include <Fonts/FreeSerifBold9pt7b.h>
-#include <Keypad.h>
+#include <Exiomatrix.h>
 #include "TCA9554PWR.h"
 
 // Pin definitions
-#define TFT_CS 8
-#define TFT_RST 14
-#define TFT_DC 15
-#define TFT_MOSI 7
-#define TFT_SCLK 6
+#define TFT_CS 2
+#define TFT_RST 0
+#define TFT_DC 1
+#define TFT_MOSI 5
+#define TFT_SCLK 9
 
 // Button and potentiometer configuration
 extern const int buttonPin;
