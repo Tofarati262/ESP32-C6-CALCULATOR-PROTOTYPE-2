@@ -1,10 +1,11 @@
 #include "DisplayInit.h"
-#include "Exiomatrix.h"
+#include "<Exiomatrix.h"
 // DisplayInit.cpp
 
-
+//calculator logic
+u_int8_t xincrement=1; 
 // Pin definitions
-const int buttonPin = 21;
+const int buttonPin = TCA9554_EXIO6;
 const int potPin = 4;
 
 // Button state variables
@@ -28,23 +29,6 @@ const byte columns = 5;
 // Display objects
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
 
-//keypad for calculator 
-
-
-char hexaKeys[rows][columns] = {
- 
-  {'C', 'O', 'M', 'R', '='},      // Row 1: Clear and hold to clear entry, math button: {degrees, absolute value,modulus}, Mode, Recall, Equals
- /*({'B', 'L', '(', ')', 'T'},      // Row 2: Backspace, Logarithm, Open Parenthesis, Close Parenthesis, Trigonometric
-  {'F', 'P', '7', '8', '9'},      // Row 3: Factorial, Pi, 7, 8, 9
-  {'X', '/', 'S', '4', '5'},      // Row 4: Multiplication, Division, Square root, 4, 5
-  {'6', '+', '-', '^', '1'},      // Row 5: 6, Addition, Subtraction, Exponentiation, 1
-  {'2', '3', 'A', '0', '.'},      // Row 6: 2, 3, Trig Functions, 0, Decimal
-  {'G', 'N', 'D', 'Q', 'R'},      // Row 7: Log base-10, Natural Log, Degrees toggle, Constant (Euler's number), square root)*/ 
-};
-
-byte rowPins[rows] = {TCA9554_EXIO5};
-byte colPins[columns] = {9,20,18,19, TCA9554_EXIO7};
-
 // to clear displays inbetween page changes
 void cleanscreen(){
     tft.fillScreen(ST7735_WHITE);
@@ -63,7 +47,7 @@ void setupDisplay() {
 
 // Implement the rest of your functions here
 void Startup() {
-    while (digitalRead(buttonPin) == HIGH) {
+    while (digitalRead(buttonPin) == 1) {
         tft.drawRect(25, 40, 120, 35, ST7735_WHITE);
         tft.setFont(&FreeSerifBold9pt7b);
         tft.setTextSize(2);
@@ -116,8 +100,8 @@ void button() {
 
 void drawmenu() {
     // Continuously loop until the user performs an action
-    while (true) {
-        int buttonState = digitalRead(buttonPin);
+    while (Read_EXIO(buttonPin) == 1) {
+        int buttonState = Read_EXIO(buttonPin);
         
         // Read potentiometer to update mappedValue
         int potValue = analogRead(potPin);  // Read potentiometer
@@ -137,7 +121,7 @@ void drawmenu() {
             tft.setCursor(90, 100);
             tft.print("Return");
 
-            if (buttonState == LOW) {  // Button pressed
+            if (buttonState == 0) {  // Button pressed
                 cleanscreen();
                 currentpage--;  // Decrement page
                 break;  // Exit the loop and update the page
@@ -150,7 +134,7 @@ void drawmenu() {
             tft.setCursor(90, 100);
             tft.print("Return");
 
-            if (buttonState == LOW) {  // Button pressed
+            if (buttonState == 0) {  // Button pressed
                 currentpage++;  // Increment page
                 cleanscreen();
                 break;  // Exit the loop and update the page
@@ -162,8 +146,18 @@ void drawmenu() {
 }
 
 void calcengine() {
+  tft.drawRect(0, 20, 130, 2, ST7735_WHITE);
+  tft.drawRect(0, 60, 130, 2, ST7735_WHITE);
+  tft.drawRect(0, 100, 130, 2, ST7735_WHITE);
 while (true) {
-   char but = Scankeypad();
+   char key = Scankeypad();
+   if(key!= '0/'){
+    tft.setcursor(xincrement,0);
+    tft.setTextSize(1);
+    tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
+      xincrement++;
+    }
+
   }
 }
 
