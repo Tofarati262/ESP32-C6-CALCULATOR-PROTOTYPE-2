@@ -1,3 +1,4 @@
+#include "esp32-hal-gpio.h"
 #include "DisplayInit.h"
 #include "Exiomatrix.h"
 // DisplayInit.cpp
@@ -5,7 +6,7 @@
 //calculator logic
 u_int8_t xincrement=1; 
 // Pin definitions
-const int buttonPin = TCA9554_EXIO6;
+const int buttonPin = 18;
 const int potPin = 4;
 
 // Button state variables
@@ -47,7 +48,7 @@ void setupDisplay() {
 
 // Implement the rest of your functions here
 void Startup() {
-    while (Read_EXIO(buttonPin) == 1) {
+    while (digitalRead(buttonPin) == HIGH) {
         tft.drawRect(25, 40, 120, 35, ST7735_WHITE);
         tft.setFont(&FreeSerifBold9pt7b);
         tft.setTextSize(2);
@@ -100,8 +101,9 @@ void button() {
 
 void drawmenu() {
     // Continuously loop until the user performs an action
-    while (Read_EXIO(buttonPin) == 1) {
+    while (digitalRead(buttonPin) == HIGH) {
         int buttonState = Read_EXIO(buttonPin);
+        Serial.print(buttonState);
         
         // Read potentiometer to update mappedValue
         int potValue = analogRead(potPin);  // Read potentiometer
@@ -121,7 +123,7 @@ void drawmenu() {
             tft.setCursor(90, 100);
             tft.print("Return");
 
-            if (buttonState == 0) {  // Button pressed
+            if (buttonState == LOW) {  // Button pressed
                 cleanscreen();
                 currentpage--;  // Decrement page
                 break;  // Exit the loop and update the page
@@ -134,7 +136,7 @@ void drawmenu() {
             tft.setCursor(90, 100);
             tft.print("Return");
 
-            if (buttonState == 0) {  // Button pressed
+            if (buttonState == LOW) {  // Button pressed
                 currentpage++;  // Increment page
                 cleanscreen();
                 break;  // Exit the loop and update the page
@@ -150,7 +152,7 @@ void calcengine() {
   tft.drawRect(0, 60, 130, 2, ST7735_WHITE);
   tft.drawRect(0, 100, 130, 2, ST7735_WHITE);
 while (true) {
-   char key = Scankeypad();
+   char key = loopy();
    if(key!= '0/'){
     tft.setCursor(xincrement,0);
     tft.setTextSize(1);

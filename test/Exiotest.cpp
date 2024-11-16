@@ -3,7 +3,7 @@
 #include <Adafruit_ST7735.h>
 #include <Fonts/FreeSerifBold9pt7b.h>
 
-#include "TCA9554PWR.h"
+#include <TCA9554PWR.h>
 
 void setup() {
   TCA9554PWR_Init(0x00);
