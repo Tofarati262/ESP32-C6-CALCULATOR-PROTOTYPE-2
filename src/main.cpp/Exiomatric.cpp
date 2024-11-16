@@ -1,26 +1,30 @@
+#include "esp32-hal-gpio.h"
 #include "Exiomatrix.h"
 
-void Setupkeypad() {
-    // INITIALIZING columns as outputs
-    Mode_EXIO(TCA9554_EXIO1, 0);  // Set EXIO1 as 0
-    Mode_EXIO(TCA9554_EXIO2, 0);  // Set EXIO2 as 0
-    Mode_EXIO(TCA9554_EXIO3, 0);  // Set EXIO3 as 0
-    Mode_EXIO(TCA9554_EXIO4, 0);  // Set EXIO4 as 0
-    Mode_EXIO(TCA9554_EXIO5, 0);  // Set EXIO5 as output
+const int rowpins[]={3,4,7,14,8,15,19};
+const int numRows = sizeof(rowpins) / sizeof(rowpins[0]);  // Calculate number of rows
 
-    // INITIALIZING rows as inputs
-    pinMode(3, INPUT);   // Row 1
-    pinMode(4, INPUT);   // Row 2
-    pinMode(7, INPUT);   // Row 3
-    pinMode(14, INPUT);  // Row 4
-    pinMode(8, INPUT);   // Row 5
-    pinMode(15, INPUT);  // Row 6
-    pinMode(18, INPUT);  // Row 7
-    pinMode(19, INPUT);  // Row 8
+
+const int colpins[]={1,2,3,4,5};
+const int numCols = sizeof(colpins) / sizeof(colpins[0]);  // Calculate number of rows
+
+
+void Setupkeypad() {
+    // INITIALIZING columns as INPUTS
+    for(int x = 0; x < numCols;x++){
+      pinMode(colpins[x],OUTPUT);
+      digitalWrite(colpins[x],LOW)
+    }
+    // INITIALIZING rows as OUTPUTS
+    for(int x = 0; x < numRows;x++){
+      pinMode(rowpins[x],OUTPUT);
+      digitalWrite(rowpins[x],LOW)
+    }
 }
 
 char Scankeypad() {
     // Define the keypad keys layout (1 row, 5 columns)
+
     char hexaKeys[1][5] = {
         {'C', 'O', 'M', 'R', '='}  // Row 1: Clear, Mode, Recall, Equals
         /* Uncomment and define additional rows if needed:
@@ -33,12 +37,24 @@ char Scankeypad() {
         */
     };
     // Scan through columns (assuming 5 columns defined here)
-    for (int i = 0; i < 1; i++) {  // Only 1 row defined in hexaKeys
-        for (int j = 0; j < 5; j++) {  // Check all 5 columns
-            if (Read_EXIO(TCA9554_EXIO1 + j) == 0) {  // Assuming LOW means button press
-                return hexaKeys[i][j];  // Return the pressed key
-            }
+   for (int col = 0; col < numCols; col++) {  // Scan columns
+        delay(5);  // Allow signal to stabilize
+
+        for (int row = 0; row < 1; row++) {  // Only 1 row defined here
+            Serial.print("Scanning row ");
+            Serial.print(row);
+            Serial.print(", column ");
+            Serial.print(col);
+            Serial.print(", Row state: ");
+            Serial.print(digitalRead(rowpins[row]));
+            Serial.print(", Col state:");
+            Serial.println(Read_EXIO(colpins[col]));
+
+            /*if (digitalRead(rowpins[row]) == LOW) {  // Button pressed
+                return hexaKeys[row][col];
+            }*/
         }
     }
-    return '0';  // Default return value if no key is pressed
+
+    return '\0';  // Return null character if no key is pressed
 }

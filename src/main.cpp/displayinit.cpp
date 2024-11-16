@@ -1,5 +1,5 @@
 #include "DisplayInit.h"
-#include "<Exiomatrix.h"
+#include "Exiomatrix.h"
 // DisplayInit.cpp
 
 //calculator logic
@@ -47,7 +47,7 @@ void setupDisplay() {
 
 // Implement the rest of your functions here
 void Startup() {
-    while (digitalRead(buttonPin) == 1) {
+    while (Read_EXIO(buttonPin) == 1) {
         tft.drawRect(25, 40, 120, 35, ST7735_WHITE);
         tft.setFont(&FreeSerifBold9pt7b);
         tft.setTextSize(2);
@@ -152,7 +152,7 @@ void calcengine() {
 while (true) {
    char key = Scankeypad();
    if(key!= '0/'){
-    tft.setcursor(xincrement,0);
+    tft.setCursor(xincrement,0);
     tft.setTextSize(1);
     tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
       xincrement++;
