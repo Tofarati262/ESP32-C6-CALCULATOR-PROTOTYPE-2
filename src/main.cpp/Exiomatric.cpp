@@ -12,13 +12,12 @@ const int numCols = sizeof(colpins) / sizeof(colpins[0]);  // Calculate number o
 void Setupkeypad() {
     // INITIALIZING columns as INPUTS
     for(int x = 0; x < numCols;x++){
-      pinMode(colpins[x],OUTPUT);
-      digitalWrite(colpins[x],LOW)
+        Mode_EXIO(colpins[x],1);
     }
     // INITIALIZING rows as OUTPUTS
     for(int x = 0; x < numRows;x++){
       pinMode(rowpins[x],OUTPUT);
-      digitalWrite(rowpins[x],LOW)
+      digitalWrite(rowpins[x],LOW);
     }
 }
 
