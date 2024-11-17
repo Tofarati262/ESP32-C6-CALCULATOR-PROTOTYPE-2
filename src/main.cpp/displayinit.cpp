@@ -148,16 +148,17 @@ void drawmenu() {
 }
 
 void calcengine() {
-  tft.drawRect(0, 20, 130, 2, ST7735_WHITE);
-  tft.drawRect(0, 60, 130, 2, ST7735_WHITE);
-  tft.drawRect(0, 100, 130, 2, ST7735_WHITE);
+  tft.drawRect(0, 20, 160, 1, ST7735_BLACK);
+  tft.drawRect(0, 60, 160, 1, ST7735_BLACK);
+  tft.drawRect(0, 100, 160,1, ST7735_BLACK);
 while (true) {
    char key = loopy();
-   if(key!= '0/'){
-    tft.setCursor(xincrement,0);
+   if(key!= ' '){
+    tft.setCursor(xincrement,5);
     tft.setTextSize(1);
     tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
-      xincrement++;
+    tft.print(key);
+      xincrement+=7;
     }
 
   }
