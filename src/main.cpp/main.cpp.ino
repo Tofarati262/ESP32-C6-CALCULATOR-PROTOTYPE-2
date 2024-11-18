@@ -1,5 +1,6 @@
 #include "DisplayInit.h"  // Ensure the correct path
 
+
 void setup() {
   TCA9554PWR_Init(0x00); 
   setupDisplay();  // Initialize displays and setup the initial screen

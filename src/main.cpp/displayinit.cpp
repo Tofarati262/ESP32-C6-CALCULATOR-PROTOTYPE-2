@@ -1,9 +1,12 @@
+#include "esp32-hal-gpio.h"
 #include "DisplayInit.h"
+#include "Exiomatrix.h"
 // DisplayInit.cpp
 
-
+//calculator logic
+u_int8_t xincrement=1; 
 // Pin definitions
-
+const int buttonPin = 18;
 const int potPin = 4;
 
 // Button state variables
@@ -27,27 +30,6 @@ const byte columns = 5;
 // Display objects
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
 
-//keypad for calculator 
-
-
-char hexaKeys[rows][columns] = {
- 
-  {'C', 'O', 'M', 'R', '='},      // Row 1: Clear and hold to clear entry, math button: {degrees, absolute value,modulus}, Mode, Recall, Equals
- /*({'B', 'L', '(', ')', 'T'},      // Row 2: Backspace, Logarithm, Open Parenthesis, Close Parenthesis, Trigonometric
-  {'F', 'P', '7', '8', '9'},      // Row 3: Factorial, Pi, 7, 8, 9
-  {'X', '/', 'S', '4', '5'},      // Row 4: Multiplication, Division, Square root, 4, 5
-  {'6', '+', '-', '^', '1'},      // Row 5: 6, Addition, Subtraction, Exponentiation, 1
-  {'2', '3', 'A', '0', '.'},      // Row 6: 2, 3, Trig Functions, 0, Decimal
-  {'G', 'N', 'D', 'Q', 'R'},      // Row 7: Log base-10, Natural Log, Degrees toggle, Constant (Euler's number), square root)*/ 
-};
-
-
-
-byte rowPins[rows] = {TCA9554_EXIO2};
-byte colPins[columns] = {9,18,19, 7,20};
-
-Keypad keypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, rows, columns);
-
 // to clear displays inbetween page changes
 void cleanscreen(){
     tft.fillScreen(ST7735_WHITE);
@@ -61,12 +43,12 @@ void setupDisplay() {
     tft.fillScreen(ST7735_WHITE);
     tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
     tft.setTextSize(1);
-   
+    pinMode(buttonPin, INPUT_PULLUP);
 }
 
 // Implement the rest of your functions here
 void Startup() {
-    while (Read_EXIO(TCA9554_EXIO6)== 1) {
+    while (digitalRead(buttonPin) == HIGH) {
         tft.drawRect(25, 40, 120, 35, ST7735_WHITE);
         tft.setFont(&FreeSerifBold9pt7b);
         tft.setTextSize(2);
@@ -84,6 +66,7 @@ void Startup() {
     }
     tft.fillScreen(ST7735_WHITE);
     Serial.println("Startup complete, exiting loop.");
+    delay(1000);
     currentpage++;
 }
 
@@ -104,11 +87,23 @@ void knob() {
   }
 }
 
+void button() {
+   int reading = digitalRead(buttonPin);
+  if (reading == LOW && lastButtonState == HIGH && (millis() - lastPressTime) > debounceDelay) {
+    Serial.println("Button Pressed");
+    lastPressTime = millis();
+    value = (value + 1) % 2;
+    buttonpressed = true;
+  } else {
+    buttonpressed = false;
+  }
+  lastButtonState = reading;
+}
 
 void drawmenu() {
     // Continuously loop until the user performs an action
-    while (true) {
-        uint8_t buttonState = Read_EXIO(TCA9554_EXIO6);
+    while (digitalRead(buttonPin) == HIGH) {
+        
         
         // Read potentiometer to update mappedValue
         int potValue = analogRead(potPin);  // Read potentiometer
@@ -120,45 +115,55 @@ void drawmenu() {
 
         // Draw the menu elements
         tft.drawRect(38, 100, 130, 15, ST7735_WHITE);
-        if (mappedValue > 180) {  // Return button highlighted
-            tft.setTextColor(ST7735_BLACK, ST7735_WHITE); 
-            tft.setCursor(40, 100);
-            tft.print("Enter");
-            tft.setTextColor(ST7735_WHITE, ST7735_BLACK);  
-            tft.setCursor(90, 100);
-            tft.print("Return");
-
-            if (buttonState == 0) {  // Button pressed
-                cleanscreen();
-                currentpage--;  // Decrement page
-                break;  // Exit the loop and update the page
-            }
-        } else if (mappedValue <= 180) {  // Enter button highlighted
-            tft.setTextColor(ST7735_WHITE, ST7735_BLACK);  
+        if (mappedValue <= 180) {  // Return button highlighted
+           tft.setTextColor(ST7735_WHITE, ST7735_BLACK);  
             tft.setCursor(40, 100);
             tft.print("Enter");
             tft.setTextColor(ST7735_BLACK, ST7735_WHITE);  
             tft.setCursor(90, 100);
             tft.print("Return");
 
-            if (buttonState == 0) {  // Button pressed
+            if (digitalRead(buttonPin) ==  0) {  // Button pressed
                 currentpage++;  // Increment page
                 cleanscreen();
                 break;  // Exit the loop and update the page
             }
-        }
+        } else if (mappedValue > 180) {  // Enter button highlighted
+           tft.setTextColor(ST7735_BLACK, ST7735_WHITE); 
+            tft.setCursor(40, 100);
+            tft.print("Enter");
+            tft.setTextColor(ST7735_WHITE, ST7735_BLACK);  
+            tft.setCursor(90, 100);
+            tft.print("Return");
 
-        delay(100);  // Small delay to prevent button bouncing or excessive potentiometer reads
+             if (digitalRead(buttonPin) == 0) {  // Button pressed
+                cleanscreen();
+                currentpage--;  // Decrement page
+                break;  // Exit the loop and update the page
+            }
+        }
     }
 }
 
 void calcengine() {
-    while (true) {
-        char key = keypad.getKey();  // Use the keypad instance here
-        if (key) {  // Only print if a key is pressed
-            Serial.println(key);
-        }
+  int screencount = 0;
+  tft.drawRect(0, 20, 160, 1, ST7735_BLACK);
+  tft.drawRect(0, 60, 160, 1, ST7735_BLACK);
+  tft.drawRect(0, 100, 160,1, ST7735_BLACK);
+  while (true) {
+    char key = loopy();
+    if(key!= ' '){
+      screencount++;
+      if (screencount <= 22 ){
+          tft.setCursor(xincrement,5);
+          tft.setTextSize(1);
+          tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
+          tft.print(key);
+          xincrement+=7;
+      }
     }
+
+  }
 }
 
 

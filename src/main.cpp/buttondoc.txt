@@ -1,0 +1,50 @@
+?  Row 1: Basic editing and memory functions
+* 'C': Clear all entries
+* 'E': Clear the current entry
+* 'M': Memory store
+* 'R': Recall memory
+* '=': Equals
+* 'B': Backspace
+?  Row 2: Scientific functions
+* 'L': Logarithm (base-10)
+* '(' and ')': Parentheses
+* 'T': Trigonometric mode toggle
+* 'F': Factorial
+* 'P': Pi constant
+?  Row 3: Numbers and basic operations
+* '7', '8', '9': Numbers
+* 'X': Multiplication
+* '/': Division
+* 'S': Square root
+?  Row 4: Numbers and basic operations
+* '4', '5', '6': Numbers
+* '+': Addition
+* '-': Subtraction
+* '^': Exponentiation
+?  Row 5: Numbers and trigonometric functions
+* '1', '2', '3': Numbers
+* 'A': Sine
+* 'B': Cosine
+* 'C': Tangent
+?  Row 6: Additional functions
+* '0': Zero
+* '.': Decimal
+* 'G': Log base-10
+* 'N': Natural logarithm
+* 'D': Degrees toggle for trigonometry
+* 'Q': Constant (Euler’s number)
+?  Row 7: Advanced operations
+* 'E': Euler’s number
+* 'Y': Previous answer
+* 'X': Exponential function
+* 'M': Modulus
+* 'R': Square root
+* 'A': Absolute value
+?  Row 8: Mode toggles and power options
+* 'D': Degrees mode
+* 'R': Radians mode
+* 'S': Scientific notation
+* 'F': Fix decimal places
+* '%': Percentage
+* 'O': Power off
+
