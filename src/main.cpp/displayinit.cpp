@@ -66,6 +66,7 @@ void Startup() {
     }
     tft.fillScreen(ST7735_WHITE);
     Serial.println("Startup complete, exiting loop.");
+    delay(1000);
     currentpage++;
 }
 
@@ -102,8 +103,7 @@ void button() {
 void drawmenu() {
     // Continuously loop until the user performs an action
     while (digitalRead(buttonPin) == HIGH) {
-        int buttonState = Read_EXIO(buttonPin);
-        Serial.print(buttonState);
+        
         
         // Read potentiometer to update mappedValue
         int potValue = analogRead(potPin);  // Read potentiometer
@@ -115,50 +115,52 @@ void drawmenu() {
 
         // Draw the menu elements
         tft.drawRect(38, 100, 130, 15, ST7735_WHITE);
-        if (mappedValue > 180) {  // Return button highlighted
-            tft.setTextColor(ST7735_BLACK, ST7735_WHITE); 
-            tft.setCursor(40, 100);
-            tft.print("Enter");
-            tft.setTextColor(ST7735_WHITE, ST7735_BLACK);  
-            tft.setCursor(90, 100);
-            tft.print("Return");
-
-            if (buttonState == LOW) {  // Button pressed
-                cleanscreen();
-                currentpage--;  // Decrement page
-                break;  // Exit the loop and update the page
-            }
-        } else if (mappedValue <= 180) {  // Enter button highlighted
-            tft.setTextColor(ST7735_WHITE, ST7735_BLACK);  
+        if (mappedValue <= 180) {  // Return button highlighted
+           tft.setTextColor(ST7735_WHITE, ST7735_BLACK);  
             tft.setCursor(40, 100);
             tft.print("Enter");
             tft.setTextColor(ST7735_BLACK, ST7735_WHITE);  
             tft.setCursor(90, 100);
             tft.print("Return");
 
-            if (buttonState == LOW) {  // Button pressed
+            if (digitalRead(buttonPin) ==  0) {  // Button pressed
                 currentpage++;  // Increment page
                 cleanscreen();
                 break;  // Exit the loop and update the page
             }
-        }
+        } else if (mappedValue > 180) {  // Enter button highlighted
+           tft.setTextColor(ST7735_BLACK, ST7735_WHITE); 
+            tft.setCursor(40, 100);
+            tft.print("Enter");
+            tft.setTextColor(ST7735_WHITE, ST7735_BLACK);  
+            tft.setCursor(90, 100);
+            tft.print("Return");
 
-        delay(100);  // Small delay to prevent button bouncing or excessive potentiometer reads
+             if (digitalRead(buttonPin) == 0) {  // Button pressed
+                cleanscreen();
+                currentpage--;  // Decrement page
+                break;  // Exit the loop and update the page
+            }
+        }
     }
 }
 
 void calcengine() {
+  int screencount = 0;
   tft.drawRect(0, 20, 160, 1, ST7735_BLACK);
   tft.drawRect(0, 60, 160, 1, ST7735_BLACK);
   tft.drawRect(0, 100, 160,1, ST7735_BLACK);
-while (true) {
-   char key = loopy();
-   if(key!= ' '){
-    tft.setCursor(xincrement,5);
-    tft.setTextSize(1);
-    tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
-    tft.print(key);
-      xincrement+=7;
+  while (true) {
+    char key = loopy();
+    if(key!= ' '){
+      screencount++;
+      if (screencount <= 22 ){
+          tft.setCursor(xincrement,5);
+          tft.setTextSize(1);
+          tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
+          tft.print(key);
+          xincrement+=7;
+      }
     }
 
   }

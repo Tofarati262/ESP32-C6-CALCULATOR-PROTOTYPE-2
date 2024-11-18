@@ -1,54 +1,68 @@
 #include "TCA9554PWR.h"
 #include "Exiomatrix.h"
 
-const int rowpins[]={3,4,7,14,8,15,19};
-const int numRows = sizeof(rowpins) / sizeof(rowpins[0]);  // Calculate number of rows
+// Define row and column pins
+const int rowpins[] = {3, 7, 8, 14, 15, 19,20};
+const int numRows = sizeof(rowpins) / sizeof(rowpins[0]); // Calculate number of rows
+
+const int colpins[] = {6, 7, 4, 1, 5};
+const int numCols = sizeof(colpins) / sizeof(colpins[0]); // Calculate number of columns
 
 
-const int colpins[]={6,7,4,1,5};
-const int numCols = sizeof(colpins) / sizeof(colpins[0]);  // Calculate number of rows
+// Define key mapping
+char hexaKeys[2][5] = {
+    {'C', 'O', 'M', 'R', '='}, // Row 1: Clear, Mode, Recall, Equals
+     {'L','(', 'T','F','P'}
 
-  char hexaKeys[1][5] = {
-        {'C', 'O', 'M', 'R', '='}  // Row 1: Clear, Mode, Recall, Equals
+};
 
-  };
-
+// Setup function
 void settup() {
-  Serial.begin(9600);  // Initialize serial communication at 9600 baud rate
 
-    for(int x = 0; x < numCols + 1;x++){
-        Mode_EXIO(colpins[x],1);
-    }
-    // INITIALIZING rows as OUTPUTS
-    for(int x = 0; x < numRows + 1;x++){
-      pinMode(rowpins[x],OUTPUT);
-      digitalWrite(rowpins[x],LOW);
-    }
+  // Initialize columns as inputs with pull-up resistors
+  Mode_EXIO(colpins[0], 1);
+  Mode_EXIO(colpins[1], 1);
+  Mode_EXIO(colpins[2], 1);
+      Mode_EXIO(colpins[3], 1);
+  Mode_EXIO(colpins[4], 1); // Set column pins as inputs
+  // Initialize rows as outputs
+    pinMode(rowpins[0], OUTPUT);
+    digitalWrite(rowpins[0], LOW); // Set rows LOW initially
+   pinMode(rowpins[1], OUTPUT);
+    digitalWrite(rowpins[1], LOW);
 }
 
+// Function to scan the keypad matrix
 char loopy() {
   settup();
+  static bool buttonPressed = false; // Track button press state
+  static int lastCol = -1;           // Track last column where a button was pressed
 
-   // Scan through columns (assuming 5 columns defined here)
-   for (int col = 0; col < numCols; col++) {  // Scan columns
-          // Allow signal to stabilize
-only allow column it loops to be input and set others as output
-        for (int row = 0; row < 1; row++) {  // Only 1 row defined here
-            Serial.print("Scanning col ");
-            Serial.print(col);
-            Serial.print(", Col state:");
-            Serial.print(Read_EXIO(colpins[col]));
-            Serial.print(", Scanning row ");
-            Serial.print(row);
-            Serial.print(", R0W state:");
-            Serial.println(digitalRead(rowpins[0]));
+  for (int col = 0; col < numCols; col++) { // Scan columns
+    // Configure column pins: set current column as INPUT, others as OUTPUT LOW
 
-          if(Read_EXIO(colpins[col])!=1 ){
-            return hexaKeys[row][col];
-          }
-        }
-        delay(200);
 
+    // Scan rows
+    for (int row = 0; row < 2; row++) { // Only 1 row defined here
+      // Read the state of the current column
+      bool isPressed = (Read_EXIO(colpins[col]) == 0);
+
+      // Detect state change (from unpressed to pressed)
+      if (isPressed && !buttonPressed) {
+        buttonPressed = true; // Mark button as pressed
+        lastCol = col;        // Save the column where the button was pressed
+        Serial.print("Button pressed: ");
+        Serial.println(hexaKeys[row][col]);
+        return hexaKeys[row][col]; // Return the pressed key
+      } else if (!isPressed && buttonPressed && lastCol == col) {
+        // Reset button state when released
+        buttonPressed = false;
+        lastCol = -1;
+      }
+    }
+
+    delay(50); // Short debounce delay
   }
-  return' ';
+
+  return ' '; // Return a space if no button is pressed
 }
