@@ -153,6 +153,7 @@ void calcengine() {
   while (true) {
     char key = loopy();
     if(key!= ' '){
+      delay(100);
       screencount++;
       if (screencount <= 22 ){
           tft.setCursor(xincrement,5);
