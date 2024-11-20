@@ -23,13 +23,13 @@ void settup() {
   Mode_EXIO(colpins[0], 1);
   Mode_EXIO(colpins[1], 1);
   Mode_EXIO(colpins[2], 1);
-      Mode_EXIO(colpins[3], 1);
+  Mode_EXIO(colpins[3], 1);
   Mode_EXIO(colpins[4], 1); // Set column pins as inputs
   // Initialize rows as outputs
     pinMode(rowpins[0], OUTPUT);
-    digitalWrite(rowpins[0], LOW); // Set rows LOW initially
+    digitalWrite(rowpins[0], HIGH); // Set rows LOW initially
    pinMode(rowpins[1], OUTPUT);
-    digitalWrite(rowpins[1], LOW);
+    digitalWrite(rowpins[1], HIGH);
 }
 
 // Function to scan the keypad matrix
@@ -40,12 +40,15 @@ char loopy() {
 
   for (int col = 0; col < numCols; col++) { // Scan columns
     // Configure column pins: set current column as INPUT, others as OUTPUT LOW
-
-
     // Scan rows
     for (int row = 0; row < 2; row++) { // Only 1 row defined here
       // Read the state of the current column
+
+      digitalWrite(rowpins[row],LOW);
+      
+
       bool isPressed = (Read_EXIO(colpins[col]) == 0);
+      
 
       // Detect state change (from unpressed to pressed)
       if (isPressed && !buttonPressed) {
@@ -54,14 +57,17 @@ char loopy() {
         Serial.print("Button pressed: ");
         Serial.println(hexaKeys[row][col]);
         return hexaKeys[row][col]; // Return the pressed key
+        
       } else if (!isPressed && buttonPressed && lastCol == col) {
         // Reset button state when released
         buttonPressed = false;
         lastCol = -1;
       }
+      delay(100);
+      settup();
     }
 
-    delay(50); // Short debounce delay
+      
   }
 
   return ' '; // Return a space if no button is pressed
