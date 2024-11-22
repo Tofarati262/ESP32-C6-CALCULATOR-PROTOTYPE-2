@@ -10,9 +10,10 @@ const int numCols = sizeof(colpins) / sizeof(colpins[0]); // Calculate number of
 
 
 // Define key mapping
-char hexaKeys[2][5] = {
+char hexaKeys[3][5] = {
     {'C', 'O', 'M', 'R', '='}, // Row 1: Clear, Mode, Recall, Equals
-     {'L','(', 'T','F','P'}
+    {'L','(', 'T','F','P'},
+    {'7', '8', '9','X','/'}
 
 };
 
@@ -30,6 +31,8 @@ void settup() {
     digitalWrite(rowpins[0], HIGH); // Set rows LOW initially
    pinMode(rowpins[1], OUTPUT);
     digitalWrite(rowpins[1], HIGH);
+     pinMode(rowpins[2], OUTPUT);
+    digitalWrite(rowpins[2], HIGH);
 }
 
 // Function to scan the keypad matrix
@@ -41,7 +44,7 @@ char loopy() {
   for (int col = 0; col < numCols; col++) { // Scan columns
     // Configure column pins: set current column as INPUT, others as OUTPUT LOW
     // Scan rows
-    for (int row = 0; row < 2; row++) { // Only 1 row defined here
+    for (int row = 0; row < 3; row++) { // Only 1 row defined here
       // Read the state of the current column
 
       digitalWrite(rowpins[row],LOW);
