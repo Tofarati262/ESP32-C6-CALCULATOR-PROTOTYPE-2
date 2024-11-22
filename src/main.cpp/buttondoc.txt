@@ -32,9 +32,9 @@
 * 'G': Log base-10
 * 'N': Natural logarithm
 * 'D': Degrees toggle for trigonometry
-* 'Q': Constant (Euler’s number)
+* 'Q': Constant (Eulerï¿½s number)
 ?  Row 7: Advanced operations
-* 'E': Euler’s number
+* 'E': Eulerï¿½s number
 * 'Y': Previous answer
 * 'X': Exponential function
 * 'M': Modulus

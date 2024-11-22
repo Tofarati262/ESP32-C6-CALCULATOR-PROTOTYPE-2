@@ -150,10 +150,11 @@ void calcengine() {
   tft.drawRect(0, 20, 160, 1, ST7735_BLACK);
   tft.drawRect(0, 60, 160, 1, ST7735_BLACK);
   tft.drawRect(0, 100, 160,1, ST7735_BLACK);
+  delay(100);
   while (true) {
     char key = loopy();
-    if(key!= ' '){
-      delay(600);
+    if(key!= 'z'){
+      delay(500);
       screencount++;
       if (screencount <= 22 ){
           tft.setCursor(xincrement,5);

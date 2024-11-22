@@ -10,11 +10,14 @@ const int numCols = sizeof(colpins) / sizeof(colpins[0]); // Calculate number of
 
 
 // Define key mapping
-char hexaKeys[4][5] = {
+char hexaKeys[7][5] = {
     {'C', 'O', 'M', 'R', '='}, // Row 1: Clear, Mode, Recall, Equals
     {'L','(', 'T','F','P'},
-    {'7', '8', '9','X','/'}
-
+    {'7', '8', '9','X','/'},
+    {'4', '5', '6','-','+'},
+    {'1', '2', '3','A','B'},
+    { '0','.','G','N','D'},
+    {'S','%','E','#','^'},
 };
 
 // Setup function
@@ -29,12 +32,20 @@ void settup() {
   // Initialize rows as outputs
     pinMode(rowpins[0], OUTPUT);
     digitalWrite(rowpins[0], HIGH); // Set rows LOW initially
-   pinMode(rowpins[1], OUTPUT);
+    pinMode(rowpins[1], OUTPUT);
     digitalWrite(rowpins[1], HIGH);
-     pinMode(rowpins[2], OUTPUT);
+    pinMode(rowpins[2], OUTPUT);
     digitalWrite(rowpins[2], HIGH);
-         pinMode(rowpins[3], OUTPUT);
+    pinMode(rowpins[3], OUTPUT);
     digitalWrite(rowpins[3], HIGH);
+    pinMode(rowpins[4], OUTPUT);
+    digitalWrite(rowpins[4], HIGH);
+    pinMode(rowpins[5], OUTPUT);
+    digitalWrite(rowpins[5], HIGH);
+    pinMode(rowpins[6], OUTPUT);
+    digitalWrite(rowpins[6], HIGH);
+   pinMode(rowpins[7], OUTPUT);
+    digitalWrite(rowpins[7], HIGH);
 }
 
 // Function to scan the keypad matrix
@@ -46,7 +57,7 @@ char loopy() {
   for (int col = 0; col < numCols; col++) { // Scan columns
     // Configure column pins: set current column as INPUT, others as OUTPUT LOW
     // Scan rows
-    for (int row = 0; row < 4; row++) { // Only 1 row defined here
+    for (int row = 0; row <7; row++) { // Only 1 row defined here
       // Read the state of the current column
 
       digitalWrite(rowpins[row],LOW);
@@ -61,6 +72,7 @@ char loopy() {
         lastCol = col;        // Save the column where the button was pressed
         Serial.print("Button pressed: ");
         Serial.println(hexaKeys[row][col]);
+        delay(50);
         return hexaKeys[row][col]; // Return the pressed key
         
       } else if (!isPressed && buttonPressed && lastCol == col) {
@@ -68,11 +80,11 @@ char loopy() {
         buttonPressed = false;
         lastCol = -1;
       }
-      settup();
-    }
 
+    }
+    settup();
       
   }
 
-  return ' '; // Return a space if no button is pressed
+  return 'z'; // Return a space if no button is pressed
 }
