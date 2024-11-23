@@ -1,6 +1,7 @@
 #include "esp32-hal-gpio.h"
 #include "DisplayInit.h"
 #include "Exiomatrix.h"
+#include "ArithmeticStack.h"
 // DisplayInit.cpp
 
 //calculator logic
@@ -151,6 +152,8 @@ void calcengine() {
   tft.drawRect(0, 60, 160, 1, ST7735_BLACK);
   tft.drawRect(0, 100, 160,1, ST7735_BLACK);
   delay(100);
+  CALCSTACK calc;
+
   while (true) {
     char key = loopy();
     if(key!= 'z'){
@@ -163,6 +166,36 @@ void calcengine() {
           tft.print(key);
           xincrement+=7;
       }
+       if (isdigit(key)) {
+                // If the key is a digit, push it to the number stack
+                calc.pushNumber(key - '0'); // Convert char to int
+            } else if (calc.isOperator(key)) {
+                // If the key is an operator, push it to the operator stack
+                calc.pushOperator(key);
+            } else if (key == '=') {
+                // Perform evaluation when '=' is pressed
+                try {
+                    calc.evaluate(); // Evaluate the current expression
+                    int result = calc.peekNumber(); // Get the result
+
+                    // Display the result on the screen
+                    tft.setCursor(0, 25);
+                    tft.print("Result: ");
+                    tft.print(result);
+
+                } catch (const std::exception& e) {
+                    tft.setCursor(0, 25);
+                    tft.print("Error: ");
+                    tft.print(e.what());
+                }
+            } else if (key == 'C') {
+                // Clear the screen and reset the stack
+                calc = CALCSTACK(); // Reinitialize the stack
+                xincrement = 0;
+                screencount = 0;
+                tft.fillScreen(ST7735_WHITE); // Clear the TFT display
+                tft.setCursor(0, 5);
+            }
     }
 
   }
