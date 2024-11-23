@@ -148,8 +148,8 @@ void drawmenu() {
 
 void calcengine() {
   int screencount = 0;
-  tft.drawRect(0, 0, 160, 10, ST7735_BLACK);
-  tft.drawRect(0, 10, 160, 10, ST7735_BLACK);
+  tft.drawRect(0, 15, 160, 1, ST7735_WHITE);
+  tft.drawRect(0, 30, 160, 1, ST7735_WHITE);
   delay(100);
   CALCSTACK calc;
 
@@ -162,8 +162,10 @@ void calcengine() {
           tft.setCursor(xincrement,5);
           tft.setTextSize(1);
           tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
-          tft.print(key);
-          xincrement+=7;
+          if(key!= '='){
+            tft.print(key);
+            xincrement+=7;
+          }
       }
        if (isdigit(key)) {
                 // If the key is a digit, push it to the number stack
@@ -178,12 +180,12 @@ void calcengine() {
                     int result = calc.peekNumber(); // Get the result
 
                     // Display the result on the screen
-                    tft.setCursor(0, 25);
-                    tft.print("Result: ");
+                    tft.drawRect(0, 30, 160, 1, ST7735_BLACK);
+                    tft.setCursor(150, 20);
                     tft.print(result);
 
                 } catch (const std::exception& e) {
-                    tft.setCursor(0, 25);
+                    tft.setCursor(100, 30);
                     tft.print("Error: ");
                     tft.print(e.what());
                 }
@@ -193,7 +195,7 @@ void calcengine() {
                 xincrement = 0;
                 screencount = 0;
                 tft.fillScreen(ST7735_WHITE); // Clear the TFT display
-                tft.setCursor(0, 5);
+                tft.setCursor(0, 15);
             }
     }
 

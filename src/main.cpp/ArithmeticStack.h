@@ -23,17 +23,12 @@ public:
 
     // Peek at the top of the number stack
     int peekNumber() const {
-        if (numberTop < 0) {
-            throw std::underflow_error("Number stack underflow");
-        }
         return numberStack[numberTop];
     }
 
     // Pop a number from the number stack
     int popNumber() {
-        if (numberTop < 0) {
-            throw std::underflow_error("Number stack underflow");
-        }
+
         return numberStack[numberTop--];
     }
 
@@ -47,17 +42,12 @@ public:
 
     // Peek at the top of the operator stack
     char peekOperator() const {
-        if (operatorTop < 0) {
-            throw std::underflow_error("Operator stack underflow");
-        }
+
         return operatorStack[operatorTop];
     }
 
     // Pop an operator from the operator stack
     char popOperator() {
-        if (operatorTop < 0) {
-            throw std::underflow_error("Operator stack underflow");
-        }
         return operatorStack[operatorTop--];
     }
 
@@ -68,9 +58,6 @@ public:
 
     // Evaluate the current expression
     void evaluate() {
-        if (numberTop < 1 || operatorTop < 0) {
-            throw std::runtime_error("Invalid expression");
-        }
 
         int b = popNumber();
         int a = popNumber();
@@ -86,7 +73,7 @@ public:
             result = a / b;
             break;
         default:
-            throw std::runtime_error("Unknown operator");
+            result = b;
         }
 
         pushNumber(result);
