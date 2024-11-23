@@ -148,6 +148,7 @@ void drawmenu() {
 
 void calcengine() {
   int screencount = 0;
+  int numbuffer =0;
   tft.drawRect(0, 15, 160, 1, ST7735_WHITE);
   tft.drawRect(0, 30, 160, 1, ST7735_WHITE);
   delay(100);
@@ -155,27 +156,23 @@ void calcengine() {
 
   while (true) {
     char key = loopy();
-    if(key!= 'z'){
-      delay(500);
-      screencount++;
-      if (screencount <= 22 ){
-          tft.setCursor(xincrement,5);
-          tft.setTextSize(1);
-          tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
-          if(key!= '='){
-            tft.print(key);
-            xincrement+=7;
-          }
-      }
-       if (isdigit(key)) {
+    if (isdigit(key)) {
                 // If the key is a digit, push it to the number stack
-                calc.pushNumber(key - '0'); // Convert char to int
-            } else if (calc.isOperator(key)) {
-                // If the key is an operator, push it to the operator stack
-                calc.pushOperator(key);
-            } else if (key == '=') {
+                numbuffer = numbuffer* 10 + (key - '0'); // Convert char to int
+    } else if (calc.isOperator(key)) {
+       if (numbuffer != 0 || key == '-') {  // Include negative numbers (e.g., -5)
+        calc.pushNumber(numbuffer);
+      }
+      calc.pushOperator(key);
+      numbuffer = 0; // Reset the buffer for the next number
+    } else if (key == '=') {
                 // Perform evaluation when '=' is pressed
-                try {
+      if (numbuffer != 0) {
+        calc.pushNumber(numbuffer); // Push the last number in the buffer
+        numbuffer = 0; // Reset the buffer
+      }
+
+      try {
                     calc.evaluate(); // Evaluate the current expression
                     int result = calc.peekNumber(); // Get the result
 
@@ -188,15 +185,27 @@ void calcengine() {
                     tft.setCursor(100, 30);
                     tft.print("Error: ");
                     tft.print(e.what());
-                }
-            } else if (key == 'C') {
+                }          
+    } else if (key == 'O') {
                 // Clear the screen and reset the stack
                 calc = CALCSTACK(); // Reinitialize the stack
                 xincrement = 0;
                 screencount = 0;
                 tft.fillScreen(ST7735_WHITE); // Clear the TFT display
                 tft.setCursor(0, 15);
-            }
+    }
+    if(key!= 'z'){
+      delay(500);
+      screencount++;
+      if (screencount <= 22 ){
+          tft.setCursor(xincrement,5);
+          tft.setTextSize(1);
+          tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
+          if(key!= '='&& key!='O'){
+            tft.print(key);
+            xincrement+=7;
+          }
+      }
     }
 
   }
