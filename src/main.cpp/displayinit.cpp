@@ -148,9 +148,8 @@ void drawmenu() {
 
 void calcengine() {
   int screencount = 0;
-  tft.drawRect(0, 20, 160, 1, ST7735_BLACK);
-  tft.drawRect(0, 60, 160, 1, ST7735_BLACK);
-  tft.drawRect(0, 100, 160,1, ST7735_BLACK);
+  tft.drawRect(0, 0, 160, 10, ST7735_BLACK);
+  tft.drawRect(0, 10, 160, 10, ST7735_BLACK);
   delay(100);
   CALCSTACK calc;
 
