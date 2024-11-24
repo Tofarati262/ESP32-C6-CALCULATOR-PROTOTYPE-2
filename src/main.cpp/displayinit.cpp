@@ -1,6 +1,7 @@
 #include "esp32-hal-gpio.h"
 #include "DisplayInit.h"
 #include "Exiomatrix.h"
+#include "ArithmeticStack.h"
 // DisplayInit.cpp
 
 //calculator logic
@@ -66,7 +67,6 @@ void Startup() {
     }
     tft.fillScreen(ST7735_WHITE);
     Serial.println("Startup complete, exiting loop.");
-    delay(1000);
     currentpage++;
 }
 
@@ -147,12 +147,64 @@ void drawmenu() {
 
 void calcengine() {
   int screencount = 0;
-  tft.drawRect(0, 20, 160, 1, ST7735_BLACK);
-  tft.drawRect(0, 60, 160, 1, ST7735_BLACK);
-  tft.drawRect(0, 100, 160,1, ST7735_BLACK);
+  double numbuffer =0.0;
+  double decimalplace = 0.1;
+  bool decimalfound = false;
+  char equationbuffer[MAXBUFFER];
+  tft.drawRect(0, 15, 160, 1, ST7735_WHITE);
+  tft.drawRect(0, 30, 160, 1, ST7735_WHITE);
   delay(100);
+  CALCSTACK calc;
+
   while (true) {
     char key = loopy();
+    if (isdigit(key)) {
+      if (decimalfound){
+        numbuffer  += (key - '0')*decimalplace;
+        decimalplace *= 0.1;
+      }else{
+        numbuffer = numbuffer* 10 + (key - '0'); // Convert char to int
+      }
+    } else if (calc.isOperator(key)) {
+       if (numbuffer != 0 || key == '-' ) {  // Include negative numbers (e.g., -5)
+        calc.pushNumber(numbuffer);
+      }
+      decimalfound = false;
+      decimalplace = 0.1;
+      calc.pushOperator(key);
+      numbuffer = 0.0; // Reset the buffer for the next number
+    }else if (key == '.'){
+      decimalfound = true;
+    } else if (key == '=') {
+                // Perform evaluation when '=' is pressed
+      if (numbuffer != 0) {
+        calc.pushNumber(numbuffer); // Push the last number in the buffer
+        numbuffer = 0; // Reset the buffer
+      }
+
+      try {
+                    calc.evaluate(); // Evaluate the current expression
+                    double  result = calc.peekNumber(); // Get the result
+                    int accuracy = calc.countDecimalPlaces(result);
+                    
+                    // Display the result on the screen
+                    tft.drawRect(0, 30, 160, 1, ST7735_BLACK);
+                    tft.setCursor(145, 20);
+                    tft.print(result,accuracy);
+
+                } catch (const std::exception& e) {
+                    tft.setCursor(100, 30);
+                    tft.print("Error: ");
+                    tft.print(e.what());
+                }          
+    } else if (key == 'O') {
+                // Clear the screen and reset the stack
+                calc = CALCSTACK(); // Reinitialize the stack
+                xincrement = 0;
+                screencount = 0;
+                tft.fillScreen(ST7735_WHITE); // Clear the TFT display
+                tft.setCursor(0, 15);
+    }
     if(key!= 'z'){
       delay(500);
       screencount++;
@@ -160,8 +212,20 @@ void calcengine() {
           tft.setCursor(xincrement,5);
           tft.setTextSize(1);
           tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
+          if(key!= '='&& key!='O'){
+            tft.print(key);
+            xincrement+=7;
+          }
+      }
+    }else(key== 'B'){
+       delay(500);
+      screencount++;
+      if (screencount <= 22 ){
+          tft.setCursor(xincrement,5);
+          tft.setTextSize(1);
+          tft.setTextColor(ST7735_WHITE,ST7735_WHITE);
           tft.print(key);
-          xincrement+=7;
+          xincrement-=7;
       }
     }
 
