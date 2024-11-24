@@ -13,7 +13,7 @@ const int numCols = sizeof(colpins) / sizeof(colpins[0]); // Calculate number of
 char hexaKeys[7][5] = {
     {'C', 'O', 'M', 'R', '='}, // Row 1: Clear, Mode, Recall, Equals
     {'L','(', 'T','F','P'},
-    {'7', '8', '9','X','/'},
+    {'7', '8', '9','x','/'},
     {'4', '5', '6','-','+'},
     {'1', '2', '3','A','B'},
     { '0','.','G','N','D'},

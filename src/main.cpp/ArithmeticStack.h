@@ -22,12 +22,12 @@ public:
     }
 
     // Peek at the top of the number stack
-    int peekNumber() const {
+    double peekNumber() const {
         return numberStack[numberTop];
     }
 
     // Pop a number from the number stack
-    int popNumber() {
+    double  popNumber() {
 
         return numberStack[numberTop--];
     }
@@ -53,7 +53,7 @@ public:
 
     // Check if a character is a valid operator
     bool isOperator(char ch) const {
-        return ch == '+' || ch == '-' || ch == '*' || ch == '/';
+        return ch == '+' || ch == '-' || ch == 'x' || ch == '/';
     }
 
     // Evaluate the current expression
@@ -67,7 +67,7 @@ public:
         switch (op) {
         case '+': result = a + b; break;
         case '-': result = a - b; break;
-        case '*': result = a * b; break;
+        case 'x': result = a * b; break;
         case '/':
             if (b == 0) throw std::runtime_error("Division by zero");
             result = a / b;
@@ -77,5 +77,23 @@ public:
         }
 
         pushNumber(result);
+    }
+
+
+    int countDecimalPlaces(double number) {
+    int count = 0;
+    
+    // Check if the number is already an integer
+    if (number == (int)number) {
+        return 0;
+    }
+
+    // Loop to count the digits after the decimal point
+    while (number != (int)number) {
+        number *= 10;
+        count++;
+    }
+
+    return count;
     }
 };

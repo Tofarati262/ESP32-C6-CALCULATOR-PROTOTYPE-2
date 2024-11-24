@@ -67,7 +67,6 @@ void Startup() {
     }
     tft.fillScreen(ST7735_WHITE);
     Serial.println("Startup complete, exiting loop.");
-    delay(1000);
     currentpage++;
 }
 
@@ -148,8 +147,8 @@ void drawmenu() {
 
 void calcengine() {
   int screencount = 0;
-  int numbuffer =0;
-  int decimalplace = 1;
+  double numbuffer =0.0;
+  double decimalplace = 0.1;
   bool decimalfound = false;
   char equationbuffer[MAXBUFFER];
   tft.drawRect(0, 15, 160, 1, ST7735_WHITE);
@@ -160,9 +159,9 @@ void calcengine() {
   while (true) {
     char key = loopy();
     if (isdigit(key)) {
-      if ( decimalfound){
-        numbuffer = numbuffer* 10 + ((key - '0')/decimalplace);
-        decimalplace *= 10;
+      if (decimalfound){
+        numbuffer  += (key - '0')*decimalplace;
+        decimalplace *= 0.1;
       }else{
         numbuffer = numbuffer* 10 + (key - '0'); // Convert char to int
       }
@@ -171,9 +170,9 @@ void calcengine() {
         calc.pushNumber(numbuffer);
       }
       decimalfound = false;
-      decimalplace = 1;
+      decimalplace = 0.1;
       calc.pushOperator(key);
-      numbuffer = 0; // Reset the buffer for the next number
+      numbuffer = 0.0; // Reset the buffer for the next number
     }else if (key == '.'){
       decimalfound = true;
     } else if (key == '=') {
@@ -186,11 +185,12 @@ void calcengine() {
       try {
                     calc.evaluate(); // Evaluate the current expression
                     double  result = calc.peekNumber(); // Get the result
-
+                    int accuracy = calc.countDecimalPlaces(result);
+                    
                     // Display the result on the screen
                     tft.drawRect(0, 30, 160, 1, ST7735_BLACK);
                     tft.setCursor(145, 20);
-                    tft.print(result);
+                    tft.print(result,accuracy);
 
                 } catch (const std::exception& e) {
                     tft.setCursor(100, 30);
