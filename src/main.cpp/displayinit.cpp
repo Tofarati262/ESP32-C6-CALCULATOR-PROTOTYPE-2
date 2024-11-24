@@ -149,6 +149,9 @@ void drawmenu() {
 void calcengine() {
   int screencount = 0;
   int numbuffer =0;
+  int decimalplace = 1;
+  bool decimalfound = false;
+  char equationbuffer[MAXBUFFER];
   tft.drawRect(0, 15, 160, 1, ST7735_WHITE);
   tft.drawRect(0, 30, 160, 1, ST7735_WHITE);
   delay(100);
@@ -157,14 +160,22 @@ void calcengine() {
   while (true) {
     char key = loopy();
     if (isdigit(key)) {
-                // If the key is a digit, push it to the number stack
-                numbuffer = numbuffer* 10 + (key - '0'); // Convert char to int
+      if ( decimalfound){
+        numbuffer = numbuffer* 10 + ((key - '0')/decimalplace);
+        decimalplace *= 10;
+      }else{
+        numbuffer = numbuffer* 10 + (key - '0'); // Convert char to int
+      }
     } else if (calc.isOperator(key)) {
-       if (numbuffer != 0 || key == '-'|| '.') {  // Include negative numbers (e.g., -5)
+       if (numbuffer != 0 || key == '-' ) {  // Include negative numbers (e.g., -5)
         calc.pushNumber(numbuffer);
       }
+      decimalfound = false;
+      decimalplace = 1;
       calc.pushOperator(key);
       numbuffer = 0; // Reset the buffer for the next number
+    }else if (key == '.'){
+      decimalfound = true;
     } else if (key == '=') {
                 // Perform evaluation when '=' is pressed
       if (numbuffer != 0) {
