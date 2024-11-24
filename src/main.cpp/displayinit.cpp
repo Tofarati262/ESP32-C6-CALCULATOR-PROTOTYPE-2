@@ -210,7 +210,7 @@ void calcengine() {
                 tft.fillScreen(ST7735_WHITE); // Clear the TFT display
                 tft.setCursor(0, 15);
     }
-    if(key!= 'z'){
+    if(key!= 'z' && calcresult == false){
       delay(500);
       if (screencount <= 22 ){
           tft.setCursor(xincrement,5);
@@ -223,7 +223,7 @@ void calcengine() {
             Serial.println(screencount);
           }
          if (key == 'B') { // Handle backspace
-          if (  screencount > 0 && calcresult == false){
+          if (  screencount > 0){
             screencount--; // Decrement screen count
             Serial.println(screencount);
             tft.setCursor(xincrement-7, 5);
