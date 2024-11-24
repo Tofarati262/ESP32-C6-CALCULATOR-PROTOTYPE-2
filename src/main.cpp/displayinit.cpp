@@ -160,7 +160,7 @@ void calcengine() {
                 // If the key is a digit, push it to the number stack
                 numbuffer = numbuffer* 10 + (key - '0'); // Convert char to int
     } else if (calc.isOperator(key)) {
-       if (numbuffer != 0 || key == '-') {  // Include negative numbers (e.g., -5)
+       if (numbuffer != 0 || key == '-'|| '.') {  // Include negative numbers (e.g., -5)
         calc.pushNumber(numbuffer);
       }
       calc.pushOperator(key);
@@ -174,11 +174,11 @@ void calcengine() {
 
       try {
                     calc.evaluate(); // Evaluate the current expression
-                    int result = calc.peekNumber(); // Get the result
+                    double  result = calc.peekNumber(); // Get the result
 
                     // Display the result on the screen
                     tft.drawRect(0, 30, 160, 1, ST7735_BLACK);
-                    tft.setCursor(150, 20);
+                    tft.setCursor(145, 20);
                     tft.print(result);
 
                 } catch (const std::exception& e) {

@@ -5,7 +5,7 @@
 
 class CALCSTACK {
 private:
-    int numberStack[MAXBUFFER];
+    double numberStack[MAXBUFFER];
     char operatorStack[MAXBUFFER];
     int numberTop;
     int operatorTop;
@@ -14,7 +14,7 @@ public:
     CALCSTACK() : numberTop(-1), operatorTop(-1) {}
 
     // Push a number onto the number stack
-    void pushNumber(int number) {
+    void pushNumber(double  number) {
         if (numberTop >= MAXBUFFER - 1) {
             throw std::overflow_error("Number stack overflow");
         }
@@ -59,11 +59,11 @@ public:
     // Evaluate the current expression
     void evaluate() {
 
-        int b = popNumber();
-        int a = popNumber();
+        double  b = popNumber();
+        double a = popNumber();
         char op = popOperator();
 
-        int result;
+        double  result;
         switch (op) {
         case '+': result = a + b; break;
         case '-': result = a - b; break;
