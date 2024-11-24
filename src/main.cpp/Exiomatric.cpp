@@ -11,7 +11,7 @@ const int numCols = sizeof(colpins) / sizeof(colpins[0]); // Calculate number of
 
 // Define key mapping
 char hexaKeys[7][5] = {
-    {'C', 'O', 'M', 'R', '='}, // Row 1: Clear, Mode, Recall, Equals
+    {'C', 'O', 'M', 'B', '='}, // Row 1: Clear, Mode, Recall, Equals
     {'L','(', 'T','F','P'},
     {'7', '8', '9','x','/'},
     {'4', '5', '6','-','+'},

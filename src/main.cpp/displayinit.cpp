@@ -217,6 +217,16 @@ void calcengine() {
             xincrement+=7;
           }
       }
+    }else(key== 'B'){
+       delay(500);
+      screencount++;
+      if (screencount <= 22 ){
+          tft.setCursor(xincrement,5);
+          tft.setTextSize(1);
+          tft.setTextColor(ST7735_WHITE,ST7735_WHITE);
+          tft.print(key);
+          xincrement-=7;
+      }
     }
 
   }
