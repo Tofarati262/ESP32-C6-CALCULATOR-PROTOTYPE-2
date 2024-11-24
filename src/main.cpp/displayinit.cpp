@@ -5,7 +5,8 @@
 // DisplayInit.cpp
 
 //calculator logic
-u_int8_t xincrement=1; 
+u_int8_t xincrement=1;
+bool calcresult = false; 
 // Pin definitions
 const int buttonPin = 18;
 const int potPin = 4;
@@ -182,7 +183,8 @@ void calcengine() {
         numbuffer = 0; // Reset the buffer
       }
 
-      try {
+      if (calc.isEmpty() == 1){
+        try {
                     calc.evaluate(); // Evaluate the current expression
                     double  result = calc.peekNumber(); // Get the result
                     int accuracy = calc.countDecimalPlaces(result);
@@ -191,15 +193,18 @@ void calcengine() {
                     tft.drawRect(0, 30, 160, 1, ST7735_BLACK);
                     tft.setCursor(145, 20);
                     tft.print(result,accuracy);
+                    calcresult = true;
 
                 } catch (const std::exception& e) {
                     tft.setCursor(100, 30);
                     tft.print("Error: ");
                     tft.print(e.what());
-                }          
+                }
+      }          
     } else if (key == 'O') {
                 // Clear the screen and reset the stack
                 calc = CALCSTACK(); // Reinitialize the stack
+                calcresult= false;
                 xincrement = 0;
                 screencount = 0;
                 tft.fillScreen(ST7735_WHITE); // Clear the TFT display
@@ -207,30 +212,43 @@ void calcengine() {
     }
     if(key!= 'z'){
       delay(500);
-      screencount++;
       if (screencount <= 22 ){
           tft.setCursor(xincrement,5);
           tft.setTextSize(1);
           tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
-          if(key!= '='&& key!='O'){
+          if(key!= '='&& key!='O'&& key!='B'){
             tft.print(key);
             xincrement+=7;
+            screencount++;
+            Serial.println(screencount);
           }
-      }
-    }else(key== 'B'){
-       delay(500);
-      screencount++;
-      if (screencount <= 22 ){
-          tft.setCursor(xincrement,5);
-          tft.setTextSize(1);
-          tft.setTextColor(ST7735_WHITE,ST7735_WHITE);
-          tft.print(key);
-          xincrement-=7;
+         if (key == 'B') { // Handle backspace
+          if (  screencount > 0 && calcresult == false){
+            screencount--; // Decrement screen count
+            Serial.println(screencount);
+            tft.setCursor(xincrement-7, 5);
+            tft.setTextSize(1);
+            tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
+            tft.print(" "); // Clear the character on display
+            xincrement -= 7; // Move cursor back
+          }
+        // Adjust numbuffer
+        if (decimalfound) {
+            // Remove the last decimal digit
+            decimalplace *= 10; // Reverse the last decimal multiplier
+            numbuffer = round(numbuffer * 10.0) / 10.0; // Strip last decimal
+        } else {
+            // Remove the last integer digit
+            numbuffer = floor(numbuffer / 10);
+        }
+    
+} 
+        }
       }
     }
 
   }
-}
+
 
 
 void (*pages[])() = {Startup,drawmenu,calcengine};
