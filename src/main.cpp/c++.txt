@@ -1,0 +1,36 @@
+1.<iomanip>
+
+This library provides manipulators for stream formatting, such as controlling the precision, width, and alignment of output.
+
+How it's used:
+setprecision: Controls the number of significant digits for floating-point output.
+Example in the code:
+
+cout << "Your final grade is " << setprecision(3) 
+     << 0.2 * midterm + 0.4 * final + 0.4 * sum / count
+     << setprecision(prec) << endl;
+
+2.<ios>
+
+This library provides basic I/O functionality and types, including the streamsize type used for managing precision and stream states.
+
+How it's used:
+streamsize: Represents the precision value of the output stream.
+
+
+streamsize prec = cout.precision();
+
+Loop Invariant Overview:
+
+An invariant must hold:
+Before the loop starts.
+At the start of each iteration.
+After the loop ends.
+
+
+A vector is a type in c++ that can hold any amount of a given type and it grows as more is being added
+
+vector<double> homework;
+// invariant: homework contains all the homework grades read so far
+while (cin >> x)
+homework.push_back(x);
