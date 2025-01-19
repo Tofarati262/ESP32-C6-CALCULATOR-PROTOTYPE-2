@@ -19,7 +19,7 @@ public:
       }else{
         return 1;
       }
-    }
+    }/
 
     // Push a number onto the number stack
     void pushNumber(double  number) {
