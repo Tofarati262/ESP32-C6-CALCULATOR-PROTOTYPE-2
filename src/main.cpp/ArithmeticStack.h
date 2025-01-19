@@ -13,6 +13,14 @@ private:
 public:
     CALCSTACK() : numberTop(-1), operatorTop(-1) {}
 
+    int isEmpty(){
+      if(numberTop== -1){
+        return 0;
+      }else{
+        return 1;
+      }
+    }
+
     // Push a number onto the number stack
     void pushNumber(double  number) {
         if (numberTop >= MAXBUFFER - 1) {
