@@ -9,7 +9,7 @@ u_int8_t xincrement=1;
 bool calcresult = false; 
 // Pin definitions
 const int buttonPin = 18;
-const int potPin = 4;
+const int potPin = 4; //pin declaration
 
 // Button state variables
 int buttonState = HIGH;
