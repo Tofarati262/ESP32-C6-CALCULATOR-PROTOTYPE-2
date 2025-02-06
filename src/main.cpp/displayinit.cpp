@@ -8,7 +8,7 @@
 u_int8_t xincrement=1;
 bool calcresult = false; 
 // Pin definitions
-const int buttonPin = 18;
+const int buttonPin = 1;
 const int potPin = 4; //pin declaration
 
 // Button state variables
@@ -50,7 +50,12 @@ void setupDisplay() {
 
 // Implement the rest of your functions here
 void Startup() {
-    while (digitalRead(buttonPin) == HIGH) {
+    pinMode(1,OUTPUT);
+    digitalWrite(1,LOW);
+     TCA9554PWR_Init(0x00);
+    Mode_EXIO(buttonPin, 1);
+
+    while (Read_EXIO(buttonPin) == 1) {
         tft.drawRect(25, 40, 120, 35, ST7735_WHITE);
         tft.setFont(&FreeSerifBold9pt7b);
         tft.setTextSize(2);
@@ -66,6 +71,7 @@ void Startup() {
         delay(900);
         tft.fillRect(60, 100, 60, 10, ST7735_WHITE);
     }
+    digitalWrite(1,HIGH);
     tft.fillScreen(ST7735_WHITE);
     Serial.println("Startup complete, exiting loop.");
     currentpage++;
@@ -102,8 +108,9 @@ void button() {
 }
 
 void drawmenu() {
+  digitalWrite(1,LOW);
     // Continuously loop until the user performs an action
-    while (digitalRead(buttonPin) == HIGH) {
+    while (true) {
         
         
         // Read potentiometer to update mappedValue
@@ -124,9 +131,10 @@ void drawmenu() {
             tft.setCursor(90, 100);
             tft.print("Return");
 
-            if (digitalRead(buttonPin) ==  0) {  // Button pressed
-                currentpage++;  // Increment page
+            if (Read_EXIO(buttonPin) ==  0) {  // Button pressed
+                digitalWrite(1,HIGH);
                 cleanscreen();
+                currentpage++;  // Increment page
                 break;  // Exit the loop and update the page
             }
         } else if (mappedValue > 180) {  // Enter button highlighted
@@ -137,8 +145,9 @@ void drawmenu() {
             tft.setCursor(90, 100);
             tft.print("Return");
 
-             if (digitalRead(buttonPin) == 0) {  // Button pressed
+             if (Read_EXIO(buttonPin) == 0) {  // Button pressed
                 cleanscreen();
+                digitalWrite(1,HIGH);
                 currentpage--;  // Decrement page
                 break;  // Exit the loop and update the page
             }

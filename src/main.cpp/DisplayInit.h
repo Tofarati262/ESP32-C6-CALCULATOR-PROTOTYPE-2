@@ -7,11 +7,11 @@
 #include "TCA9554PWR.h"
 
 // Pin definitions
-#define TFT_CS 2
-#define TFT_RST 0
-#define TFT_DC 1
-#define TFT_MOSI 5
-#define TFT_SCLK 9
+#define TFT_CS 16
+#define TFT_RST 3
+#define TFT_DC 17
+#define TFT_MOSI 7
+#define TFT_SCLK 6
 
 // Button and potentiometer configuration
 extern const int buttonPin;

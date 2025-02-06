@@ -2,10 +2,10 @@
 #include "Exiomatrix.h"
 
 // Define row and column pins
-const int rowpins[] = {3, 7, 8, 14, 15, 19,20};
+const int rowpins[] = {1, 5 , 14, 15, 8,19,20};
 const int numRows = sizeof(rowpins) / sizeof(rowpins[0]); // Calculate number of rows
 
-const int colpins[] = {6, 7, 4, 1, 5};
+const int colpins[] = {1, 2, 3, 4, 5};
 const int numCols = sizeof(colpins) / sizeof(colpins[0]); // Calculate number of columns
 
 
@@ -22,7 +22,7 @@ char hexaKeys[7][5] = {
 
 // Setup function
 void settup() {
-
+   TCA9554PWR_Init(0x00);
   // Initialize columns as inputs with pull-up resistors
   Mode_EXIO(colpins[0], 1);
   Mode_EXIO(colpins[1], 1);
@@ -51,9 +51,6 @@ void settup() {
 // Function to scan the keypad matrix
 char loopy() {
   settup();
-  static bool buttonPressed = false; // Track button press state
-  static int lastCol = -1;           // Track last column where a button was pressed
-
   for (int col = 0; col < numCols; col++) { // Scan columns
     // Configure column pins: set current column as INPUT, others as OUTPUT LOW
     // Scan rows
@@ -67,18 +64,12 @@ char loopy() {
       
 
       // Detect state change (from unpressed to pressed)
-      if (isPressed && !buttonPressed) {
-        buttonPressed = true; // Mark button as pressed
-        lastCol = col;        // Save the column where the button was pressed
+      if (isPressed) {        // Save the column where the button was pressed
         Serial.print("Button pressed: ");
         Serial.println(hexaKeys[row][col]);
         delay(50);
         return hexaKeys[row][col]; // Return the pressed key
         
-      } else if (!isPressed && buttonPressed && lastCol == col) {
-        // Reset button state when released
-        buttonPressed = false;
-        lastCol = -1;
       }
 
     }
