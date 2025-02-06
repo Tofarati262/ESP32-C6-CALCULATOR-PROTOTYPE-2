@@ -8,8 +8,8 @@
 u_int8_t xincrement=1;
 bool calcresult = false; 
 // Pin definitions
-const int buttonPin = 18;
-const int potPin = 4;
+const int buttonPin = 1;
+const int potPin = 4; //pin declaration
 
 // Button state variables
 int buttonState = HIGH;
@@ -50,7 +50,12 @@ void setupDisplay() {
 
 // Implement the rest of your functions here
 void Startup() {
-    while (digitalRead(buttonPin) == HIGH) {
+    pinMode(1,OUTPUT);
+    digitalWrite(1,LOW);
+     TCA9554PWR_Init(0x00);
+    Mode_EXIO(buttonPin, 1);
+
+    while (Read_EXIO(buttonPin) == 1) {
         tft.drawRect(25, 40, 120, 35, ST7735_WHITE);
         tft.setFont(&FreeSerifBold9pt7b);
         tft.setTextSize(2);
@@ -63,9 +68,9 @@ void Startup() {
         tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
         tft.setCursor(60, 100);
         tft.print("Continue");
-        delay(900);
         tft.fillRect(60, 100, 60, 10, ST7735_WHITE);
     }
+    digitalWrite(1,HIGH);
     tft.fillScreen(ST7735_WHITE);
     Serial.println("Startup complete, exiting loop.");
     currentpage++;
@@ -102,8 +107,9 @@ void button() {
 }
 
 void drawmenu() {
+  digitalWrite(1,LOW);
     // Continuously loop until the user performs an action
-    while (digitalRead(buttonPin) == HIGH) {
+    while (true) {
         
         
         // Read potentiometer to update mappedValue
@@ -124,9 +130,10 @@ void drawmenu() {
             tft.setCursor(90, 100);
             tft.print("Return");
 
-            if (digitalRead(buttonPin) ==  0) {  // Button pressed
-                currentpage++;  // Increment page
+            if (Read_EXIO(buttonPin) ==  0) {  // Button pressed
+                digitalWrite(1,HIGH);
                 cleanscreen();
+                currentpage++;  // Increment page
                 break;  // Exit the loop and update the page
             }
         } else if (mappedValue > 180) {  // Enter button highlighted
@@ -137,8 +144,9 @@ void drawmenu() {
             tft.setCursor(90, 100);
             tft.print("Return");
 
-             if (digitalRead(buttonPin) == 0) {  // Button pressed
+             if (Read_EXIO(buttonPin) == 0) {  // Button pressed
                 cleanscreen();
+                digitalWrite(1,HIGH);
                 currentpage--;  // Decrement page
                 break;  // Exit the loop and update the page
             }
@@ -146,108 +154,55 @@ void drawmenu() {
     }
 }
 
-void calcengine() {
-  int screencount = 0;
-  double numbuffer =0.0;
-  double decimalplace = 0.1;
-  bool decimalfound = false;
-  char equationbuffer[MAXBUFFER];
-  tft.drawRect(0, 15, 160, 1, ST7735_WHITE);
-  tft.drawRect(0, 30, 160, 1, ST7735_WHITE);
-  delay(100);
-  CALCSTACK calc;
+  void calcengine() {
+    int screencount = 0;
+    double numbuffer =0.0;
+    double decimalplace = 0.1;
+    bool decimalfound = false;
+    char equationbuffer[MAXBUFFER];
+    tft.drawRect(0, 15, 160, 1, ST7735_BLACK);
+    tft.drawRect(0, 0, 160, 14, ST7735_WHITE);
+    tft.drawRect(0, 30, 160, 1, ST7735_WHITE);
+    CALCSTACK calc;
 
-  while (true) {
-    char key = loopy();
-    if (isdigit(key)) {
-      if (decimalfound){
-        numbuffer  += (key - '0')*decimalplace;
-        decimalplace *= 0.1;
-      }else{
-        numbuffer = numbuffer* 10 + (key - '0'); // Convert char to int
-      }
-    } else if (calc.isOperator(key)) {
-       if (numbuffer != 0 || key == '-' ) {  // Include negative numbers (e.g., -5)
-        calc.pushNumber(numbuffer);
-      }
-      decimalfound = false;
-      decimalplace = 0.1;
-      calc.pushOperator(key);
-      numbuffer = 0.0; // Reset the buffer for the next number
-    }else if (key == '.'){
-      decimalfound = true;
-    } else if (key == '=') {
-                // Perform evaluation when '=' is pressed
-      if (numbuffer != 0) {
-        calc.pushNumber(numbuffer); // Push the last number in the buffer
-        numbuffer = 0; // Reset the buffer
-      }
-
-      if (calc.isEmpty() == 1){
-        try {
-                    calc.evaluate(); // Evaluate the current expression
-                    double  result = calc.peekNumber(); // Get the result
-                    int accuracy = calc.countDecimalPlaces(result);
-                    
-                    // Display the result on the screen
-                    tft.drawRect(0, 30, 160, 1, ST7735_BLACK);
-                    tft.setCursor(145, 20);
-                    tft.print(result,accuracy);
-                    calcresult = true;
-
-                } catch (const std::exception& e) {
-                    tft.setCursor(100, 30);
-                    tft.print("Error: ");
-                    tft.print(e.what());
-                }
-      }          
-    } else if (key == 'O') {
-                // Clear the screen and reset the stack
-                calc = CALCSTACK(); // Reinitialize the stack
-                calcresult= false;
-                xincrement = 0;
-                screencount = 0;
-                tft.fillScreen(ST7735_WHITE); // Clear the TFT display
-                tft.setCursor(0, 15);
-    }
-    if(key!= 'z' && calcresult == false){
-      delay(500);
-      if (screencount <= 22 ){
-          tft.setCursor(xincrement,5);
-          tft.setTextSize(1);
-          tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
-          if(key!= '='&& key!='O'&& key!='B'){
-            tft.print(key);
-            xincrement+=7;
-            screencount++;
-            Serial.println(screencount);
-          }
-         if (key == 'B') { // Handle backspace
-          if (  screencount > 0){
-            screencount--; // Decrement screen count
-            Serial.println(screencount);
-            tft.setCursor(xincrement-7, 5);
+    while (true) {
+      delay(100);
+      char key = loopy();          
+      if(key!= 'z' && calcresult == false){
+          if (screencount <= 22 ){
+            tft.setCursor(xincrement,5);
             tft.setTextSize(1);
-            tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
-            tft.print(" "); // Clear the character on display
-            xincrement -= 7; // Move cursor back
+            tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
+            if(key!= '='&& key!='O'&& key!='B'){
+              tft.print(key);
+              xincrement+=7;
+              screencount++;
+              Serial.println(screencount);
+            }
           }
-        // Adjust numbuffer
-        if (decimalfound) {
-            // Remove the last decimal digit
-            decimalplace *= 10; // Reverse the last decimal multiplier
-            numbuffer = round(numbuffer * 10.0) / 10.0; // Strip last decimal
-        } else {
-            // Remove the last integer digit
-            numbuffer = floor(numbuffer / 10);
         }
-    
-} 
+       if (key == 'B') { // Handle backspace
+          if (  screencount > 0){
+              screencount--; // Decrement screen count
+              Serial.println(screencount);
+              tft.setCursor(xincrement-7, 5);
+              tft.setTextSize(1);
+              tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
+              tft.print(" "); // Clear the character on display
+              xincrement -= 7; // Move cursor back
+          }
         }
+        if (key == 'O') {
+          // Clear the screen and reset the stack
+          calc = CALCSTACK(); // Reinitialize the stack
+          calcresult= false;
+          xincrement = 0;
+          screencount = 0;
+          tft.fillRect(0, 0, 160, 14, ST7735_WHITE);
       }
     }
+  }  
 
-  }
 
 
 
