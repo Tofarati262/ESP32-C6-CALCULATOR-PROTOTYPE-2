@@ -3,6 +3,7 @@
 
 void setup() {
   TCA9554PWR_Init(0x00); 
+    setCpuFrequencyMhz(80);
   setupDisplay();  // Initialize displays and setup the initial screen
 }
 
