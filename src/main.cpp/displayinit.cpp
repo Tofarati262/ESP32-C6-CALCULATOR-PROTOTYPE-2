@@ -7,25 +7,15 @@
 //calculator logic
 u_int8_t xincrement=1;
 bool calcresult = false; 
-// Pin definitions
-const int buttonPin = 1;
-const int potPin = 4; //pin declaration
-
-// Button state variables
-int buttonState = HIGH;
-int lastButtonState = HIGH;
-unsigned long lastPressTime = 0;
-const unsigned long debounceDelay = 100;
 
 // Potentiometer state variables
-int value = 0;
-int mappedValue = 0;
-int lastMappedValue = -1;
+uint16_t value = 0;
+uint16_t mappedValue = 0;
+uint16_t lastMappedValue = -1;
 const int minPotValue = 500;
 const int maxPotValue = 4095;
 int screenline = 20;
 int currentpage = 0;
-bool buttonpressed = false;
 const byte rows = 1;
 const byte columns = 5;
 
@@ -93,18 +83,7 @@ void knob() {
   }
 }
 
-void button() {
-   int reading = digitalRead(buttonPin);
-  if (reading == LOW && lastButtonState == HIGH && (millis() - lastPressTime) > debounceDelay) {
-    Serial.println("Button Pressed");
-    lastPressTime = millis();
-    value = (value + 1) % 2;
-    buttonpressed = true;
-  } else {
-    buttonpressed = false;
-  }
-  lastButtonState = reading;
-}
+
 
 void drawmenu() {
   digitalWrite(1,LOW);
