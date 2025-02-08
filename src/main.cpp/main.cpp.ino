@@ -1,5 +1,6 @@
 #include "DisplayInit.h"  // Ensure the correct path
 
+uint8_t *currentpageptr = &currentpage;
 
 void setup() {
   TCA9554PWR_Init(0x00); 
@@ -9,10 +10,10 @@ void setup() {
 
 void loop() {
     // Call the current page function
-    (*pages[currentpage])();
+    (*pages[*currentpageptr])();
 
     // Increment the page index
-    if (currentpage >= 3) {
-        currentpage = 0;  // Reset to the first page (Startup)
+    if (*currentpageptr > 3) {
+        *currentpageptr = 0;  // Reset to the first page (Startup)
     }
 }

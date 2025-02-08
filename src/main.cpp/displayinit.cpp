@@ -7,27 +7,25 @@
 //calculator logic
 u_int8_t xincrement=1;
 bool calcresult = false; 
-// Pin definitions
-const int buttonPin = 1;
-const int potPin = 4; //pin declaration
 
-// Button state variables
-int buttonState = HIGH;
-int lastButtonState = HIGH;
-unsigned long lastPressTime = 0;
-const unsigned long debounceDelay = 100;
+uint16_t mappedValue = 0;
+uint16_t lastMappedValue = 0;
+uint8_t currentpage = 0;
+uint8_t screencount = 0;
 
 // Potentiometer state variables
-int value = 0;
-int mappedValue = 0;
-int lastMappedValue = -1;
-const int minPotValue = 500;
-const int maxPotValue = 4095;
-int screenline = 20;
-int currentpage = 0;
-bool buttonpressed = false;
-const byte rows = 1;
-const byte columns = 5;
+uint16_t *mappedValueptr = &mappedValue;
+
+
+uint16_t *lastMappedValueptr =&lastMappedValue ;
+
+// screen count 
+uint8_t *screencountptr = &screencount;
+
+//State Tracking 
+
+
+
 
 // Display objects
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
@@ -50,7 +48,7 @@ void setupDisplay() {
 
 // Implement the rest of your functions here
 void Startup() {
-    pinMode(1,OUTPUT);
+    pinMode(buttonPin,OUTPUT);
     digitalWrite(1,LOW);
      TCA9554PWR_Init(0x00);
     Mode_EXIO(buttonPin, 1);
@@ -77,34 +75,9 @@ void Startup() {
 }
 
 // Continue with the rest of the functions here...
-void knob() {
-    int potValue = analogRead(potPin);  // Read the potentiometer value (0-4095)
-  if (potValue < minPotValue) {
-    mappedValue = 0;
-  } else {
-    mappedValue = map(potValue, minPotValue, maxPotValue, 10, 360);
-  }
-  if (mappedValue != lastMappedValue) {
-    Serial.print("Potentiometer Value: ");
-    Serial.print(potValue);
-    Serial.print(" -> Mapped Value: ");
-    Serial.println(mappedValue);
-    lastMappedValue = mappedValue;
-  }
-}
 
-void button() {
-   int reading = digitalRead(buttonPin);
-  if (reading == LOW && lastButtonState == HIGH && (millis() - lastPressTime) > debounceDelay) {
-    Serial.println("Button Pressed");
-    lastPressTime = millis();
-    value = (value + 1) % 2;
-    buttonpressed = true;
-  } else {
-    buttonpressed = false;
-  }
-  lastButtonState = reading;
-}
+
+
 
 void drawmenu() {
   digitalWrite(1,LOW);
@@ -115,14 +88,14 @@ void drawmenu() {
         // Read potentiometer to update mappedValue
         int potValue = analogRead(potPin);  // Read potentiometer
         if (potValue < minPotValue) {
-            mappedValue = 0;
+            *mappedValueptr = 0;
         } else {
-            mappedValue = map(potValue, minPotValue, maxPotValue, 10, 360);
+           *mappedValueptr = map(potValue, minPotValue, maxPotValue, 10, 360);
         }
 
         // Draw the menu elements
         tft.drawRect(38, 100, 130, 15, ST7735_WHITE);
-        if (mappedValue <= 180) {  // Return button highlighted
+        if (*mappedValueptr <= 180) {  // Return button highlighted
            tft.setTextColor(ST7735_WHITE, ST7735_BLACK);  
             tft.setCursor(40, 100);
             tft.print("Enter");
@@ -133,10 +106,10 @@ void drawmenu() {
             if (Read_EXIO(buttonPin) ==  0) {  // Button pressed
                 digitalWrite(1,HIGH);
                 cleanscreen();
-                currentpage++;  // Increment page
+               currentpage++;  // Increment page
                 break;  // Exit the loop and update the page
             }
-        } else if (mappedValue > 180) {  // Enter button highlighted
+        } else if (*mappedValueptr > 180) {  // Enter button highlighted
            tft.setTextColor(ST7735_BLACK, ST7735_WHITE); 
             tft.setCursor(40, 100);
             tft.print("Enter");
@@ -155,7 +128,6 @@ void drawmenu() {
 }
 
   void calcengine() {
-    int screencount = 0;
     double numbuffer =0.0;
     double decimalplace = 0.1;
     bool decimalfound = false;
@@ -169,22 +141,22 @@ void drawmenu() {
       delay(100);
       char key = loopy();          
       if(key!= 'z' && calcresult == false){
-          if (screencount <= 22 ){
+          if (*screencountptr <= 21 ){
             tft.setCursor(xincrement,5);
             tft.setTextSize(1);
             tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
             if(key!= '='&& key!='O'&& key!='B'){
               tft.print(key);
               xincrement+=7;
-              screencount++;
-              Serial.println(screencount);
+              (*screencountptr)++;
+              Serial.println(*screencountptr);
             }
           }
         }
        if (key == 'B') { // Handle backspace
-          if (  screencount > 0){
-              screencount--; // Decrement screen count
-              Serial.println(screencount);
+          if (  *screencountptr > 0){
+              (*screencountptr)--; // Decrement screen count
+              Serial.println(*screencountptr);
               tft.setCursor(xincrement-7, 5);
               tft.setTextSize(1);
               tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
@@ -197,7 +169,7 @@ void drawmenu() {
           calc = CALCSTACK(); // Reinitialize the stack
           calcresult= false;
           xincrement = 0;
-          screencount = 0;
+          *screencountptr = 0;
           tft.fillRect(0, 0, 160, 14, ST7735_WHITE);
       }
     }

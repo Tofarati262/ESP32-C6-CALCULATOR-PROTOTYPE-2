@@ -13,21 +13,18 @@
 #define TFT_MOSI 7
 #define TFT_SCLK 6
 
+#define buttonPin  1
+#define potPin  4 //pin declaration
+#define  minPotValue 500
+#define maxPotValue  4095
+
 // Button and potentiometer configuration
-extern const int buttonPin;
-extern const int potPin;
-extern int buttonState;
-extern int lastButtonState;
-extern unsigned long lastPressTime;
-extern const unsigned long debounceDelay;
-extern int value;
-extern int mappedValue;
-extern int lastMappedValue;
-extern const int minPotValue;
-extern const int maxPotValue;
-extern int inc;
-extern bool buttonpressed;
-extern int currentpage;
+
+
+extern uint16_t mappedValue;
+extern uint16_t lastMappedValue;
+extern uint8_t currentpage;
+extern uint8_t screencount;
 
 
 // Array of function pointers for page handling
