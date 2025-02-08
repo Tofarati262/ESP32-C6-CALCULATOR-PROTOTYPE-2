@@ -20,13 +20,11 @@
 
 // Button and potentiometer configuration
 
-extern int *value;
-extern int *mappedValue;
-extern int *lastMappedValue;
-extern const int *minPotValue;
-extern const int *maxPotValue;
-extern bool *buttonpressed;
-extern int *currentpage;
+
+extern uint16_t mappedValue;
+extern uint16_t lastMappedValue;
+extern uint8_t currentpage;
+extern uint8_t screencount;
 
 
 // Array of function pointers for page handling

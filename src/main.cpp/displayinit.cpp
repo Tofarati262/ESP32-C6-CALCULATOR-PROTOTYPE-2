@@ -8,16 +8,24 @@
 u_int8_t xincrement=1;
 bool calcresult = false; 
 
-// Potentiometer state variables
-uint16_t value = 0;
 uint16_t mappedValue = 0;
-uint16_t lastMappedValue = -1;
-const int minPotValue = 500;
-const int maxPotValue = 4095;
-int screenline = 20;
-int currentpage = 0;
-const byte rows = 1;
-const byte columns = 5;
+uint16_t lastMappedValue = 0;
+uint8_t currentpage = 0;
+uint8_t screencount = 0;
+
+// Potentiometer state variables
+uint16_t *mappedValueptr = &mappedValue;
+
+
+uint16_t *lastMappedValueptr =&lastMappedValue ;
+
+// screen count 
+uint8_t *screencountptr = &screencount;
+
+//State Tracking 
+uint8_t *currentpageptr = &currentpage;
+
+
 
 // Display objects
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
@@ -40,7 +48,7 @@ void setupDisplay() {
 
 // Implement the rest of your functions here
 void Startup() {
-    pinMode(1,OUTPUT);
+    pinMode(buttonPin,OUTPUT);
     digitalWrite(1,LOW);
      TCA9554PWR_Init(0x00);
     Mode_EXIO(buttonPin, 1);
@@ -63,25 +71,11 @@ void Startup() {
     digitalWrite(1,HIGH);
     tft.fillScreen(ST7735_WHITE);
     Serial.println("Startup complete, exiting loop.");
-    currentpage++;
+    *currentpageptr++;
 }
 
 // Continue with the rest of the functions here...
-void knob() {
-    int potValue = analogRead(potPin);  // Read the potentiometer value (0-4095)
-  if (potValue < minPotValue) {
-    mappedValue = 0;
-  } else {
-    mappedValue = map(potValue, minPotValue, maxPotValue, 10, 360);
-  }
-  if (mappedValue != lastMappedValue) {
-    Serial.print("Potentiometer Value: ");
-    Serial.print(potValue);
-    Serial.print(" -> Mapped Value: ");
-    Serial.println(mappedValue);
-    lastMappedValue = mappedValue;
-  }
-}
+
 
 
 
@@ -112,7 +106,7 @@ void drawmenu() {
             if (Read_EXIO(buttonPin) ==  0) {  // Button pressed
                 digitalWrite(1,HIGH);
                 cleanscreen();
-                currentpage++;  // Increment page
+                *currentpageptr++;  // Increment page
                 break;  // Exit the loop and update the page
             }
         } else if (mappedValue > 180) {  // Enter button highlighted
@@ -126,7 +120,7 @@ void drawmenu() {
              if (Read_EXIO(buttonPin) == 0) {  // Button pressed
                 cleanscreen();
                 digitalWrite(1,HIGH);
-                currentpage--;  // Decrement page
+                *currentpageptr--;  // Decrement page
                 break;  // Exit the loop and update the page
             }
         }
@@ -134,7 +128,7 @@ void drawmenu() {
 }
 
   void calcengine() {
-    int screencount = 0;
+    *screencountptr = 0;
     double numbuffer =0.0;
     double decimalplace = 0.1;
     bool decimalfound = false;
@@ -148,21 +142,21 @@ void drawmenu() {
       delay(100);
       char key = loopy();          
       if(key!= 'z' && calcresult == false){
-          if (screencount <= 22 ){
+          if (*screencountptr <= 22 ){
             tft.setCursor(xincrement,5);
             tft.setTextSize(1);
             tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
             if(key!= '='&& key!='O'&& key!='B'){
               tft.print(key);
               xincrement+=7;
-              screencount++;
+              *screencountptr++;
               Serial.println(screencount);
             }
           }
         }
        if (key == 'B') { // Handle backspace
-          if (  screencount > 0){
-              screencount--; // Decrement screen count
+          if (  *screencountptr > 0){
+              *screencountptr--; // Decrement screen count
               Serial.println(screencount);
               tft.setCursor(xincrement-7, 5);
               tft.setTextSize(1);
@@ -176,7 +170,7 @@ void drawmenu() {
           calc = CALCSTACK(); // Reinitialize the stack
           calcresult= false;
           xincrement = 0;
-          screencount = 0;
+          *screencountptr = 0;
           tft.fillRect(0, 0, 160, 14, ST7735_WHITE);
       }
     }
