@@ -41,5 +41,6 @@ extern void button();
 extern void drawmenu();
 extern void calcengine();
 extern void cleanscreen();
+extern bool calcenginerun;
 
 #endif // DISPLAY_INIT_H

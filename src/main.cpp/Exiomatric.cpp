@@ -12,13 +12,13 @@ const int numCols = sizeof(colpins) / sizeof(colpins[0]); // Calculate number of
 
 // Define key mapping
 char hexaKeys[7][5] = {
-    {'C', 'O', 'M', 'B', '='}, // Row 1: Clear, Mode, Recall, Equals
+    {'C', 'O', 'M', 'B', '^'}, // Row 1: Clear, Mode, Recall, Equals
     {'L','(', 'T','F','P'},
     {'7', '8', '9','x','/'},
     {'4', '5', '6','-','+'},
     {'1', '2', '3','A','B'},
     { '0','.','G','N','D'},
-    {'S','%','E','#','^'},
+    {'S','%','E','#','='},
 };
 
 // Setup function
@@ -51,9 +51,6 @@ void settup() {
 
 // Function to scan the keypad matrix
 char loopy() {
-  Serial.println(numCols);
-  Serial.print(numRows);
-
   bool buttonPressed = false;
   int lastCol = -1;
 
@@ -64,7 +61,6 @@ char loopy() {
       // Read the state of the current column
 
       digitalWrite(rowpins[row],LOW);
-      Serial.println(rowpins[row]);
       
 
       bool isPressed = (Read_EXIO(colpins[col]) == 0);
