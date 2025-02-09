@@ -11,6 +11,8 @@ bool *calcresultptr = &calcresult;
 
 uint8_t *screencountptr = &screencount;
 
+double buffer = 0.0;
+
 
 
 void setup() {
@@ -31,7 +33,6 @@ void loop() {
     double numbuffer =0.0;
     double decimalplace = 0.1;
     bool decimalfound = false;
-    bool lastpushednum = true;
     char equationbuffer[MAXBUFFER];
     tft.drawRect(0, 0, 160, 14, ST7735_WHITE);
     tft.drawRect(0, 30, 160, 1, ST7735_WHITE);
@@ -49,13 +50,13 @@ void loop() {
 
             if(key == '1' || key== '2' || key == '3'||key == '4'||key == '5'||key == '6'||key == '7'||key == '8'||key == '9'||key == '0'){
               double parser = key - '0'; // converts char to double 
-              calc.pushNumber(parser); // pushes it to stack
-              lastpushednum = true; // last pushed number is tracked as a double 
+              buffer =  (10 * buffer )+ parser; // for numbers like 77 : 10* 7 + 7 
             }
 
             if(calc.isOperator(key)){ //check is the char is an operator
-              calc.pushOperator(key);
-              lastpushednum = false;// to track the last pushed number as an operator
+              calc.pushOperator(key); // pushes char into stack
+              calc.pushNumber(buffer); // pushes number into stack 
+              buffer = 0;
             }
 
 
@@ -75,20 +76,19 @@ void loop() {
               tft.setTextSize(1);
               tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
               tft.print(" "); // Clear the character on display
-              xincrement -= 7; // Move cursor back
-               if(lastpushednum == false) //meaning an operator was pushed
-               {
-                 calc.popOperator();
-               }else{
-                  calc.popNumber();
-               }
+              xincrement -= 7; // Move cursor backb
+
+              if(buffer >10){
+                buffer /= 10;
+              }else{
+                buffer = 0;
+              }
           }
         }
         if (key == 'O') {
           // Clear the screen and reset the stack
           calc = CALCSTACK(); // Reinitialize the stack
           *calcresultptr= false;
-          lastpushednum = true;
           xincrement = 0;
           *screencountptr = 0;
           tft.fillRect(0, 0, 160, 14, ST7735_WHITE);
