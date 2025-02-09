@@ -61,7 +61,7 @@ public:
 
     // Check if a character is a valid operator
     bool isOperator(char ch) const {
-        return ch == '+' || ch == '-' || ch == 'x' || ch == '/';
+        return ch == '+' || ch == '-' || ch == 'x' || ch == '/' || ch == '('|| ch =='P'|| ch =='S'|| ch =='^'|| ch =='A'|| ch =='C'|| ch =='.'|| ch =='G'|| ch =='N'|| ch =='D'|| ch =='S';
     }
 
     // Evaluate the current expression

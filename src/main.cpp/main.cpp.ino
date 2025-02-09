@@ -12,6 +12,7 @@ bool *calcresultptr = &calcresult;
 uint8_t *screencountptr = &screencount;
 
 double buffer = 0.0;
+bool bracketright = false;
 
 
 
@@ -30,6 +31,7 @@ void loop() {
 
     // Increment the page index
     if (*currentpageptr == 2) {
+    bool lastnum = true; // track what the last button pressed was number or char
     double numbuffer =0.0;
     double decimalplace = 0.1;
     bool decimalfound = false;
@@ -48,26 +50,18 @@ void loop() {
             tft.setTextSize(1);
             tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
 
-            if(key == '1' || key== '2' || key == '3'||key == '4'||key == '5'||key == '6'||key == '7'||key == '8'||key == '9'||key == '0'){
-              double parser = key - '0'; // converts char to double 
-              buffer =  (10 * buffer )+ parser; // for numbers like 77 : 10* 7 + 7 
-            }
-
-            if(calc.isOperator(key)){ //check is the char is an operator
-              calc.pushOperator(key); // pushes char into stack
-              calc.pushNumber(buffer); // pushes number into stack 
-              buffer = 0;
-            }
+           
+            
 
 
-            if(key!= '='&& key!='O'&& key!='B'){
+            if(key!= '=' && key!='O' && key!='B' && key!='M' &&  key != 'R' && key!= 'C' && key != 'T' && key != 'F' && key != 'L' && key != '(' && key!= 'G'){
               tft.print(key);
               xincrement+=7;
               (*screencountptr)++;
               Serial.println(*screencountptr);
             }
           }
-      }
+        }
           if (key == 'B') { // Handle backspace
             if (  *screencountptr > 0){
               (*screencountptr)--; // Decrement screen count
@@ -76,35 +70,56 @@ void loop() {
               tft.setTextSize(1);
               tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
               tft.print(" "); // Clear the character on display
-              xincrement -= 7; // Move cursor backb
-
-              if(buffer >10){
-                buffer /= 10;
-              }else{
-                buffer = 0;
-              }
+              xincrement -= 7; // Move cursor back
           }
         }
         if (key == 'O') {
           // Clear the screen and reset the stack
           calc = CALCSTACK(); // Reinitialize the stack
+          buffer = 0;
           *calcresultptr= false;
           xincrement = 0;
           *screencountptr = 0;
           tft.fillRect(0, 0, 160, 14, ST7735_WHITE);
           result = 0;
         }
-        if ( key == '='){
-          result = calc.evaluate();
-          *calcresultptr=true;
-          
-          Serial.print(result);
-          tft.drawRect(0, 40, 160, 1, ST7735_BLACK);
-          tft.setCursor( 145-sizeof(result), 30);
-          tft.print(result);
+        if(key == 'L')
+        {
           tft.setTextSize(1);
+          tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
+          tft.setCursor(xincrement, 5);
+          tft.print("Log");
+          xincrement +=7;
+          tft.print('(');
+          xincrement +=18;
         }
-      
+        if(key == '(')
+        {
+          tft.setTextSize(1);
+          tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
+          tft.setCursor(xincrement, 5);
+          if (bracketright){
+            tft.print(')');
+            xincrement +=7;
+          }else{
+           tft.print('(');
+           xincrement +=7;
+          }
+          bracketright = !bracketright; // Toggle the bracket state
+
+        }
+        if(key == 'G'){
+          tft.setCursor(xincrement, 5);
+          tft.setTextSize(1);
+          tft.print("log");
+
+          tft.setCursor(xincrement + 18, 8); // Move "10" lower
+          tft.setTextSize(0); // Make it smaller like a subscript
+          tft.print("10");
+
+          xincrement += 24; // Adjust cursor for next character
+
+        }
+      }
     }
   }
-}
