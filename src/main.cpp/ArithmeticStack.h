@@ -65,7 +65,7 @@ public:
     }
 
     // Evaluate the current expression
-    void evaluate() {
+    double evaluate() {
 
         double  b = popNumber();
         double a = popNumber();
@@ -84,7 +84,7 @@ public:
             result = b;
         }
 
-        pushNumber(result);
+        return result;
     }
 
 
