@@ -33,7 +33,6 @@ void loop() {
     bool decimalfound = false;
     bool lastpushednum = true;
     char equationbuffer[MAXBUFFER];
-    tft.drawRect(0, 15, 160, 1, ST7735_BLACK);
     tft.drawRect(0, 0, 160, 14, ST7735_WHITE);
     tft.drawRect(0, 30, 160, 1, ST7735_WHITE);
     CALCSTACK calc;
@@ -96,11 +95,14 @@ void loop() {
           result = 0;
         }
         if ( key == '='){
-          while(calc.isEmpty() == 1){
-            result += calc.evaluate();
-            calcresult=true;
-          }
+          result = calc.evaluate();
+          *calcresultptr=true;
+          
           Serial.print(result);
+          tft.drawRect(0, 40, 160, 1, ST7735_BLACK);
+          tft.setCursor( 145-sizeof(result), 30);
+          tft.print(result);
+          tft.setTextSize(1);
         }
       
     }
