@@ -1,7 +1,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#define MAXBUFFER 100
+#define MAXBUFFER 20
 
 class CALCSTACK {
 private:
@@ -65,35 +65,26 @@ public:
     }
 
     // Evaluate the current expression
-    double evaluate() {
-      bool done = true;
-      double  result;
+    void evaluate() {
 
-      while(done){
-        
-        if (numberTop == 0&& operatorTop == -1){
-         result =popNumber();
-         done = false;
-         return result;
-        }else if(numberTop ==2){ 
+        double  b = popNumber();
+        double a = popNumber();
+        char op = popOperator();
 
-          double  b = popNumber();
-          double a = popNumber();
-          char op = popOperator();
-          switch (op) {
-          case '+': result = a + b; break;
-          case '-': result = a - b; break;
-          case 'x': result = a * b; break;
-          case '/':
-              if (b == 0) throw std::runtime_error("Division by zero");
-              result = a / b;
-              break;
-          default:
-              result = b;
-          }
-          pushNumber(result);
+        double  result;
+        switch (op) {
+        case '+': result = a + b; break;
+        case '-': result = a - b; break;
+        case 'x': result = a * b; break;
+        case '/':
+            if (b == 0) throw std::runtime_error("Division by zero");
+            result = a / b;
+            break;
+        default:
+            result = b;
         }
-      }
+
+        pushNumber(result);
     }
 
 
