@@ -2,11 +2,8 @@
 #include "ArithmeticStack.h"
 #include "Exiomatrix.h"
 #include <iostream>
+#include "CursorFunctions.h"
 
-#define CURSOR_WIDTH 5
-#define CURSOR_HEIGHT 7
-#define CURSOR_BLINK_DELAY 100  // Blinking speed in milliseconds
-#define MAX_CHARS 22  // Maximum characters visible before scrolling
 
 uint8_t *currentpageptr = &currentpage;
 bool calcenginerun = false;
@@ -14,17 +11,7 @@ bool calcenginerun = false;
 bool calcresult = false;
 bool *calcresultptr = &calcresult; 
 
-uint8_t previousmapped = 0;
 
-uint8_t *screenendptr = &screencount;
-int screenstart = 0;
-
-int cursorIndex= 0;
-int cursorPos = 3;  // Cursor X position
-int xPos= 3;
-int lastcursorPos = 0;
-bool cursorVisible = true;  // Blinking state
-unsigned long lastBlinkTime = 0;
 
 char equationbuffer[MAXBUFFER];  // Stores the equation input
 int equationLength = 0;  // Tracks how many characters have been entered
@@ -35,7 +22,7 @@ void setup() {
     setupDisplay();  // Initialize displays and setup the initial screen
 }
 
-void drawCursor() {
+void drawCursor() { //blinks the cursor
     if (cursorVisible) {
         tft.fillRect(cursorPos, 5, CURSOR_WIDTH, CURSOR_HEIGHT, ST7735_BLACK);
     } else {
@@ -46,14 +33,14 @@ void drawCursor() {
 void updateScreen() {
     tft.fillRect(0, 0, 160, 14, ST7735_WHITE);  // Clear equation display area
     
-    xPos = 3;  // Reset xPos before drawing characters
+    xPos = 3;  // Reset xPos before drawing characters to the start of the screen 
 
-    for (int i = screenstart; i < equationLength && i < screenstart + MAX_CHARS; i++) {
+    for (int i = screenstart; i < equationLength && i < screenstart + MAX_CHARS; i++) { //prints equation from start of the screen to the end of the screen
         tft.setCursor(xPos, 5);
         tft.setTextSize(1);
         tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
         tft.print(equationbuffer[i]);
-        xPos += 7;
+        xPos += 7; //increase the position then printing a number at the next position
     }
 
 
@@ -74,6 +61,14 @@ void loop() {
             char key = loopy();  // Get key input
             unsigned long currentMillis = millis();
             
+            // Blink cursor every CURSOR_BLINK_DELAY ms
+
+            if (currentMillis - lastBlinkTime >= CURSOR_BLINK_DELAY) {
+                cursorVisible = !cursorVisible;
+                drawCursor();
+                lastBlinkTime = currentMillis;
+            }
+            
             int potValue = analogRead(potPin);
 
             if (potValue < minPotValue) {
@@ -84,38 +79,35 @@ void loop() {
 
             int degreeChange = mappedValue - previousmapped;
             previousmapped = mappedValue;
-            std::cout<<"This is the degreeChange: " << degreeChange <<std::endl;
+            std::cout<<"This is the degreeChange: "<< std::endl;
+            
 
             // Move cursor only within the valid range
-            if (degreeChange > 2 && degreeChange < 240 && cursorIndex < equationLength && (cursorPos + 7) < 153) { 
-                lastcursorPos = cursorPos;
-                tft.fillRect(lastcursorPos, 5, CURSOR_WIDTH, CURSOR_HEIGHT, ST7735_WHITE);
-                cursorPos += 7;
-                cursorIndex++;
-                std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
-                drawCursor();
-                updateScreen();
-            } else if (degreeChange < -3 && cursorIndex > 0) {
-                lastcursorPos = cursorPos;
-                cursorPos -= 7;
-                tft.fillRect(lastcursorPos, 5, CURSOR_WIDTH, CURSOR_HEIGHT, ST7735_WHITE);
-                cursorIndex--;
-                 std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
-                if(cursorIndex < screenstart)
-                {
-                  std::cout <<"This is the screenstart : "<<screenstart <<std::endl;
-                  screenstart--;
-                }
-                drawCursor();
-                updateScreen();
+            if (degreeChange > 1 && cursorIndex < equationLength && (cursorPos + 7) < 153) {  //checks if the potentiometer changes in the positive direction and the cursor's index is less than equation length an cursor positoin is not at the screen edge
+                cursorMoveForward();
+                drawCursor();// draws the cursor
+                updateScreen(); // updates the screen and writes the equation inside the buffer
+            } else if (degreeChange < -3  && cursorIndex > 0) {
+                cursorMoveback();
+                drawCursor(); //draw new cursor position
+                updateScreen(); //print the equation on the screen
             }
 
-            // Blink cursor every CURSOR_BLINK_DELAY ms
-            if (currentMillis - lastBlinkTime >= CURSOR_BLINK_DELAY) {
-                cursorVisible = !cursorVisible;
-                drawCursor();
-                lastBlinkTime = currentMillis;
+            if(key == 'B' && cursorIndex > 0){
+                cursorMoveback(); //backspace needs to 
+                equationLength--;//reduce the equation length
+                //reduce the cursor index and decrement the cursorpos all done in the called function   
+                drawCursor(); //draw new cursor position
+                updateScreen(); //print the equation on the screen
             }
+            if(key == 'C'){
+                equationLength = 0; //resets the length of the equation
+                cursorPos = 3;
+                xPos = 3;
+                cursorIndex = 0;
+                
+            }
+
 
             if (key != 'z'&& key !='B') {
               std::cout <<"This is the pos: "<<cursorPos <<std::endl;
@@ -135,15 +127,17 @@ void loop() {
                     cursorIndex++;
                 }
 
+                //if the cursor position is at the  and the index is less than the equation length 
+
                 if(cursorPos == 150 && cursorIndex < equationLength)
                 {
-                  cursorIndex++;
+                  cursorIndex++;  //increase the cursor index this allow us to print a key to the buffer once at the edge of the screen
                 }
 
                 // Scroll screen if necessary
                 if (equationLength > MAX_CHARS) {
                     screenstart++;
-                    Serial.println(screenstart);
+                    std::cout <<"This is the screenstart : "<< screenstart <<std::endl;
                 }
 
                 updateScreen();
