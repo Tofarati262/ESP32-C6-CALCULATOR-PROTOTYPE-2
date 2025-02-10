@@ -17,7 +17,7 @@ bool *calcresultptr = &calcresult;
 uint8_t previousmapped = 0;
 
 uint8_t *screenendptr = &screencount;
-uint8_t screenstart = 0;
+int screenstart = 0;
 
 int cursorIndex= 0;
 int cursorPos = 3;  // Cursor X position
@@ -84,9 +84,10 @@ void loop() {
 
             int degreeChange = mappedValue - previousmapped;
             previousmapped = mappedValue;
+            std::cout<<"This is the degreeChange: " << degreeChange <<std::endl;
 
             // Move cursor only within the valid range
-            if (degreeChange > 1 && cursorIndex < equationLength && (cursorPos + 7) < 153) { 
+            if (degreeChange > 2 && degreeChange < 240 && cursorIndex < equationLength && (cursorPos + 7) < 153) { 
                 lastcursorPos = cursorPos;
                 tft.fillRect(lastcursorPos, 5, CURSOR_WIDTH, CURSOR_HEIGHT, ST7735_WHITE);
                 cursorPos += 7;
@@ -94,7 +95,7 @@ void loop() {
                 std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
                 drawCursor();
                 updateScreen();
-            } else if (key == 'B' && cursorIndex > 0) {
+            } else if (degreeChange < -3 && cursorIndex > 0) {
                 lastcursorPos = cursorPos;
                 cursorPos -= 7;
                 tft.fillRect(lastcursorPos, 5, CURSOR_WIDTH, CURSOR_HEIGHT, ST7735_WHITE);
