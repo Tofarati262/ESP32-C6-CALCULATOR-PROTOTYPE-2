@@ -143,7 +143,7 @@ void loop() {
                 // Scroll screen if necessary
                 if (equationLength > MAX_CHARS) {
                     screenstart++;
-                    std::cout <<"This is the screenstart : "<<screenstart <<std::endl;
+                    Serial.println(screenstart);
                 }
 
                 updateScreen();
