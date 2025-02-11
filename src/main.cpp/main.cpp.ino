@@ -36,11 +36,11 @@ void updateScreen() {
     
     xPos = 3;  // Reset xPos before drawing characters to the start of the screen 
 
-    for (int i = screenstart; i < equationLength && i < screenstart + MAX_CHARS; i++) { //prints equation from start of the screen to the end of the screen
+    for (int i = screenstart; i < equationbuffer.size() && i < screenstart + MAX_CHARS; i++) { //prints equation from start of the screen to the end of the screen
         tft.setCursor(xPos, 5);
         tft.setTextSize(1);
         tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
-        tft.print(equationbuffer[0]);
+        tft.print(equationbuffer[i]);
         xPos += 7; //increase the position then printing a number at the next position
     }
 
@@ -84,7 +84,7 @@ void loop() {
             
 
             // Move cursor only within the valid range
-            if (degreeChange > 1 && cursorIndex < equationLength && (cursorPos + 7) < 153) {  //checks if the potentiometer changes in the positive direction and the cursor's index is less than equation length an cursor positoin is not at the screen edge
+            if (degreeChange > 1 && cursorIndex < equationbuffer.size() && (cursorPos + 7) < 153) {  //checks if the potentiometer changes in the positive direction and the cursor's index is less than equation length an cursor positoin is not at the screen edge
                 cursorMoveForward();
                 drawCursor();// draws the cursor
                 updateScreen(); // updates the screen and writes the equation inside the buffer
@@ -96,18 +96,15 @@ void loop() {
 
             if(key == 'B' && cursorIndex > 0){
                 cursorMoveback(); //backspace needs to 
-                equationLength--;//reduce the equation length
                 //reduce the cursor index and decrement the cursorpos all done in the called function   
                 drawCursor(); //draw new cursor position
                 updateScreen(); //print the equation on the screen
             }
             if(key == 'C'){
-                equationLength = 0; //resets the length of the equation
                 cursorPos = 3;
                 xPos = 3;
                 cursorIndex = 0;
                 equationbuffer.clear();
-                
                 drawCursor(); //draw new cursor position
                 updateScreen(); //print out the empty screen
             }
@@ -118,22 +115,23 @@ void loop() {
               std::cout <<"This is the equationlength: " <<equationLength <<std::endl;
               std::cout <<"This is the index: "<<cursorIndex <<std::endl;
                 // Replace character at current cursor position
+                if(cursorIndex >=equationbuffer.size()){
+                  equationbuffer.push_back(key);
+                }else{
                 equationbuffer[cursorIndex] = key;
-
-                // Increase equation length only if adding at the end
-                if (cursorIndex == equationLength) {
-                    equationLength++;  
                 }
 
+                // Increase equation length only if adding at the end
+
                 // Move cursor forward (prevent going off-screen)
-                if ((cursorPos + 7) < 155 && cursorIndex < equationLength) {
+                if ((cursorPos + 7) < 155 && cursorIndex < equationbuffer.size()) {
                     cursorPos += 7;
                     cursorIndex++;
                 }
 
                 //if the cursor position is at the  and the index is less than the equation length 
 
-                if(cursorPos == 150 && cursorIndex < equationLength)
+                if(cursorPos == 150 && cursorIndex < equationbuffer.size())
                 {
                   cursorIndex++;  //increase the cursor index this allow us to print a key to the buffer once at the edge of the screen
                 }
