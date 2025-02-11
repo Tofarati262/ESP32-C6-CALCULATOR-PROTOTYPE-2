@@ -4,22 +4,16 @@
 
 int cursorIndex= 0;
 int cursorPos = 3;
-
-int lastcursorPos = 0;
-bool cursorVisible = true;  // Blinking state
-unsigned long lastBlinkTime = 0;
-
-uint8_t previousmapped = 0;
-
-uint8_t *screenendptr = &screencount;
-uint8_t screenstart = 0;
-
-int cursorIndex= 0;
-int cursorPos = 3;  // Cursor X position
 int xPos= 3;
+
 int lastcursorPos = 0;
 bool cursorVisible = true;  // Blinking state
 unsigned long lastBlinkTime = 0;
+
+int previousmapped = 0;
+
+int *screenendptr = &screencount;
+int screenstart = 0;
 
 void cursorMoveForward()
 {

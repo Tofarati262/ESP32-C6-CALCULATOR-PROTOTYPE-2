@@ -13,9 +13,9 @@ extern int cursorIndex;
 extern int cursorPos;  // Cursor X position
 extern int xPos;
 
-extern uint8_t *screenendptr;
-extern uint8_t screenstart;
-extern uint8_t previousmapped;
+extern int  *screenendptr;
+extern int  screenstart;
+extern int  previousmapped;
 
 extern void cursorMoveback();
 extern void cursorMoveForward();

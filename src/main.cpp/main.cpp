@@ -3,9 +3,10 @@
 #include "Exiomatrix.h"
 #include <iostream>
 #include "CursorFunctions.h"
+#include <vector>
 
 
-uint8_t *currentpageptr = &currentpage;
+int *currentpageptr = &currentpage;
 bool calcenginerun = false;
 
 bool calcresult = false;
@@ -13,7 +14,7 @@ bool *calcresultptr = &calcresult;
 
 
 
-char equationbuffer[MAXBUFFER];  // Stores the equation input
+std::vector<char>equationbuffer;  // Stores the equation input
 int equationLength = 0;  // Tracks how many characters have been entered
 
 void setup() {
@@ -39,7 +40,7 @@ void updateScreen() {
         tft.setCursor(xPos, 5);
         tft.setTextSize(1);
         tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
-        tft.print(equationbuffer[i]);
+        tft.print(equationbuffer[0]);
         xPos += 7; //increase the position then printing a number at the next position
     }
 
@@ -105,7 +106,10 @@ void loop() {
                 cursorPos = 3;
                 xPos = 3;
                 cursorIndex = 0;
+                equationbuffer.clear();
                 
+                drawCursor(); //draw new cursor position
+                updateScreen(); //print out the empty screen
             }
 
 

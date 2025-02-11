@@ -1,7 +1,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#define MAXBUFFER 20
+#define MAXBUFFER 100
 
 class CALCSTACK {
 private:

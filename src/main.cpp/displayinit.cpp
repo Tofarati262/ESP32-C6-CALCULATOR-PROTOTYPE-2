@@ -4,27 +4,16 @@
 #include "ArithmeticStack.h"
 // DisplayInit.cpp
 
-//calculator logic
-//bool *calcresultptr = &calcresult; 
 
-uint16_t mappedValue = 0;
-uint16_t lastMappedValue = 0;
-uint8_t currentpage = 0;
-uint8_t screencount = 0;
+
+int mappedValue = 0;
+int lastMappedValue = 0;
+int currentpage = 0;
+int screencount = 0;
 
 // Potentiometer state variables
-uint16_t *mappedValueptr = &mappedValue;
-
-
-uint16_t *lastMappedValueptr =&lastMappedValue ;
-
-// screen count 
-//uint8_t *screencountptr = &screencount;
-
-//State Tracking 
-
-
-
+int *mappedValueptr = &mappedValue;
+int *lastMappedValueptr =&lastMappedValue ;
 
 // Display objects
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
