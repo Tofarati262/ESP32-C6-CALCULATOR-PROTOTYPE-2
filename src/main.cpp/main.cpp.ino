@@ -94,14 +94,14 @@ void loop() {
                 updateScreen(); //print the equation on the screen
             }
 
-            if(key == 'B' && cursorIndex > 0){
+            if(key == 'B' && cursorIndex > 0){ // deletes the characters and updates the screen
                 equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index 
                 cursorMoveback(); //backspace needs to 
                 //reduce the cursor index and decrement the cursorpos all done in the called function
                 drawCursor(); //draw new cursor position
                 updateScreen(); //print the equation on the screen
             }
-            if(key == 'C'){
+            if(key == 'E'){ // erase the characters inside the vector 
                 cursorPos = 3;
                 xPos = 3;
                 cursorIndex = 0;
@@ -110,16 +110,76 @@ void loop() {
                 updateScreen(); //print out the empty screen
             }
 
+            if(key == 'L'){ //ln(
+                lastcursorPos = cursorPos;
+                tft.fillRect(lastcursorPos,5,CURSOR_WIDTH,CURSOR_HEIGHT,ST7735_WHITE);
+                cursorPos+= 21;
+                char temp arr = {'l','n','('};
+                for(int i =0; i < 2 ; i++){
+                    cursorIndex++;
+                    equationbuffer[cursorIndex] =arr[i];
+                }
 
-            if (key != 'z'&& key !='B' && key != 'C') {
+
+                std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+                drawCursor();
+                updateScreen();
+            }
+
+             if(key == 'l'){ //log(
+                lastcursorPos = cursorPos;
+                tft.fillRect(lastcursorPos,5,CURSOR_WIDTH,CURSOR_HEIGHT,ST7735_WHITE);
+                cursorPos+= 28;
+                char temp arr[]= {'l','o','g', '('};
+                for(int i =0; i < 3 ; i++){
+                    cursorIndex++;
+                    equationbuffer[cursorIndex] =arr[i];
+                }
+
+
+                std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+                drawCursor();
+                updateScreen();
+            }
+
+            if(key == '('){
+                bool rightbracket = true
+                lastcursorPos = cursorPos;
+                 tft.fillRect(lastcursorPos,5,CURSOR_WIDTH,CURSOR_HEIGHT,ST7735_WHITE);
+                cursorPos+= 7;
+                cursorIndex++;
+
+                if(rightbracket)
+                {
+                    equationbuffer[cursorIndex] ='(';
+                }else{
+                    equationbuffer[cursorIndex] =')';
+                }
+
+
+                std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+                rightbracket = !rightbracket;
+                
+                drawCursor();
+                updateScreen();
+
+            }
+
+            if(key == 'O'){
+                esp_sleep_enable_timer_wakeup(10* 100000000); // No timer, stays asleep indefinitely
+                esp_deep_sleep_start(); //sets the chip into a deepslep state
+            }
+            
+
+            if (key != 'z'&& key !='B' && key != 'C' && key != 'a' && key != '=') {
               std::cout <<"This is the pos: "<<cursorPos <<std::endl;
               std::cout <<"This is the equationlength: " <<equationLength <<std::endl;
               std::cout <<"This is the index: "<<cursorIndex <<std::endl;
                 // Replace character at current cursor position
                 if(cursorIndex >=equationbuffer.size()){
-                  equationbuffer.push_back(key);
+                    equationbuffer.push_back(key);
                 }else{
-                equationbuffer[cursorIndex] = key;
+                    equationbuffer[cursorIndex] = key;
                 }
 
                 // Increase equation length only if adding at the end
