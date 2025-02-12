@@ -1,29 +1,28 @@
-#include "esp32-hal-gpio.h"
 #include "TCA9554PWR.h"
 #include "Exiomatrix.h"
 
 // Define row and column pins
-const int rowpins[] = {1, 5 , 14, 15,8,19,20};
+const int rowpins[] = {1, 5, 14, 15, 8, 19,20};
 const int numRows = sizeof(rowpins) / sizeof(rowpins[0]); // Calculate number of rows
 
-const int colpins[] = {1, 2, 3, 4, 5};
+const int colpins[] = {1, 2 , 3, 4, 5};
 const int numCols = sizeof(colpins) / sizeof(colpins[0]); // Calculate number of columns
 
 
 // Define key mapping
 char hexaKeys[7][5] = {
-    {'C', 'O', 'M', 'B', '^'}, // Row 1: Clear, Mode, Recall, Equals
-    {'L','(', 'T','F','π'},
+    {'C', 'O', 'M', 'B', '='}, // Row 1: Clear, Mode, Recall, Equals
+    {'L','(', 'T','F','P'},
     {'7', '8', '9','x','/'},
     {'4', '5', '6','-','+'},
     {'1', '2', '3','A','B'},
     { '0','.','G','N','D'},
-    {'S','%','E','#','='},
+    {'S','%','E','#','^'},
 };
 
 // Setup function
 void settup() {
-   TCA9554PWR_Init(0x00);
+
   // Initialize columns as inputs with pull-up resistors
   Mode_EXIO(colpins[0], 1);
   Mode_EXIO(colpins[1], 1);
@@ -51,13 +50,14 @@ void settup() {
 
 // Function to scan the keypad matrix
 char loopy() {
-  bool buttonPressed = false;
-  int lastCol = -1;
-
   settup();
+  static bool buttonPressed = false; // Track button press state
+  static int lastCol = -1;           // Track last column where a button was pressed
+
   for (int col = 0; col < numCols; col++) { // Scan columns
     // Configure column pins: set current column as INPUT, others as OUTPUT LOW
-    for (int row = 0; row < numRows; row++) { // Only 1 row defined here
+    // Scan rows
+    for (int row = 0; row <7; row++) { // Only 1 row defined here
       // Read the state of the current column
 
       digitalWrite(rowpins[row],LOW);
@@ -67,24 +67,23 @@ char loopy() {
       
 
       // Detect state change (from unpressed to pressed)
-      if (isPressed && !buttonPressed) { // Detect state change (press event)
-          buttonPressed = true;  // Mark button as pressed
-          lastCol = col;         // Save the column index
-
-          Serial.print("Button pressed: ");
-          Serial.println(hexaKeys[row][col]);
-          delay(100);
-          digitalWrite(rowpins[row], HIGH);  // Reset row state
-          return hexaKeys[row][col]; // Return the pressed key
-
+      if (isPressed && !buttonPressed) {
+        buttonPressed = true; // Mark button as pressed
+        lastCol = col;        // Save the column where the button was pressed
+        Serial.print("Button pressed: ");
+        Serial.println(hexaKeys[row][col]);
+        delay(50);
+        return hexaKeys[row][col]; // Return the pressed key
+        
       } else if (!isPressed && buttonPressed && lastCol == col) {
-          // Reset button state only when key is released
-          buttonPressed = false;
-          lastCol = -1;
-      } 
+        // Reset button state when released
+        buttonPressed = false;
+        lastCol = -1;
+      }
 
     }
     settup();
+      
   }
 
   return 'z'; // Return a space if no button is pressed

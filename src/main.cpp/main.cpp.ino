@@ -84,7 +84,7 @@ void loop() {
             
 
             // Move cursor only within the valid range
-            if (degreeChange > 1 && cursorIndex < equationbuffer.size() && (cursorPos + 7) < 153) {  //checks if the potentiometer changes in the positive direction and the cursor's index is less than equation length an cursor positoin is not at the screen edge
+            if (degreeChange > 4 && cursorIndex < equationbuffer.size() && (cursorPos + 7) < 153) {  //checks if the potentiometer changes in the positive direction and the cursor's index is less than equation length an cursor positoin is not at the screen edge
                 cursorMoveForward();
                 drawCursor();// draws the cursor
                 updateScreen(); // updates the screen and writes the equation inside the buffer
@@ -95,8 +95,9 @@ void loop() {
             }
 
             if(key == 'B' && cursorIndex > 0){
+                equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index 
                 cursorMoveback(); //backspace needs to 
-                //reduce the cursor index and decrement the cursorpos all done in the called function   
+                //reduce the cursor index and decrement the cursorpos all done in the called function
                 drawCursor(); //draw new cursor position
                 updateScreen(); //print the equation on the screen
             }
@@ -110,7 +111,7 @@ void loop() {
             }
 
 
-            if (key != 'z'&& key !='B') {
+            if (key != 'z'&& key !='B' && key != 'C') {
               std::cout <<"This is the pos: "<<cursorPos <<std::endl;
               std::cout <<"This is the equationlength: " <<equationLength <<std::endl;
               std::cout <<"This is the index: "<<cursorIndex <<std::endl;
