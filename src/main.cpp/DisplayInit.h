@@ -21,10 +21,10 @@
 // Button and potentiometer configuration
 
 
-extern uint16_t mappedValue;
-extern uint16_t lastMappedValue;
-extern uint8_t currentpage;
-extern uint8_t screencount;
+extern int mappedValue;
+extern int lastMappedValue;
+extern int currentpage;
+extern int screencount;
 
 
 // Array of function pointers for page handling
@@ -41,5 +41,6 @@ extern void button();
 extern void drawmenu();
 extern void calcengine();
 extern void cleanscreen();
+extern bool calcenginerun;
 
 #endif // DISPLAY_INIT_H

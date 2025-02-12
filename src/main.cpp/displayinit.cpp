@@ -4,28 +4,16 @@
 #include "ArithmeticStack.h"
 // DisplayInit.cpp
 
-//calculator logic
-u_int8_t xincrement=1;
-bool calcresult = false; 
 
-uint16_t mappedValue = 0;
-uint16_t lastMappedValue = 0;
-uint8_t currentpage = 0;
-uint8_t screencount = 0;
+
+int mappedValue = 0;
+int lastMappedValue = 0;
+int currentpage = 0;
+int screencount = 0;
 
 // Potentiometer state variables
-uint16_t *mappedValueptr = &mappedValue;
-
-
-uint16_t *lastMappedValueptr =&lastMappedValue ;
-
-// screen count 
-uint8_t *screencountptr = &screencount;
-
-//State Tracking 
-
-
-
+int *mappedValueptr = &mappedValue;
+int *lastMappedValueptr =&lastMappedValue ;
 
 // Display objects
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
@@ -127,55 +115,9 @@ void drawmenu() {
     }
 }
 
-  void calcengine() {
-    double numbuffer =0.0;
-    double decimalplace = 0.1;
-    bool decimalfound = false;
-    char equationbuffer[MAXBUFFER];
-    tft.drawRect(0, 15, 160, 1, ST7735_BLACK);
-    tft.drawRect(0, 0, 160, 14, ST7735_WHITE);
-    tft.drawRect(0, 30, 160, 1, ST7735_WHITE);
-    CALCSTACK calc;
-
-    while (true) {
-      delay(100);
-      char key = loopy();          
-      if(key!= 'z' && calcresult == false){
-          if (*screencountptr <= 21 ){
-            tft.setCursor(xincrement,5);
-            tft.setTextSize(1);
-            tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
-            if(key!= '='&& key!='O'&& key!='B'){
-              tft.print(key);
-              xincrement+=7;
-              (*screencountptr)++;
-              Serial.println(*screencountptr);
-            }
-          }
-        }
-       if (key == 'B') { // Handle backspace
-          if (  *screencountptr > 0){
-              (*screencountptr)--; // Decrement screen count
-              Serial.println(*screencountptr);
-              tft.setCursor(xincrement-7, 5);
-              tft.setTextSize(1);
-              tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
-              tft.print(" "); // Clear the character on display
-              xincrement -= 7; // Move cursor back
-          }
-        }
-        if (key == 'O') {
-          // Clear the screen and reset the stack
-          calc = CALCSTACK(); // Reinitialize the stack
-          calcresult= false;
-          xincrement = 0;
-          *screencountptr = 0;
-          tft.fillRect(0, 0, 160, 14, ST7735_WHITE);
-      }
-    }
-  }  
+  
 
 
 
 
-void (*pages[])() = {Startup,drawmenu,calcengine};
+void (*pages[])() = {Startup,drawmenu};
