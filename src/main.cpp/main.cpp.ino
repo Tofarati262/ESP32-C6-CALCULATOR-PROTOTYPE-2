@@ -5,6 +5,7 @@
 #include "CursorFunctions.h"
 #include <vector>
 
+RTC_DATA_ATTR int currentpage = 0;
 
 int *currentpageptr = &currentpage;
 bool calcenginerun = false;
@@ -12,15 +13,19 @@ bool calcenginerun = false;
 bool calcresult = false;
 bool *calcresultptr = &calcresult; 
 
+bool rightbracket = true;
 
 
 std::vector<char>equationbuffer;  // Stores the equation input
 int equationLength = 0;  // Tracks how many characters have been entered
 
+
+
 void setup() {
     TCA9554PWR_Init(0x00); 
     setCpuFrequencyMhz(80);
     setupDisplay();  // Initialize displays and setup the initial screen
+    esp_sleep_enable_timer_wakeup(10* 1000000); // No timer, stays asleep indefinitely
 }
 
 void drawCursor() { //blinks the cursor
@@ -80,7 +85,6 @@ void loop() {
 
             int degreeChange = mappedValue - previousmapped;
             previousmapped = mappedValue;
-            std::cout<<"This is the degreeChange: "<< std::endl;
             
 
             // Move cursor only within the valid range
@@ -102,26 +106,39 @@ void loop() {
                 updateScreen(); //print the equation on the screen
             }
             if(key == 'E'){ // erase the characters inside the vector 
-                cursorPos = 3;
+              equationbuffer.clear();
                 xPos = 3;
                 cursorIndex = 0;
-                equationbuffer.clear();
+                 cursorPos = 3;
                 drawCursor(); //draw new cursor position
                 updateScreen(); //print out the empty screen
             }
-
+            
             if(key == 'L'){ //ln(
-                lastcursorPos = cursorPos;
-                tft.fillRect(lastcursorPos,5,CURSOR_WIDTH,CURSOR_HEIGHT,ST7735_WHITE);
-                cursorPos+= 21;
-                char temp arr = {'l','n','('};
-                for(int i =0; i < 2 ; i++){
+                char temp[] = {'l','n','('};
+                if(equationbuffer.size()==0){ // if its at zero
+                    equationbuffer.push_back(temp[0]);
                     cursorIndex++;
-                    equationbuffer[cursorIndex] =arr[i];
+                    equationbuffer.push_back(temp[1]);
+                    cursorIndex++;
+                    equationbuffer.push_back(temp[2]);
+                    cursorIndex++;
+                }else{ //if the eqautionbuffersize is not at zero
+                  for(int i =0; i < 3 ; i++){
+                    if(equationbuffer.at(cursorIndex) == '('){
+                      equationbuffer.insert(equationbuffer.begin() + cursorIndex,temp[i]);
+                      cursorIndex++;
+                    }else{
+                      equationbuffer.insert(equationbuffer.begin() + cursorIndex,temp[i]);
+                      cursorIndex++;
+                    }
+                  }
                 }
 
-
+                lastcursorPos = cursorPos;
+                tft.fillRect(lastcursorPos,5,CURSOR_WIDTH,CURSOR_HEIGHT,ST7735_WHITE);
                 std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+                cursorPos+= 21;
                 drawCursor();
                 updateScreen();
             }
@@ -130,48 +147,50 @@ void loop() {
                 lastcursorPos = cursorPos;
                 tft.fillRect(lastcursorPos,5,CURSOR_WIDTH,CURSOR_HEIGHT,ST7735_WHITE);
                 cursorPos+= 28;
-                char temp arr[]= {'l','o','g', '('};
-                for(int i =0; i < 3 ; i++){
+                char temp[]= {'l','o','g', '('};
+               if(equationbuffer.size()==0){ // if its at zero
+                    equationbuffer.push_back(temp[0]);
                     cursorIndex++;
-                    equationbuffer[cursorIndex] =arr[i];
+                    equationbuffer.push_back(temp[1]);
+                    cursorIndex++;
+                    equationbuffer.push_back(temp[2]);
+                    cursorIndex++;
+                    equationbuffer.push_back(temp[3]);
+                    cursorIndex++;
+                }else{ //if the eqautionbuffersize is not at zero
+                  for(int i =0; i < 4 ; i++){
+                    equationbuffer.insert(equationbuffer.begin() + cursorIndex,temp[i]);
+                    cursorIndex++;
+                  }
                 }
 
 
                 std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
                 drawCursor();
                 updateScreen();
-            }
-
-            if(key == '('){
-                bool rightbracket = true
-                lastcursorPos = cursorPos;
-                 tft.fillRect(lastcursorPos,5,CURSOR_WIDTH,CURSOR_HEIGHT,ST7735_WHITE);
-                cursorPos+= 7;
-                cursorIndex++;
-
-                if(rightbracket)
-                {
-                    equationbuffer[cursorIndex] ='(';
-                }else{
-                    equationbuffer[cursorIndex] =')';
-                }
-
-
-                std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
-                rightbracket = !rightbracket;
-                
-                drawCursor();
-                updateScreen();
-
-            }
-
-            if(key == 'O'){
-                esp_sleep_enable_timer_wakeup(10* 100000000); // No timer, stays asleep indefinitely
-                esp_deep_sleep_start(); //sets the chip into a deepslep state
             }
             
 
-            if (key != 'z'&& key !='B' && key != 'C' && key != 'a' && key != '=') {
+            if(key == '('){
+
+                if(rightbracket)
+                {
+                   key = '(';
+                }else{
+                  key = ')';
+                }
+                std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+                rightbracket = !rightbracket;
+            }
+
+            if(key == 'O'){
+                esp_sleep_enable_timer_wakeup(10* 1000000); // No timer, stays asleep indefinitely
+                esp_deep_sleep_start(); //sets the chip into a deepslep state
+                
+            }
+            
+
+            if (key != 'z'&& key !='B' && key != 'E' && key != 'a' && key != '=' && key != 'l'&& key!='L') {
               std::cout <<"This is the pos: "<<cursorPos <<std::endl;
               std::cout <<"This is the equationlength: " <<equationLength <<std::endl;
               std::cout <<"This is the index: "<<cursorIndex <<std::endl;
@@ -179,7 +198,7 @@ void loop() {
                 if(cursorIndex >=equationbuffer.size()){
                     equationbuffer.push_back(key);
                 }else{
-                    equationbuffer[cursorIndex] = key;
+                    equationbuffer.at(cursorIndex) = key;
                 }
 
                 // Increase equation length only if adding at the end

@@ -1,6 +1,5 @@
 #include "TCA9554PWR.h"
 #include "Exiomatrix.h"
-#include "esp32_sleep.h"
 
 // Define row and column pins
 const int rowpins[] = {1, 5, 14, 15, 8, 19,20};
@@ -12,7 +11,7 @@ const int numCols = sizeof(colpins) / sizeof(colpins[0]); // Calculate number of
 
 // Define key mapping
 char hexaKeys[7][5] = {
-    {'E', 'B', 'M', '^', 'O'}, // Row 1: Clear, Mode, Recall, Equals
+    {'E', 'B', 'O', '^', 'M'}, // Row 1: Clear, Mode, Recall, Equals
     {'L','l', 'T','F','p'},
     { 's','m','G','N','D'},
     {'7', '8', '9','x','/'},

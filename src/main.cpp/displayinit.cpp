@@ -8,7 +8,6 @@
 
 int mappedValue = 0;
 int lastMappedValue = 0;
-int currentpage = 0;
 int screencount = 0;
 
 // Potentiometer state variables
