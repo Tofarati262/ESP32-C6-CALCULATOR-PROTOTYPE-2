@@ -21,6 +21,7 @@ extern int  previousmapped;
 
 extern void cursorMoveback();
 extern void cursorMoveForward();
+extern void cursorDelete();
 
 extern std::vector<char>equationbuffer;  // Stores the equation input
 
