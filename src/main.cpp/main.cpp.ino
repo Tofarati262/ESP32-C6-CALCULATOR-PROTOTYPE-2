@@ -75,24 +75,24 @@ void loop() {
                 lastBlinkTime = currentMillis;
             }
             
-            int potValue = analogRead(potPin);
+           int potValue = analogRead(potPin);
 
             if (potValue < minPotValue) {
                 mappedValue = 0;
             } else {
-                mappedValue = map(potValue, 500, 4095, 0, 360);
+                mappedValue = map(potValue, 500, 4095, 0, 500);
             }
 
-            int degreeChange = mappedValue - previousmapped;
+            int speedchange = mappedValue - previousmapped;
             previousmapped = mappedValue;
-            
+            std::cout<<"This is the degreeChange: "<< speedchange <<std::endl;
 
             // Move cursor only within the valid range
-            if (key=='T' && cursorIndex < equationbuffer.size() && (cursorPos + 7) < 153) {  //checks if the potentiometer changes in the positive direction and the cursor's index is less than equation length an cursor positoin is not at the screen edge
+            if (speedchange > 5 && cursorIndex < equationbuffer.size() && (cursorPos + 7) < 153) {  //checks if the potentiometer changes in the positive direction and the cursor's index is less than equation length an cursor positoin is not at the screen edge
                 cursorMoveForward();
                 drawCursor();// draws the cursor
                 updateScreen(); // updates the screen and writes the equation inside the buffer
-            } else if (key=='F'  && cursorIndex > 0) {
+            } else if (speedchange < -5  && cursorIndex > 0) {
                 cursorMoveback();
                 drawCursor(); //draw new cursor position
                 updateScreen(); //print the equation on the screen
@@ -185,6 +185,10 @@ void loop() {
                 
             }
             
+            if(key == 'F'){
+               tft.fillRect(cursorPos,1,CURSOR_WIDTH,3,ST7735_BLACK);
+               tft.fillRect(cursorPos,4,CURSOR_WIDTH,3,ST7735_BLACK);
+            }
 
             if (key != 'z'&& key !='B' && key != 'E' && key != 'a' && key != '=' && key != 'l'&& key!='L'&& key != 'T'&& key != 'F') {
                 // Replace character at current cursor position
