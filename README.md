@@ -9,4 +9,4 @@ Microcontroller 🎮: https://www.waveshare.com/product/esp32-c6-pico.htm
 
 
 
-![image alt](https://github.com/Tofarati262/Fincalc/blob/74f027177148d7eba6ef5f6e7b0a314be5cef8ea/Assets/Screenshot%202025-02-16%20231415.jpg)
+![image alt](https://github.com/Tofarati262/Fincalc/blob/c18223d3eae03410638fed457488fdb5f455bbf0/Assets/Screenshot%202025-02-16%20231415.jpg)
