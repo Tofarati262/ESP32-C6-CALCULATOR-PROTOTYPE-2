@@ -6,5 +6,5 @@
 
 <h3> Components</h3>
 <p> Microcontroller 🎮 :https://www.waveshare.com/esp32-c6-dev-kit-n8.htm </p>
-![image alt](https://github.com/Tofarati262/Fincalc/tree/df573e2cdf34668d5d72b618ab3669d8da491dec/Assets](https://github.com/Tofarati262/Fincalc/blob/df573e2cdf34668d5d72b618ab3669d8da491dec/Assets/Screenshot%202025-02-16%20225534.png)
+![image alt](https://github.com/Tofarati262/Fincalc/blob/df573e2cdf34668d5d72b618ab3669d8da491dec/Assets/Screenshot%202025-02-16%20225534.png)
 
