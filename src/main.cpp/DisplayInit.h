@@ -15,8 +15,8 @@
 
 #define buttonPin  1
 #define potPin  4 //pin declaration
-#define  minPotValue 500
-#define maxPotValue  4095
+#define  minPotValue 0
+#define maxPotValue  3260
 
 // Button and potentiometer configuration
 

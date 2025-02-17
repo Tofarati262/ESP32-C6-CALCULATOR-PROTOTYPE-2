@@ -11,7 +11,7 @@ const int numCols = sizeof(colpins) / sizeof(colpins[0]); // Calculate number of
 
 // Define key mapping
 char hexaKeys[7][5] = {
-    {'E', 'B', 'O', '^', 'M'}, // Row 1: Clear, Mode, Recall, Equals
+    {'E', 'B', '^', 'O', 'M'}, // Row 1: Clear, Mode, Recall, Equals
     {'L','l', 'T','F','p'},
     { 's','m','G','N','D'},
     {'7', '8', '9','x','/'},
@@ -20,12 +20,17 @@ char hexaKeys[7][5] = {
     {'0','.','(','a','='},
 };
 // need to add e , b ,a ,= , s,math,G,N,D,T,F,Mode,pie constant // need to draw a hex bit encoded image
-// priority O off button watch youtube videos about deep sleep, F factorial display mechanics, ^ raised to power display mechanics
+//  F factorial display mechanics, ^ raised to power display mechanics
 
 
 
 
 
+//functional  buttons e for  Erase 
+//B for backspace
+//O for switching the calc off 
+//L for Ln()
+// l for log()
 
 
 // Setup function
