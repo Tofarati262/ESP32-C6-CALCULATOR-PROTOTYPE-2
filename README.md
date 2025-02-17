@@ -3,3 +3,6 @@
 
 <h2>Link to predecessor</h2>
 <p> You can find the predecessor project at the following link: https://github.com/Tofarati262/ESP32-C6-CALCULATOR </p>
+
+<h3> Components</h3>
+<p> Microcontroller 🎮 :https://www.waveshare.com/esp32-c6-dev-kit-n8.htm </p>
