@@ -5,6 +5,7 @@
 #include "CursorFunctions.h"
 #include "TCA9554PWR.h"
 #include <vector>
+#include "wifiEngine.h"
 
 RTC_DATA_ATTR int currentpage = 0;
 
@@ -14,7 +15,7 @@ int *currentpageptr = &currentpage;
 
 void setup() {
     TCA9554PWR_Init(0x00); 
-    setCpuFrequencyMhz(100);
+    setCpuFrequencyMhz(160);
     setupDisplay();  // Initialize displays and setup the initial screen
     esp_sleep_enable_timer_wakeup(10* 1000000); // No timer, stays asleep indefinitely
 }
@@ -27,7 +28,9 @@ void loop() {
         (*pages[*currentpageptr])();
     }
 
-    if (*currentpageptr == 2) {
+    if (*currentpageptr == 6) {
        calcrun();
+    }else if(*currentpageptr == 3){
+        wifirun();
     }
 }
