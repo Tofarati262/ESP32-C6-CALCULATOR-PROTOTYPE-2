@@ -22,6 +22,9 @@ extern int  previousmapped;
 extern void cursorMoveback();
 extern void cursorMoveForward();
 extern void cursorDelete();
+extern void calcrun();
+extern void drawCursor();
+extern void  updateScreen();
 
 extern std::vector<char>equationbuffer;  // Stores the equation input
 

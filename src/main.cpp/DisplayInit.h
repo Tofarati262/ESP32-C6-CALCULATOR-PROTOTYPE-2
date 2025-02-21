@@ -43,4 +43,9 @@ extern void calcengine();
 extern void cleanscreen();
 extern bool calcenginerun;
 
+struct MenuItem {
+    const char* name;
+    int x, y;
+};
+
 #endif // DISPLAY_INIT_H

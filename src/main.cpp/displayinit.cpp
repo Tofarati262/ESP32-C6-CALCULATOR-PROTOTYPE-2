@@ -1,7 +1,11 @@
+#include <string.h>
+#include "esp32-hal.h"
 #include "esp32-hal-gpio.h"
 #include "DisplayInit.h"
 #include "Exiomatrix.h"
 #include "ArithmeticStack.h"
+#include "iostream"
+
 // DisplayInit.cpp
 
 
@@ -10,12 +14,24 @@ int mappedValue = 0;
 int lastMappedValue = 0;
 int screencount = 0;
 
+  int selected = -1;
+    int timer1 = 0;
+    int timer2 = 0;
+
 // Potentiometer state variables
 int *mappedValueptr = &mappedValue;
 int *lastMappedValueptr =&lastMappedValue ;
 
 // Display objects
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
+
+MenuItem menu[4] = {
+    {"WIFI", 60, 9},
+    {"Weather", 56, 39},
+    {"Tik-Tak-Toe", 47, 69},
+    {"Calculator", 51, 99}
+};
+
 
 // to clear displays inbetween page changes
 void cleanscreen(){
@@ -67,51 +83,64 @@ void Startup() {
 
 
 void drawmenu() {
-  digitalWrite(1,LOW);
+  pinMode(buttonPin,OUTPUT);
+    digitalWrite(1,LOW);
+     TCA9554PWR_Init(0x00);
+    Mode_EXIO(buttonPin, 1);
     // Continuously loop until the user performs an action
-    while (true) {
-        
-        
+
+    while (true) { 
+       Serial.print(selected);       
         // Read potentiometer to update mappedValue
         int potValue = analogRead(potPin);  // Read potentiometer
         if (potValue < minPotValue) {
-            *mappedValueptr = 0;
+            mappedValue = 0;
         } else {
-           *mappedValueptr = map(potValue, minPotValue, maxPotValue, 10, 360);
+           mappedValue = map(potValue, minPotValue, maxPotValue, 10, 360);
+        }
+        timer1 = millis();
+
+        if(Read_EXIO(buttonPin) == 0){
+          if(selected == 3){ // when calculator is selected 
+                  currentpage = 6;
+                  break;
+          }else if(selected ==0 ){ // when wifi is selected
+            currentpage = 3;
+            break;
+          }
         }
 
-        // Draw the menu elements
-        tft.drawRect(38, 100, 130, 15, ST7735_WHITE);
-        if (*mappedValueptr <= 180) {  // Return button highlighted
-           tft.setTextColor(ST7735_WHITE, ST7735_BLACK);  
-            tft.setCursor(40, 100);
-            tft.print("Enter");
-            tft.setTextColor(ST7735_BLACK, ST7735_WHITE);  
-            tft.setCursor(90, 100);
-            tft.print("Return");
-
-            if (Read_EXIO(buttonPin) ==  0) {  // Button pressed
-                digitalWrite(1,HIGH);
-                cleanscreen();
-               currentpage++;  // Increment page
-                break;  // Exit the loop and update the page
-            }
-        } else if (*mappedValueptr > 180) {  // Enter button highlighted
-           tft.setTextColor(ST7735_BLACK, ST7735_WHITE); 
-            tft.setCursor(40, 100);
-            tft.print("Enter");
-            tft.setTextColor(ST7735_WHITE, ST7735_BLACK);  
-            tft.setCursor(90, 100);
-            tft.print("Return");
-
-             if (Read_EXIO(buttonPin) == 0) {  // Button pressed
-                cleanscreen();
-                digitalWrite(1,HIGH);
-                currentpage--;  // Decrement page
-                break;  // Exit the loop and update the page
-            }
+        for (int i = 0; i < 4; i++) {
+          if (selected == i) {  // Highlight selected item in bold
+             tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
+              tft.setTextSize(1); // Make selected text bigger
+              tft.setCursor(menu[i].x, menu[i].y); 
+              tft.print(menu[i].name);
+          }
+          if(selected != i){  // Normal text for unselected items
+              tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
+              tft.setTextSize(1);
+              tft.setCursor(menu[i].x, menu[i].y);
+              tft.print(menu[i].name);
+          }
         }
-    }
+        
+      // Handle menu navigation
+        if (mappedValue > lastMappedValue+4 && (timer1-timer2 > 50)) {
+          selected++;
+          if (selected > 3) {
+              selected = 0;
+          } 
+        }
+        if (mappedValue < lastMappedValue-4 && (timer1-timer2 > 50)) {
+          selected--;
+          if (selected <1){
+            selected = 3;
+          }
+        }
+        lastMappedValue = mappedValue;
+        timer2 = timer1;
+  }
 }
 
   
