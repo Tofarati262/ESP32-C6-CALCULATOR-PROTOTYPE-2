@@ -1,9 +1,28 @@
 #include "wifiEngine.h"
 #include "DisplayInit.h"
+#include  <map>
+#include <string.h>
+#include <set>
+#include <iostream>
+
+using namespace std;
 
 class wifiEngine {
 private:
     int foundwifi = 0;
+    int displaystate = 0;
+    std::map<string, set <string>> wifiList;
+    
+    
+    void wifiHashMap(int  networksFound){
+        for(int i = 0; i < networksFound ; i++)
+        {
+          string key = WiFi.SSID(i).c_str();
+
+          std::set <string> WifiMetadata = { WiFi.SSID(i).c_str(), to_string(WiFi.RSSI(i)), to_string(WiFi.channel(i))};
+          wifiList[key] =  WifiMetadata;
+        }
+    }
 
 public:
     int getFoundWifi() { return foundwifi; }
@@ -17,11 +36,46 @@ public:
                 WiFi.scanNetworks(true);
             }
         } else {
+            wifiHashMap(foundwifi);
             wifiStatusPrinter(foundwifi);
             Serial.println("Starting new scan...");
             WiFi.scanNetworks(true);
         }
     }
+
+
+    //function is used for debugging 
+
+    void getWifiList()
+    {
+        if(wifiList.empty())
+        {
+            cout<<"Empty Wifi List"<< endl;
+        }else{
+            for(auto wifi : wifiList)
+            {
+                cout<<"SSID: " << wifi.first << endl;
+
+                cout << "Metadata: ";
+                for (const auto& data : wifi.second) {  
+                    cout << data << " | ";  // RSSI and channel info
+                }
+                cout << endl;
+            }
+        }
+
+    }
+
+    void displayNetworks()
+    {
+        if(foundwifi < 0){
+            tft.setCursor(80,64);
+            tft.print("No Network Found");
+        }else{
+            
+        }
+    }
+
 };
 
 void wifisetup() {
@@ -71,12 +125,9 @@ void wifirun() {
     tft.setCursor(70, 60);
     tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
     while(true){
-        tft.print("Scanning....");
         wifiEngine engine1;
         engine1.scanForNetworks();
-        tft.print("Scanning...");
-        delay(250);
-        Serial.println("Loop running...");
-        tft.print("Scanning..");
+        engine1.displayNetworks();
+        
     }
 }
