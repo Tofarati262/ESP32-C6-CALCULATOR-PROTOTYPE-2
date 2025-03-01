@@ -1,6 +1,7 @@
 #include "wifiEngine.h"
 #include "DisplayInit.h"
 #include  <map>
+#include <vector>
 #include <string.h>
 #include <set>
 #include <iostream>
@@ -14,6 +15,8 @@ private:
     int displaystate = 0;
     std::map<string, set <string>> wifiList;
 
+    vector <string> keys;
+
 
     
     
@@ -21,6 +24,7 @@ private:
         for(int i = 0; i < networksFound ; i++)
         {
           string key = WiFi.SSID(i).c_str();
+          keys.push_back(key);
 
           std::set <string> WifiMetadata = { WiFi.SSID(i).c_str(), to_string(WiFi.RSSI(i)), to_string(WiFi.channel(i)), to_string(WiFi.encryptionType(i))};
           wifiList[key] =  WifiMetadata;
@@ -30,6 +34,7 @@ private:
 public:
     int getFoundWifi() { return foundwifi; }
     void setFoundWifi(int value) { foundwifi = value; }
+    std::vector <pair<int,int>> positions = {{5,12},{5,32},{5,52}, {5,72},{5,92},{5,112}} ;
 
     void scanForNetworks() {
         foundwifi = WiFi.scanComplete();
@@ -70,20 +75,25 @@ public:
     }
 
     void displayNetworks()
-    {
-        if(foundwifi == 1){
+    {   tft.setCursor(5, 1);
+        tft.print("Wifi Sniffer");
+
+         if (foundwifi > 1 && !wifiList.empty()){
+            tft.drawRect(5,10,150,15, ST7735_BLACK);
+            tft.drawRect(5,30,150,15, ST7735_BLACK);
+            tft.drawRect(5,50,150,15, ST7735_BLACK);
+            tft.drawRect(5,70,150,15, ST7735_BLACK);
+            tft.drawRect(5,90,150,15, ST7735_BLACK);
+            tft.drawRect(5,110,150,15, ST7735_BLACK);
+
+            for(int i = 0 ; i < 6; i++){
+              tft.setCursor(positions[i].first + 3, positions[i].second);
+              auto& data =  wifiList[keys[i]];
+              tft.print(data.rbegin()->c_str());
+            }
+        }else if(foundwifi == 1){
             tft.setCursor(40,64);
             tft.print("No Network Found");
-        }else{
-            tft.drawRect(5,5,160,15, ST7735_BLACK);
-
-            tft.drawRect(5,15,160,15, ST7735_BLACK);
-
-            tft.drawRect(5,25,160,15, ST7735_BLACK);
-
-            tft.drawRect(5,35,160,15, ST7735_BLACK);
-
-            tft.drawRect(5,45,160,15, ST7735_BLACK);
         }
     }
 
@@ -137,14 +147,17 @@ void wifirun() {
     tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
 
     wifiEngine engine1;
-    Potentiometer Potentiometer1;
+    //Potentiometer Potentiometer2;
+    wifisetup();
     engine1.scanForNetworks();
     engine1.displayNetworks();
 
     while(true){
-        char key = loopy();
-        mappedValue = Potentiometer1.getPotValue();
+       char key = loopy();
+        //mappedValue = Potentiometer2.getPotValue();
         if(key == 'E'){ //RELOADS WIFI SCAN
+          Serial.print("Refreshing...");
+          wifiEngine engine1;
           engine1.scanForNetworks(); 
           engine1.displayNetworks();
         }

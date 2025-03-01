@@ -88,17 +88,14 @@ void drawmenu() {
      TCA9554PWR_Init(0x00);
     Mode_EXIO(buttonPin, 1);
     // Continuously loop until the user performs an action
+    Potentiometer potentiometer1;
 
     while (true) { 
-       Serial.print(selected);       
+      Serial.print(selected);       
         // Read potentiometer to update mappedValue
-        int potValue = analogRead(potPin);  // Read potentiometer
-        if (potValue < minPotValue) {
-            mappedValue = 0;
-        } else {
-           mappedValue = map(potValue, minPotValue, maxPotValue, 10, 360);
-        }
-        timer1 = millis();
+      mappedValue = potentiometer1.getPotValue();
+
+      timer1 = millis();
 
         if(Read_EXIO(buttonPin) == 0){
           if(selected == 3){ // when calculator is selected 

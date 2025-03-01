@@ -49,13 +49,24 @@ struct MenuItem {
 };
 
 
-class Potentiometer 
+class Potentiometer
 {
 private:
-
+  
 public:
-    int getPotValue();
-};
+  int getPotValue()
+  {
+    int potValue = analogRead(potPin);  // Read potentiometer
+      if (potValue < minPotValue) {
+        mappedValue = 0;
+      } else {
+        mappedValue = map(potValue, minPotValue, maxPotValue, 10, 360);
+    }
 
+    return mappedValue;
+
+  }
+
+};
 
 #endif // DISPLAY_INIT_H
