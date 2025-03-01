@@ -48,4 +48,14 @@ struct MenuItem {
     int x, y;
 };
 
+
+class Potentiometer 
+{
+private:
+
+public:
+    int getPotValue();
+};
+
+
 #endif // DISPLAY_INIT_H

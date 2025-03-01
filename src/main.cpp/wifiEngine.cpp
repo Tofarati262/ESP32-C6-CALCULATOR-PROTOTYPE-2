@@ -4,6 +4,7 @@
 #include <string.h>
 #include <set>
 #include <iostream>
+#include "Exiomatrix.h"
 
 using namespace std;
 
@@ -12,6 +13,8 @@ private:
     int foundwifi = 0;
     int displaystate = 0;
     std::map<string, set <string>> wifiList;
+
+
     
     
     void wifiHashMap(int  networksFound){
@@ -19,7 +22,7 @@ private:
         {
           string key = WiFi.SSID(i).c_str();
 
-          std::set <string> WifiMetadata = { WiFi.SSID(i).c_str(), to_string(WiFi.RSSI(i)), to_string(WiFi.channel(i))};
+          std::set <string> WifiMetadata = { WiFi.SSID(i).c_str(), to_string(WiFi.RSSI(i)), to_string(WiFi.channel(i)), to_string(WiFi.encryptionType(i))};
           wifiList[key] =  WifiMetadata;
         }
     }
@@ -30,7 +33,7 @@ public:
 
     void scanForNetworks() {
         foundwifi = WiFi.scanComplete();
-        if (foundwifi < 0) {
+        if (foundwifi < 0 ) {
             if (foundwifi == WIFI_SCAN_FAILED) {
                 Serial.println("WiFi Scan failed. Restarting scan...");
                 WiFi.scanNetworks(true);
@@ -68,11 +71,19 @@ public:
 
     void displayNetworks()
     {
-        if(foundwifi < 0){
-            tft.setCursor(80,64);
+        if(foundwifi == 1){
+            tft.setCursor(40,64);
             tft.print("No Network Found");
         }else{
-            
+            tft.drawRect(5,5,160,15, ST7735_BLACK);
+
+            tft.drawRect(5,15,160,15, ST7735_BLACK);
+
+            tft.drawRect(5,25,160,15, ST7735_BLACK);
+
+            tft.drawRect(5,35,160,15, ST7735_BLACK);
+
+            tft.drawRect(5,45,160,15, ST7735_BLACK);
         }
     }
 
@@ -124,10 +135,18 @@ void wifirun() {
     tft.fillScreen(ST7735_WHITE);
     tft.setCursor(70, 60);
     tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
+
+    wifiEngine engine1;
+    Potentiometer Potentiometer1;
+    engine1.scanForNetworks();
+    engine1.displayNetworks();
+
     while(true){
-        wifiEngine engine1;
-        engine1.scanForNetworks();
-        engine1.displayNetworks();
-        
+        char key = loopy();
+        mappedValue = Potentiometer1.getPotValue();
+        if(key == 'E'){ //RELOADS WIFI SCAN
+          engine1.scanForNetworks(); 
+          engine1.displayNetworks();
+        }
     }
 }
