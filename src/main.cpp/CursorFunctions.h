@@ -26,6 +26,32 @@ extern void calcrun();
 extern void drawCursor();
 extern void  updateScreen();
 
+class cursorArrow
+{
+  private:
+  int level = 0;
+  public:
+  void increase()
+  {
+    level++;
+    if(level == 6)
+    {
+      level = 0;
+    }
+  }
+  void decrease()
+  { 
+    if(level > 0){
+      level--;
+    }
+  }
+
+  int  getcursorLevel()
+  {
+    return level;
+  }
+};
+
 extern std::vector<char>equationbuffer;  // Stores the equation input
 
 

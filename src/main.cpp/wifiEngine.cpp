@@ -1,13 +1,8 @@
 #include "wifiEngine.h"
-#include "DisplayInit.h"
-#include  <map>
-#include <vector>
-#include <string.h>
-#include <set>
-#include <iostream>
-#include "Exiomatrix.h"
-
 using namespace std;
+
+int level; 
+int lastlevel = 0;
 
 class wifiEngine {
 private:
@@ -15,16 +10,23 @@ private:
     int displaystate = 0;
     std::map<string, set <string>> wifiList;
 
+    set <string> uniquekeys;
     vector <string> keys;
 
-
+    
     
     
     void wifiHashMap(int  networksFound){
+        
         for(int i = 0; i < networksFound ; i++)
         {
+          
           string key = WiFi.SSID(i).c_str();
-          keys.push_back(key);
+          if(!uniquekeys.count(key))
+          {
+            keys.push_back(key);
+            uniquekeys.insert(key);
+          }
 
           std::set <string> WifiMetadata = { WiFi.SSID(i).c_str(), to_string(WiFi.RSSI(i)), to_string(WiFi.channel(i)), to_string(WiFi.encryptionType(i))};
           wifiList[key] =  WifiMetadata;
@@ -54,37 +56,22 @@ public:
 
     //function is used for debugging 
 
-    void getWifiList()
+    int getWifiList()
     {
-        if(wifiList.empty())
-        {
-            cout<<"Empty Wifi List"<< endl;
-        }else{
-            for(auto wifi : wifiList)
-            {
-                cout<<"SSID: " << wifi.first << endl;
-
-                cout << "Metadata: ";
-                for (const auto& data : wifi.second) {  
-                    cout << data << " | ";  // RSSI and channel info
-                }
-                cout << endl;
-            }
-        }
-
+        return wifiList.size();
     }
 
     void displayNetworks()
     {   tft.setCursor(5, 1);
         tft.print("Wifi Sniffer");
 
-         if (foundwifi > 1 && !wifiList.empty()){
-            tft.drawRect(5,10,150,15, ST7735_BLACK);
-            tft.drawRect(5,30,150,15, ST7735_BLACK);
-            tft.drawRect(5,50,150,15, ST7735_BLACK);
-            tft.drawRect(5,70,150,15, ST7735_BLACK);
-            tft.drawRect(5,90,150,15, ST7735_BLACK);
-            tft.drawRect(5,110,150,15, ST7735_BLACK);
+        if (foundwifi > 1 && !wifiList.empty()){
+          int size = wifiList.size();
+            int maxRectangles = min(size, 6); // Ensure at most 6 rectangles
+
+            for (int i = 0; i < maxRectangles; i++) { 
+              tft.drawRect(5, 10 + (i * 20), 150, 15, ST7735_BLACK);
+            }
 
             for(int i = 0 ; i < 6; i++){
               tft.setCursor(positions[i].first + 3, positions[i].second);
@@ -95,6 +82,22 @@ public:
             tft.setCursor(40,64);
             tft.print("No Network Found");
         }
+    }
+
+
+    void clearEntrys()
+    {   
+      for(int i = 1 ; i < 7; i++){
+        tft.fillRect(5,(20*i)-10,150,15, ST7735_WHITE);
+      }
+    }
+
+    void  updateCursor()
+    {
+      tft.fillRect(100, 14 + (lastlevel * 20), 30, 10, ST7735_WHITE);
+      tft.drawRect(100, 14 + (level * 20), 30, 10, ST7735_WHITE);
+      tft.setCursor(110,  14 + (level * 20));
+      tft.print("<-");
     }
 
 };
@@ -142,24 +145,61 @@ void wifiStatusPrinter(uint16_t networksFound) {
 }
 
 void wifirun() {
+    int previousMappedValue = 0;
     tft.fillScreen(ST7735_WHITE);
     tft.setCursor(70, 60);
     tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
 
     wifiEngine engine1;
+    Potentiometer potentiometer2;
+    cursorArrow arrow1;
     //Potentiometer Potentiometer2;
     wifisetup();
+    delay(100);
     engine1.scanForNetworks();
+
+    delay(100);
+    
     engine1.displayNetworks();
+    engine1.clearEntrys();
 
     while(true){
-       char key = loopy();
-        //mappedValue = Potentiometer2.getPotValue();
-        if(key == 'E'){ //RELOADS WIFI SCAN
-          Serial.print("Refreshing...");
-          wifiEngine engine1;
-          engine1.scanForNetworks(); 
-          engine1.displayNetworks();
-        }
+      char key = loopy();
+      level = arrow1.getcursorLevel();
+      delay(10);
+      potentiometer2.getPotValue();
+
+      delay(10);
+
+      if(engine1.getWifiList() > 0){
+        engine1.updateCursor();
+      }
+      
+      delay(10);
+
+      if(key == 'E'){ //RELOADS WIFI SCAN
+        Serial.print("Refreshing...");
+        engine1 = wifiEngine(); // Reinitialize engine1
+        delay(200);
+
+        engine1.scanForNetworks(); 
+        engine1.clearEntrys();
+        engine1.displayNetworks();
+      }
+
+      if(mappedValue > previousMappedValue + 4){
+        arrow1.increase();
+        cout<< "increasing"<<endl;
+      }
+
+      if(mappedValue < previousMappedValue -4 ){
+        arrow1.decrease();
+        cout<< "decreasing"<<endl;
+      }
+  
+
+      lastlevel = level;
+      previousMappedValue = mappedValue;
+      cout << mappedValue << "and" << level <<endl;
     }
 }
