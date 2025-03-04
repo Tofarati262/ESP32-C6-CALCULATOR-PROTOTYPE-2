@@ -37,6 +37,7 @@ public:
     int getFoundWifi() { return foundwifi; }
     void setFoundWifi(int value) { foundwifi = value; }
     std::vector <pair<int,int>> positions = {{5,12},{5,32},{5,52}, {5,72},{5,92},{5,112}} ;
+    String screenstring;
 
     void scanForNetworks() {
         foundwifi = WiFi.scanComplete();
@@ -74,9 +75,18 @@ public:
             }
 
             for(int i = 0 ; i < 6; i++){
-              tft.setCursor(positions[i].first + 3, positions[i].second);
+              tft.setCursor(positions[i].first + 3, positions[i].second+3);
               auto& data =  wifiList[keys[i]];
-              tft.print(data.rbegin()->c_str());
+              screenstring  = data.rbegin()->c_str();
+              auto  end = screenstring.length();
+            
+              if(end > 14){
+                screenstring.remove(13, end-14);
+                tft.print(screenstring + "....");
+              }else{
+                tft.print(screenstring);
+              }
+            
             }
         }else if(foundwifi == 1){
             tft.setCursor(40,64);
@@ -94,9 +104,9 @@ public:
 
     void  updateCursor()
     {
-      tft.fillRect(100, 14 + (lastlevel * 20), 30, 10, ST7735_WHITE);
-      tft.drawRect(100, 14 + (level * 20), 30, 10, ST7735_WHITE);
-      tft.setCursor(110,  14 + (level * 20));
+      tft.fillRect(120, 14 + (lastlevel * 20),25, 10, ST7735_WHITE);
+      tft.drawRect(120, 14 + (level * 20), 25, 10, ST7735_WHITE);
+      tft.setCursor(130,  14 + (level * 20));
       tft.print("<-");
     }
 
@@ -180,10 +190,11 @@ void wifirun() {
       if(key == 'E'){ //RELOADS WIFI SCAN
         Serial.print("Refreshing...");
         engine1 = wifiEngine(); // Reinitialize engine1
+        engine1.clearEntrys();// clear the menu boxes 
         delay(200);
 
         engine1.scanForNetworks(); 
-        engine1.clearEntrys();
+        
         engine1.displayNetworks();
       }
 
