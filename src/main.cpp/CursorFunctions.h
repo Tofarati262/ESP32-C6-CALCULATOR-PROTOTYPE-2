@@ -32,10 +32,12 @@ class cursorArrow
   int level = 0;
   public:
   int screenstart = 0;
+  int pages;
+
   void increase()
   {
     level++;
-    if(level == 6)
+    if(level == 6 && screenstart < pages / 6)
     {
       screenstart++;
       level = 0;
@@ -43,9 +45,15 @@ class cursorArrow
   }
   void decrease()
   { 
-    if(level > 0){
-      level--;
-    }
+      
+      if (level == 0 && screenstart >= 1)
+      {
+        level = 0;
+        screenstart--;
+      }else if (level > 0)
+      {
+        level--;
+      }
   }
 
   int  getcursorLevel()
