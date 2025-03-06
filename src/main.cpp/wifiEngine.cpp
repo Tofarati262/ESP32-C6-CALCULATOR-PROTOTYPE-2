@@ -3,7 +3,8 @@ using namespace std;
 
 int level; 
 int lastlevel = 0;
-
+int nextpageindex = 0;
+int previouspageindex = 0;
 class wifiEngine {
 private:
     int foundwifi = 0;
@@ -76,15 +77,24 @@ public:
 
             for(int i = 0 ; i < 6; i++){
               tft.setCursor(positions[i].first + 3, positions[i].second+3);
-              auto& data =  wifiList[keys[i]];
-              screenstring  = data.rbegin()->c_str();
-              auto  end = screenstring.length();
-            
-              if(end > 14){
-                screenstring.remove(13, end-14);
-                tft.print(screenstring + "....");
+              int index = i + (nextpageindex * 6);
+
+              cout<< "This is network number: " << wifiList.size() << "This is the index: " << index << endl;
+
+              if(index >  wifiList.size()-1){
+
               }else{
-                tft.print(screenstring);
+
+                auto& data =  wifiList[keys[index]];
+                screenstring  = data.rbegin()->c_str();
+                auto  end = screenstring.length();
+            
+                if(end > 14){
+                  screenstring.remove(13, end-14);
+                  tft.print(screenstring + "....");
+                }else{
+                  tft.print(screenstring);
+                }
               }
             
             }
@@ -108,6 +118,16 @@ public:
       tft.drawRect(120, 14 + (level * 20), 25, 10, ST7735_WHITE);
       tft.setCursor(130,  14 + (level * 20));
       tft.print("<-");
+    }
+
+
+    void getSelected()
+    {
+      char key = loopy();
+
+      if(key == 'E'){
+
+      }
     }
 
 };
@@ -176,10 +196,12 @@ void wifirun() {
     while(true){
       char key = loopy();
       level = arrow1.getcursorLevel();
+      arrow1.pages = engine1.getWifiList();
       delay(10);
       potentiometer2.getPotValue();
 
       delay(10);
+
 
       if(engine1.getWifiList() > 0){
         engine1.updateCursor();
@@ -196,16 +218,36 @@ void wifirun() {
         engine1.scanForNetworks(); 
         
         engine1.displayNetworks();
+
+        //engine1.getSelected();
       }
 
       if(mappedValue > previousMappedValue + 4){
         arrow1.increase();
+        if(arrow1.getNextpage() > previouspageindex)
+        {
+          previouspageindex = nextpageindex;
+          nextpageindex = arrow1.getNextpage();
+          level = arrow1.getcursorLevel();
+          engine1.clearEntrys();
+          engine1.displayNetworks();
+          engine1.updateCursor();
+        }
         cout<< "increasing"<<endl;
       }
 
-      if(mappedValue < previousMappedValue -4 ){
+      if(mappedValue < previousMappedValue -4 && screenstart >= 0){
         arrow1.decrease();
-        cout<< "decreasing"<<endl;
+        if(arrow1.getNextpage() < previouspageindex)
+        {
+          previouspageindex = nextpageindex;
+          nextpageindex = arrow1.getNextpage();
+          level = arrow1.getcursorLevel();
+          engine1.clearEntrys();
+          engine1.displayNetworks();
+          engine1.updateCursor();
+        }
+        cout<< "decreasing" << screenstart <<endl;
       }
   
 
