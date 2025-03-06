@@ -31,11 +31,13 @@ class cursorArrow
   private:
   int level = 0;
   public:
+  int screenstart = 0;
   void increase()
   {
     level++;
     if(level == 6)
     {
+      screenstart++;
       level = 0;
     }
   }
@@ -49,6 +51,11 @@ class cursorArrow
   int  getcursorLevel()
   {
     return level;
+  }
+
+  int getNextpage()
+  {
+    return screenstart;
   }
 };
 
