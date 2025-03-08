@@ -66,6 +66,7 @@ public:
 
     void displayNetworks()
     {   tft.setCursor(5, 1);
+        tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
         tft.print("Wifi Sniffer");
 
         if (foundwifi > 1 && !wifiList.empty()){
@@ -124,11 +125,6 @@ public:
 
     void getSelected()
     {
-      while(true){
-        char button = loopy();
-        if(button = 'O'){
-          break;
-        }
         int cursorselected = level + ( screenstart * 6 );
         auto& data = wifiList[keys[cursorselected]];
         String screenstring = data.rbegin()->c_str();
@@ -200,17 +196,23 @@ public:
         tft.print("Wifi Encryption: " + encryptionType);
         wifiselected = !wifiselected;
 
-        
-        tft.setCursor(40, 100);
+      
+        tft.setCursor(20, 100);
         tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
-        tft.print("Press O to continue");
-        tft.fillRect(40, 100, 60, 10, ST7735_BLACK);
+        tft.print("Press O:");
+      while(true){  
+        char button = loopy();
 
+        delay(200);
+        if(button == 'O'){
+          tft.fillScreen(ST7735_WHITE);
+          wifiselected = !wifiselected;
+          return;
+        }
         tft.setCursor(80, 100);
-        tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
+        tft.setTextColor(ST7735_WHITE, ST7735_RED);
+        tft.fillRect(80, 100, 60, 10, ST7735_WHITE);
         tft.print("continue");
-        tft.fillRect(80, 100, 60, 10, ST7735_BLACK);
-
       }
     }
 };
@@ -290,6 +292,19 @@ void wifirun() {
       }
       
       delay(10);
+      
+      if(key == 'B'){
+        cout << "selected"<< endl;
+        engine1.getSelected();
+
+        engine1 = wifiEngine(); // Reinitialize engine1
+        engine1.clearEntrys();// clear the menu boxes 
+        delay(200);
+
+        engine1.scanForNetworks(); 
+        
+        engine1.displayNetworks();
+      }
 
       if(key == 'E'){ //RELOADS WIFI SCAN
         Serial.print("Refreshing...");
@@ -300,10 +315,6 @@ void wifirun() {
         engine1.scanForNetworks(); 
         
         engine1.displayNetworks();
-      }
-
-      if(key == 'B'){
-        engine1.getSelected();
       }
 
       if(mappedValue > previousMappedValue + 4 && wifiselected == true ){
