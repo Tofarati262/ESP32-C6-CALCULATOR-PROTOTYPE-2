@@ -5,6 +5,7 @@ int level;
 int lastlevel = 0;
 int nextpageindex = 0;
 int previouspageindex = 0;
+bool wifiselected = true;
 class wifiEngine {
 private:
     int foundwifi = 0;
@@ -123,13 +124,95 @@ public:
 
     void getSelected()
     {
-      char key = loopy();
+      while(true){
+        char button = loopy();
+        if(button = 'O'){
+          break;
+        }
+        int cursorselected = level + ( screenstart * 6 );
+        auto& data = wifiList[keys[cursorselected]];
+        String screenstring = data.rbegin()->c_str();
+        cout<< screenstring <<endl;
 
-      if(key == 'E'){
+        tft.fillScreen(ST7735_WHITE);
+        tft.setTextSize(1);
+        tft.setCursor(5, 1);
+        tft.print(screenstring + " details");
+
+        auto wifistrength = data.begin();
+        wifistrength; 
+        cout<< screenstring << *wifistrength <<endl;
+        String val = wifistrength->c_str();
+        tft.setTextSize(1);
+        tft.setCursor(5, 21);
+        tft.print("Wifi Strength: " + val);
+
+        auto channel = data.begin();
+        ++channel; 
+        cout<< screenstring << *channel <<endl;
+        String chan = channel->c_str();
+        tft.setTextSize(1);
+        tft.setCursor(5, 41);
+        tft.print("Wifi Channel: " + chan);
+
+        auto encryption = data.begin();
+        ++encryption;
+        ++encryption;  
+        cout<< screenstring << *encryption<<endl;
+        String crypt = encryption->c_str();
+
+        // Using a switch statement to print the encryption type
+        String encryptionType;
+        switch (crypt.toInt()) {  // Converting the string to int (as WiFi encryption types are integers)
+            case WIFI_AUTH_OPEN:
+                encryptionType = "Open";
+                break;
+            case WIFI_AUTH_WEP:
+                encryptionType = "WEP";
+                break;
+            case WIFI_AUTH_WPA_PSK:
+                encryptionType = "WPA";
+                break;
+            case WIFI_AUTH_WPA2_PSK:
+                encryptionType = "WPA2";
+                break;
+            case WIFI_AUTH_WPA_WPA2_PSK:
+                encryptionType = "WPA+WPA2";
+                break;
+            case WIFI_AUTH_WPA2_ENTERPRISE:
+                encryptionType = "WPA2-EAP";
+                break;
+            case WIFI_AUTH_WPA3_PSK:
+                encryptionType = "WPA3";
+                break;
+            case WIFI_AUTH_WPA2_WPA3_PSK:
+                encryptionType = "WPA2+WPA3";
+                break;
+            case WIFI_AUTH_WAPI_PSK:
+                encryptionType = "WAPI";
+                break;
+            default:
+                encryptionType = "Unknown";
+        }
+
+        tft.setTextSize(1);
+        tft.setCursor(5, 61);
+        tft.print("Wifi Encryption: " + encryptionType);
+        wifiselected = !wifiselected;
+
+        
+        tft.setCursor(40, 100);
+        tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
+        tft.print("Press O to continue");
+        tft.fillRect(40, 100, 60, 10, ST7735_BLACK);
+
+        tft.setCursor(80, 100);
+        tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
+        tft.print("continue");
+        tft.fillRect(80, 100, 60, 10, ST7735_BLACK);
 
       }
     }
-
 };
 
 void wifisetup() {
@@ -199,11 +282,10 @@ void wifirun() {
       arrow1.pages = engine1.getWifiList();
       delay(10);
       potentiometer2.getPotValue();
-
       delay(10);
 
 
-      if(engine1.getWifiList() > 0){
+      if(engine1.getWifiList() > 0 && wifiselected == true ){
         engine1.updateCursor();
       }
       
@@ -218,11 +300,13 @@ void wifirun() {
         engine1.scanForNetworks(); 
         
         engine1.displayNetworks();
-
-        //engine1.getSelected();
       }
 
-      if(mappedValue > previousMappedValue + 4){
+      if(key == 'B'){
+        engine1.getSelected();
+      }
+
+      if(mappedValue > previousMappedValue + 4 && wifiselected == true ){
         arrow1.increase();
         if(arrow1.getNextpage() > previouspageindex)
         {
@@ -236,7 +320,7 @@ void wifirun() {
         cout<< "increasing"<<endl;
       }
 
-      if(mappedValue < previousMappedValue -4 && screenstart >= 0){
+      if(mappedValue < previousMappedValue -4 && screenstart >= 0 && wifiselected == true ){
         arrow1.decrease();
         if(arrow1.getNextpage() < previouspageindex)
         {
