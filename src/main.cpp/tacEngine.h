@@ -11,22 +11,34 @@ class tacEngine
 {
 private:
 
-char matrix[3][3]= 
+bool matrix[3][3]= 
 {
-    {' ', ' ',' '},
-    {' ', ' ',' '},
-    {' ', ' ',' '},
+    {false, false,false},
+    {false, false,false},
+    {false, false,false},
 };
+
+
 
 pair<int,int> position[1] =  {{0,0}};
     
 public:
-    void moveup(){
-        position[0].first++;
+    void moveup() {
+        if (position[0].first < 2) {
+            position[0].first++;
+        } else if (position[0].first == 2 ) {
+            position[0].first = 0;
+        }
     }
 
     void movedown(){
-        position[0].first--;
+        if(position[0].first > 0 )
+        {
+            position[0].first--;
+        }else if(position[0].first == 0 )
+        {
+          position[0].first = 0;
+        }
     }
 
     void moveleft(){
@@ -35,6 +47,11 @@ public:
 
     void moveright(){
         position[0].second++;
+
+        if(position[0].second > 2 )
+        {
+            position[0].second = 0;
+        }
     }
 
     pair<int,int> getpos()
