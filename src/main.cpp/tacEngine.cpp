@@ -1,6 +1,6 @@
 #include "tacEngine.h"
 #include "DisplayInit.h"
-
+#include "Exiomatrix.h"
 
 void tic_tac_run()
 {
@@ -26,36 +26,48 @@ void tic_tac_run()
     tft.drawRect(70,85,20,20,color);
     tft.drawRect(100,85,20,20,color);
 
-    Potentiometer Potentiometer; 
-    tacEngine tacengine; 
+    Potentiometer Potentiometer; //get the knobs value
+    tacEngine tacengine; // gives access to stored matrix value and matrix index 
 
     int prevy = 0;
     int prevx = 0;
 
     while (true)
     {
+        delay(1000);
+
+        char button = loopy();
         int knobvalue = Potentiometer.getPotValue();
         auto y = tacengine.getpos().first; //new y value
         auto x = tacengine.getpos().second; //new x value
 
-        
-        if(knobvalue > Potentiometer.getPotValue() &&  x < 2) // moving forward 
+        std::cout<<knobvalue<<endl;
+        prevx = x;
+
+        if(button == 'B') // moving forward 
         {
             tacengine.moveright(); // updates the x coordinate +1
-        }
-        if(knobvalue < Potentiometer.getPotValue() && x > 0) 
-        {
-            tacengine.moveleft();
+            cout<< "Moved right"<<endl;
         }
 
+        prevy = y; // updates the old y value;
 
-        tft.drawRect(40 + (x*30),25 + (y*30),20,20,ST7735_YELLOW); // box is highlighted 
-        tft.drawRect(40 + (prevx*30),25 + (prevy*30),20,20,color);
+        if(knobvalue > Potentiometer.getPotValue() + 4 ){ //moves the cursor down
+            tacengine.movedown();
+            cout<< "increasing"<<endl;
+        }
+    
+        if(knobvalue < Potentiometer.getPotValue() - 4 ){ //moves the cursor up
+            tacengine.moveup();
+            cout<< "decreasing"<<endl;
+        }
 
 
-        std::cout << "in game engine"<<std::endl;
-        prevy = y;
-        prevx = x;
+        auto y = tacengine.getpos().first; //new y value
+        auto x = tacengine.getpos().second; //new x value
+
+        tft.drawRect(40 + (x*30),25 + (y*30),20,20,ST7735_RED); // box is highlighted 
+        tft.drawRect(42 + (prevx*30),27 + (prevy*30),20,20,ST7735_BLACK);
     }   
         
 }
