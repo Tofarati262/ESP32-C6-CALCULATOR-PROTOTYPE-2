@@ -6,6 +6,7 @@
 #include "TCA9554PWR.h"
 #include <vector>
 #include "wifiEngine.h"
+#include "tacEngine.h"
 
 RTC_DATA_ATTR int currentpage = 0;
 
@@ -32,5 +33,8 @@ void loop() {
        calcrun();
     }else if(*currentpageptr == 3){
         wifirun();
+    }else if(*currentpageptr == 5)
+    {
+      tic_tac_run();
     }
 }

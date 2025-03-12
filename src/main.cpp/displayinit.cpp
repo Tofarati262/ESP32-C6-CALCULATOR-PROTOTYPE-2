@@ -99,10 +99,13 @@ void drawmenu() {
 
         if(Read_EXIO(buttonPin) == 0){
           if(selected == 3){ // when calculator is selected 
-                  currentpage = 6;
-                  break;
+            currentpage = 6;
+            break;
           }else if(selected ==0 ){ // when wifi is selected
             currentpage = 3;
+            break;
+          }else if(selected == 2){
+            currentpage = 5;
             break;
           }
         }
