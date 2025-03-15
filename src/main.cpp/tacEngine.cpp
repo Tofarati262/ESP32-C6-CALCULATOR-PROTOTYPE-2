@@ -49,6 +49,18 @@ void tic_tac_run()
             cout<< "Moved right"<<endl;
         }
 
+        if(button == 'O')
+
+        {
+          bool recieved = tacengine.checkBox(y,x);
+          if(recieved && tacengine.getTurns() % 2 != 0  ){
+            tft.setCursor(60 + (x*30),25 + (y*30));
+            tft.print('X'); 
+          }else if(recieved && tacengine.getTurns() % 2 == 0 ){
+            tft.setCursor(60 + (x*30),25 + (y*30));
+            tft.print('O'); 
+          }
+        }
         
 
         if(knobvalue > prevknobvalue+4){ //moves the cursor down

@@ -11,13 +11,14 @@ class tacEngine
 {
 private:
 
-bool matrix[3][3]= 
+char matrix[3][3]= 
 {
-    {false, false,false},
-    {false, false,false},
-    {false, false,false},
+    {' ', ' ',' '},
+    {' ', ' ',' '},
+    {' ', ' ',' '},
 };
 
+int move = 0;
 
 
 pair<int,int> position[1] =  {{0,0}};
@@ -52,6 +53,33 @@ public:
         {
             position[0].second = 0;
         }
+    }
+
+    bool checkBox(int i , int j)
+
+    {
+
+        if (matrix[i][j] == ' ' && move == 0) // for first insertion 
+        {
+            matrix[i][j] == 'X';
+            return true;
+        } else if(matrix[i][j] == ' ' && move % 2 == 0) // for every even insertion
+        {
+            matrix[i][j] == 'O';
+            return true;
+        } else if(matrix[i][j] == ' ' && move % 2 >= 1) // for every oddd insertion
+        {
+            matrix[i][j] == 'x';
+            return true;
+        }else{
+            return false;
+        }
+
+    }
+
+    int getTurns()
+    {
+        return move;
     }
 
     pair<int,int> getpos()
