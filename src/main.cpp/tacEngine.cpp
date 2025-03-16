@@ -34,12 +34,13 @@ void tic_tac_run()
     int prevknobvalue = 0;
     while (true)
     {
+
         char button = loopy();
         int knobvalue = Potentiometer.getPotValue();
         auto y = tacengine.getpos().first; //new y value
         auto x = tacengine.getpos().second; //new x value
 
-        std::cout<<knobvalue<<endl;
+       //std::cout<<knobvalue<<endl; debugging for the potentiometer
         
         if(button == 'B') // moving forward 
         {
@@ -49,9 +50,24 @@ void tic_tac_run()
             cout<< "Moved right"<<endl;
         }
 
+
+        if(button == 'O')
+
+        {
+          bool recieved = tacengine.checkBox(y,x);
+          if(recieved == true && tacengine.getTurns() % 2 != 0 ){
+            tft.setCursor(47 + (x*30),30 + (y*30));
+            tft.print('X'); 
+          }else if(recieved == true && tacengine.getTurns() % 2 == 0 ){
+            tft.setCursor(47 + (x*30),30 + (y*30));
+            tft.print('O'); 
+          }else if (recieved == false) {
+            continue;
+          }
+        }
         
 
-        if(knobvalue > prevknobvalue+4){ //moves the cursor down
+        if(knobvalue > prevknobvalue+8){ //moves the cursor down
           prevy = y; // updates the old y value;
           prevx = x; // updates the old y value;
           tacengine.moveup();
@@ -59,24 +75,31 @@ void tic_tac_run()
         }
         
 
-        if(knobvalue < prevknobvalue-1){ //moves the cursor down
+        if(knobvalue < prevknobvalue-8){ //moves the cursor down
           prevy = y; // updates the old y value;
           prevx = x; // updates the old y value;
           tacengine.movedown();
           cout<< "decreasing"<<endl;
         }
         
-       
+        // **Check for a win right after placing a move**
+        if (tacengine.checkWinO() == true) {
+            std::cout<< "X is the winner" << std::endl; 
+        }else if (tacengine.checkWinX() == true) {
+          std::cout<< "O is the winner" << std::endl;
+        }        
+        
 
-        std::cout<< '(' << x << ',' << y << ')' << std::endl;
-        std::cout<< '(' << prevx << ',' << prevy << ')' << std::endl;
+        //std::cout<< '(' << x << ',' << y << ')' << std::endl;
+        //std::cout<< '(' << prevx << ',' << prevy << ')' << std::endl;
 
         prevknobvalue = knobvalue;
+
+
 
         tft.drawRect(40 + (x*30),25 + (y*30),20,20,ST7735_RED); // box is highlighted 
         delay(100);
         tft.drawRect(40 + (prevx*30),25 + (prevy*30),20,20,ST7735_BLACK);
-        delay(50);
     }   
         
 }
