@@ -67,7 +67,7 @@ void tic_tac_run()
         }
         
 
-        if(knobvalue > prevknobvalue+4){ //moves the cursor down
+        if(knobvalue > prevknobvalue+8){ //moves the cursor down
           prevy = y; // updates the old y value;
           prevx = x; // updates the old y value;
           tacengine.moveup();
@@ -75,7 +75,7 @@ void tic_tac_run()
         }
         
 
-        if(knobvalue < prevknobvalue-4){ //moves the cursor down
+        if(knobvalue < prevknobvalue-8){ //moves the cursor down
           prevy = y; // updates the old y value;
           prevx = x; // updates the old y value;
           tacengine.movedown();
@@ -83,16 +83,15 @@ void tic_tac_run()
         }
         
         // **Check for a win right after placing a move**
-        if (tacengine.checkWinX() == true) {
-            std::cout<< "X is the winner" << std::endl; 
-        }
         if (tacengine.checkWinO() == true) {
+            std::cout<< "X is the winner" << std::endl; 
+        }else if (tacengine.checkWinX() == true) {
           std::cout<< "O is the winner" << std::endl;
         }        
         
 
-        std::cout<< '(' << x << ',' << y << ')' << std::endl;
-        std::cout<< '(' << prevx << ',' << prevy << ')' << std::endl;
+        //std::cout<< '(' << x << ',' << y << ')' << std::endl;
+        //std::cout<< '(' << prevx << ',' << prevy << ')' << std::endl;
 
         prevknobvalue = knobvalue;
 

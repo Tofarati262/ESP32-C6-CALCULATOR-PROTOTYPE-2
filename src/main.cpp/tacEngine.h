@@ -49,30 +49,11 @@ bool horizontalscan(char value , int index)
     return true;
 }
 
-bool diagonalscan( char value, int index )
+bool diagonalscan( char value )
 {
-
-    if(index == 0)
-    {
-        for(int i = 0 ; i < 3 ; i++)
-        {
-            if(matrix[i][i] != value)
-            {
-                return false;
-            }
-        }
-    }else if (index ==2)
-    {
-        for(int i = 0; i < 3 ; i++)
-        {
-            if(matrix[i][2-i] != value)
-            {
-                return false;
-            }
-        }
-    }
-
-    return true;
+  bool mainDiagonal = (matrix[0][0] == value && matrix[1][1] == value && matrix[2][2] == value);
+  bool antiDiagonal = (matrix[0][2] == value && matrix[1][1] == value && matrix[2][0] == value);
+  return mainDiagonal || antiDiagonal;
 }
 
 public:
@@ -143,19 +124,15 @@ public:
         {
             bool horizontal = horizontalscan('X', i);
             bool vertical = verticalscan('X', i );
-            bool diagonal = false;
-            if(i == 0 || i ==2)
-            {
-             diagonal = diagonalscan('X', i);
-            }
+            
 
-            if(horizontal || vertical || diagonal)
+            if(horizontal || vertical)
             {
                 return true;
             }
-        }
 
-        return false;
+        }
+         return diagonalscan('X');
     }
 
     bool checkWinO()
@@ -164,18 +141,14 @@ public:
         {
             bool horizontal = horizontalscan('O', i);
             bool vertical = verticalscan('O', i );
-            bool diagonal = false;
-            if(i == 0 || i ==2)
+            if(horizontal || vertical)
             {
-             diagonal = diagonalscan('O', i);
+              return true;
             }
 
-            if(horizontal || vertical || diagonal)
-            {
-                return true;
-            }
         }
-        return false;
+         return diagonalscan('O');
+
     }
 
 };
