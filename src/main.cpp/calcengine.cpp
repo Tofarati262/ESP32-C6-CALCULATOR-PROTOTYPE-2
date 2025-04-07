@@ -85,7 +85,7 @@ void calcrun(){
             updateScreen(); //print the equation on the screen
         }
 
-        if(key == 'B' && !equationbuffer.empty())
+        if(key == 'B' && cursorIndex > 0)
         {   // deletes the characters and updates the screen
             //cursorDelete(); //backspace needs to 
             //reduce the cursor index and decrement the cursorpos all done in the called function
