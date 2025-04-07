@@ -79,16 +79,17 @@ void calcrun(){
             cursorMoveForward();
             drawCursor();// draws the cursor
             updateScreen(); // updates the screen and writes the equation inside the buffer
-        } else if (speedchange < -5  && cursorIndex > 0) {
+        } else if (speedchange < -10  && cursorIndex > 0) {
             cursorMoveback();
             drawCursor(); //draw new cursor position
             updateScreen(); //print the equation on the screen
         }
 
-        if(key == 'B' && !equationbuffer.empty() && cursorIndex < equationbuffer.size())
-        { // deletes the characters and updates the screen
-            cursorDelete(); //backspace needs to 
+        if(key == 'B' && !equationbuffer.empty())
+        {   // deletes the characters and updates the screen
+            //cursorDelete(); //backspace needs to 
             //reduce the cursor index and decrement the cursorpos all done in the called function
+            cursorMoveback();
             drawCursor(); //draw new cursor position
             updateScreen(); //print the equation on the screen
         }
@@ -166,17 +167,35 @@ void calcrun(){
             rightbracket = !rightbracket;
         }
 
-        if(key == 'O'){
-            esp_sleep_enable_timer_wakeup(10* 1000000); // No timer, stays asleep indefinitely
-            esp_deep_sleep_start(); //sets the chip into a deepslep state
-            
+        if(key == 'F'&& !equationbuffer.empty() && cursorIndex < equationbuffer.size()){
+            cursorMoveForward();
+            drawCursor(); //draw new cursor position
+            updateScreen(); //print the equation on the screen
         }
         
-        if(key == 'F'){
-          
+        if(key == '^'){
+            lastcursorPos = cursorPos;
+            cursorPos+= 14;
+            char temp[]= {'^','('};
+           if(equationbuffer.size()==0){ // if its at zero
+                equationbuffer.push_back(temp[0]);
+                cursorIndex++;
+                equationbuffer.push_back(temp[1]);
+                cursorIndex++;
+            }else{ //if the eqautionbuffersize is not at zero
+              for(int i =0; i < 2 ; i++){
+                equationbuffer.insert(equationbuffer.begin() + cursorIndex,temp[i]);
+                cursorIndex++;
+              }
+            }
+
+
+            std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+            drawCursor();
+            updateScreen();
         }
 
-        if (key != 'z'&& key !='B' && key != 'E' && key != 'a' && key != '=' && key != 'l'&& key!='L'&& key != 'T'&& key != 'F') {
+        if (key != 'z'&& key !='B' && key !='^' && key != 'E' && key != 'a' && key != '=' && key != 'l'&& key!='L'&& key != 'T'&& key != 'F') {
             // Replace character at current cursor position
             if(cursorIndex >=equationbuffer.size()){
                 equationbuffer.push_back(key);

@@ -39,6 +39,18 @@ void cursorMoveForward()
 
       }
 
+    }else if (equationbuffer.at(cursorIndex) == 's'){
+      if(equationbuffer.at(cursorIndex+1) == 'q'){
+
+
+        cursorPos += 35;
+        cursorIndex+=5;  //increases the cursor's index 
+        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+
+
+      }
+      
+
     }else{
       
       cursorPos += 7;  //increments the cursoposition
@@ -63,6 +75,11 @@ void cursorMoveback(){
       }else if(equationbuffer.at(cursorIndex-2) == 'g'){
         cursorPos-=28;
         cursorIndex-=4;  //decreases the cursor's index 
+        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+
+      }else if(equationbuffer.at(cursorIndex-2) == 't'){
+        cursorPos-=35;
+        cursorIndex-=5;  //decreases the cursor's index 
         std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
   
       }else{
@@ -92,29 +109,46 @@ void cursorDelete()
     //if cursorIndex = ( decrease cursorpos by 2 or 3 if the second number is n or g
     std::cout<< "This is the cursor index before condition: "<< cursorIndex <<"\n";
 
-    if(equationbuffer.at(cursorIndex) == 'l'){
+
+    if(cursorIndex <= equationbuffer.size()){  // prevent segmentation fault meaning that it does not access uninitialised memory in the equation buffer 
+      equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index 
+      std::cout <<"This is the cursor index: "<< cursorIndex <<std::endl; 
+    }
+
+    //ln delete
+
+    if(equationbuffer.at(cursorIndex) == 'l'){ 
       if(equationbuffer.at(cursorIndex+1) == 'n'){
-        equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index 
-        equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex+2); // the number at the cursor index 
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex+1); // the number at the cursor index
         equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
         std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
       }else if(equationbuffer.at(cursorIndex+1) == 'o'){
-        equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index 
-        equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex+3); // the number at the cursor index 
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex+2); // the number at the cursor index
         equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
         equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
         std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
   
       }
-    }else{
-      if(cursorIndex <= equationbuffer.size()){
-        equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index 
-        std::cout <<"This is the cursor index: "<< cursorIndex <<std::endl; 
-      }
+    
+    }
+
+    //sqrt( delete
+    
+    if(equationbuffer.at(cursorIndex) == 's'){ 
+      if(equationbuffer.at(cursorIndex+1) == 'q'){
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex+4); // the number at the cursor index 
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex+3); // the number at the cursor index 
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex+2); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
+        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+      }    
     }
        
 
-    if(cursorIndex < screenstart) // decreases the screen start index once the cursor moves back to zero and screenstart will be at 1 
+    if(cursorIndex < MAX_CHARS) // decreases the screen start index once the cursor moves back to zero and screenstart will be at 1 
     {
       std::cout <<"This is the screenstart : "<<screenstart <<std::endl;
       screenstart--; //decreases the screenstart and it shows the start of the equation that wasnot in the view scope

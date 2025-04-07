@@ -11,27 +11,34 @@ const int numCols = sizeof(colpins) / sizeof(colpins[0]); // Calculate number of
 
 // Define key mapping
 char hexaKeys[7][5] = {
-    {'E', 'B', '^', 'O', 'M'}, // Row 1: Clear, Mode, Recall, Equals
-    {'L','l', 'T','F','p'},
-    { 's','m','G','N','D'},
-    {'7', '8', '9','x','/'},
-    {'4', '5', '6','-','+'},
-    {'1', '2', '3','b','e'},
-    {'0','.','(','a','='},
-};
+    {'B', 'F', 'Q', 'O', 'M'}, // Row 1: Clear, Mode, Recall, Equals
+    {'L','l','(',')','E'},
+    {'D','7', '8','9','÷'},
+    { '+','4','5','6','-'},
+    {'%', '1', '2','3','/'},
+    {'^', '0', '.','=','+'},
+    {'s','c','t','!','|'},
+};    
 // need to add e , b ,a ,= , s,math,G,N,D,T,F,Mode,pie constant // need to draw a hex bit encoded image
 //  F factorial display mechanics, ^ raised to power display mechanics
 
 
+//Q is the square root done
+//B is moving back done 
+//F is forward done
+//O for switching the calc off  not done
 
 
+//L for Ln()   done
+// l for log() done 
+//( ) done
+//E Erase all memory done
 
-//functional  buttons e for  Erase 
-//B for backspace
-//O for switching the calc off 
-//L for Ln()
-// l for log()
 
+//D for backspace
+//7 
+// 8 
+//9 done
 
 // Setup function
 void settup() {
