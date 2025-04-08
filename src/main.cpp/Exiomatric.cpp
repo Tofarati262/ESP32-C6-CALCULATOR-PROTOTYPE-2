@@ -13,11 +13,11 @@ const int numCols = sizeof(colpins) / sizeof(colpins[0]); // Calculate number of
 char hexaKeys[7][5] = {
     {'B', 'F', 'Q', 'O', 'M'}, // Row 1: Clear, Mode, Recall, Equals
     {'L','l','(',')','E'},
-    {'D','7', '8','9','÷'},
+    {'D','7', '8','9','/'},
     { '+','4','5','6','-'},
-    {'%', '1', '2','3','/'},
-    {'^', '0', '.','=','+'},
-    {'s','c','t','!','|'},
+    {'%', '1', '2','3','x'},
+    {'m','^', '0', '.','='},
+    {'s','c','t','!','e'},
 };    
 // need to add e , b ,a ,= , s,math,G,N,D,T,F,Mode,pie constant // need to draw a hex bit encoded image
 //  F factorial display mechanics, ^ raised to power display mechanics
@@ -35,12 +35,36 @@ char hexaKeys[7][5] = {
 //E Erase all memory done
 
 
-//D for backspace
-//7 
-// 8 
+//D for backspace done
+//7  done
+// 8 done
 //9 done
 
-// Setup function
+//+ done
+//4 done
+//5 done
+//6 done
+//- done
+
+//% done
+//1 done
+//2 done
+//3 done 
+//* done
+
+
+//m mode for rad or degs 
+//^done
+//0done
+//.done
+//=done
+
+//s sin done
+//c cos done
+//t tan done
+//!done
+//e esc button
+
 void settup() {
 
   // Initialize columns as inputs with pull-up resistors

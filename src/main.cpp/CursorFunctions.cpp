@@ -38,18 +38,31 @@ void cursorMoveForward()
 
 
       }
+    }else if (equationbuffer.at(cursorIndex) == 'c'){//cos
+      if(equationbuffer.at(cursorIndex+1) == 'o'){
+        cursorPos += 28;
+        cursorIndex+=4;  //increases the cursor's index 
+        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+      }
+    }else if (equationbuffer.at(cursorIndex) == 't'){//tan
+      if(equationbuffer.at(cursorIndex+1) == 'a'){
+        cursorPos += 28;
+        cursorIndex+=4;  //increases the cursor's index 
+        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+      }
+    }else if (equationbuffer.at(cursorIndex) == 's'){ //sqrt and sin
 
-    }else if (equationbuffer.at(cursorIndex) == 's'){
       if(equationbuffer.at(cursorIndex+1) == 'q'){
-
-
         cursorPos += 35;
         cursorIndex+=5;  //increases the cursor's index 
         std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
-
-
       }
-      
+
+      if(equationbuffer.at(cursorIndex+1) == 'i'){
+        cursorPos += 28;
+        cursorIndex+=4;  //increases the cursor's index 
+        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+      }
 
     }else{
       
@@ -67,21 +80,32 @@ void cursorMoveback(){
     //if cursorIndex = ( decrease cursorpos by 2 or 3 if the second number is n or g
     std::cout<< "This is the cursor index before condition: "<< cursorIndex <<"\n";
 
-    if(equationbuffer.at(cursorIndex-1) == '('){
-      if(equationbuffer.at(cursorIndex-2) == 'n'){
-        cursorPos -= 21;
+    if(equationbuffer[cursorIndex] == '('){
+      if(equationbuffer.at(cursorIndex-1) == 'n'){
+        cursorPos -= 14;
+        cursorIndex-=2;  //decreases the cursor's index 
+        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+      }else if(equationbuffer.at(cursorIndex-1) == 'g'){
+        cursorPos-=21;
         cursorIndex-=3;  //decreases the cursor's index 
         std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
-      }else if(equationbuffer.at(cursorIndex-2) == 'g'){
+
+      }else if(equationbuffer.at(cursorIndex-1) == 't'){
         cursorPos-=28;
         cursorIndex-=4;  //decreases the cursor's index 
         std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
-
-      }else if(equationbuffer.at(cursorIndex-2) == 't'){
-        cursorPos-=35;
-        cursorIndex-=5;  //decreases the cursor's index 
+      }else if (equationbuffer.at(cursorIndex-1) == 's'){ //cos
+        cursorPos -= 21;
+        cursorIndex-=3;  //decreases the cursor's index 
         std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
-  
+      }else if (equationbuffer.at(cursorIndex-2) == 'i'){ //sin
+        cursorPos -= 21;
+        cursorIndex-=3;  //decreases the cursor's index 
+        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+      }else if (equationbuffer.at(cursorIndex-2) == 'a'){ //tan
+        cursorPos -= 21;
+        cursorIndex-=3;  //decreases the cursor's index 
+        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
       }else{
         cursorPos -= 7; //decrement the current cursor pos moving it backward
         cursorIndex--; //decrease the cursors index
@@ -93,12 +117,6 @@ void cursorMoveback(){
        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl; 
     }
        
-
-    if(cursorIndex < screenstart) // decreases the screen start index once the cursor moves back to zero and screenstart will be at 1 
-    {
-      std::cout <<"This is the screenstart : "<<screenstart <<std::endl;
-      screenstart--; //decreases the screenstart and it shows the start of the equation that wasnot in the view scope
-    }
 }
 
 
@@ -109,48 +127,98 @@ void cursorDelete()
     //if cursorIndex = ( decrease cursorpos by 2 or 3 if the second number is n or g
     std::cout<< "This is the cursor index before condition: "<< cursorIndex <<"\n";
 
+  
+   std::cout<< equationbuffer[cursorIndex] << std::endl;
 
-    if(cursorIndex <= equationbuffer.size()){  // prevent segmentation fault meaning that it does not access uninitialised memory in the equation buffer 
-      equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index 
-      std::cout <<"This is the cursor index: "<< cursorIndex <<std::endl; 
-    }
+    //ln or log delete
 
-    //ln delete
-
-    if(equationbuffer.at(cursorIndex) == 'l'){ 
-      if(equationbuffer.at(cursorIndex+1) == 'n'){
+    if(equationbuffer[cursorIndex] == 'l'){ 
+      if(equationbuffer[cursorIndex+1] == 'n'){
         equationbuffer.erase(equationbuffer.begin()+cursorIndex+2); // the number at the cursor index 
         equationbuffer.erase(equationbuffer.begin()+cursorIndex+1); // the number at the cursor index
         equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
         std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
-      }else if(equationbuffer.at(cursorIndex+1) == 'o'){
+      }else if(equationbuffer[cursorIndex+1] == 'o'){
         equationbuffer.erase(equationbuffer.begin()+cursorIndex+3); // the number at the cursor index 
         equationbuffer.erase(equationbuffer.begin()+cursorIndex+2); // the number at the cursor index
-        equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex+1); // the number at the cursor index
         equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
         std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
   
       }
     
-    }
-
-    //sqrt( delete
-    
-    if(equationbuffer.at(cursorIndex) == 's'){ 
-      if(equationbuffer.at(cursorIndex+1) == 'q'){
+    }else if(equationbuffer[cursorIndex] == 's'){ //sin and sqrt
+      if(equationbuffer[cursorIndex+1] == 'q'){
         equationbuffer.erase(equationbuffer.begin()+cursorIndex+4); // the number at the cursor index 
         equationbuffer.erase(equationbuffer.begin()+cursorIndex+3); // the number at the cursor index 
         equationbuffer.erase(equationbuffer.begin()+cursorIndex+2); // the number at the cursor index
-        equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex+1); // the number at the cursor index
         equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
         std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
-      }    
+      }else if(equationbuffer[cursorIndex+1] == 'i'){ 
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex+3); // the number at the cursor index 
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex+2); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex+1); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
+        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+      } 
+    }else if (equationbuffer[cursorIndex] == 't'){  //tan
+      if(equationbuffer[cursorIndex+1] == 'a'){
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex+3); // the number at the cursor index 
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex+2); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex+1); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
+        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+      }
+    }else if (equationbuffer[cursorIndex] == 'c'){ //cos
+      if(equationbuffer[cursorIndex+1] == 'o'){
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex+3); // the number at the cursor index 
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex+2); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex+1); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
+        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+      }
+    }else if(equationbuffer[cursorIndex] == '('){
+      if(equationbuffer[cursorIndex-1] == 'n'){ //ln
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex-2); // the number at the cursor index 
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex-1); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
+        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+      }else if(equationbuffer[cursorIndex-1] == 'g'){ //log
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex-3); // the number at the cursor index 
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex-2); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex-1); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
+        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+  
+      }else if(equationbuffer[cursorIndex-1] == 't'){ //sqrt
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex-4); // the number at the cursor index 
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex-3); // the number at the cursor index 
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex-2); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex-1); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
+        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+      }else if(equationbuffer[cursorIndex-1] == 's'){ //cos(
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex-3); // the number at the cursor index 
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex-2); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex-1); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
+        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+      }else if(equationbuffer[cursorIndex-2] == 'i'){ //sin(
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex-3); // the number at the cursor index 
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex-2); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex-1); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
+        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+      }else if(equationbuffer[cursorIndex-2] == 'a'){ //tan(
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex-3); // the number at the cursor index 
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex-2); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex-1); // the number at the cursor index
+        equationbuffer.erase(equationbuffer.begin()+cursorIndex); // the number at the cursor index
+        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+      }
+    }else{
+      equationbuffer.erase(equationbuffer.begin()+cursorIndex-1); // the number at the cursor index 
+      std::cout <<"This is the cursor index: "<< cursorIndex <<std::endl; 
     }
-       
-
-    if(cursorIndex < MAX_CHARS) // decreases the screen start index once the cursor moves back to zero and screenstart will be at 1 
-    {
-      std::cout <<"This is the screenstart : "<<screenstart <<std::endl;
-      screenstart--; //decreases the screenstart and it shows the start of the equation that wasnot in the view scope
-    }
-}
+}   

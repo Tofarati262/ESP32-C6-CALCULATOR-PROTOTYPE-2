@@ -53,6 +53,10 @@ void calcrun(){
         
         char key = loopy();  // Get key input
         unsigned long currentMillis = millis();
+        int potValue = analogRead(potPin);
+        
+        
+
         
         // Blink cursor every CURSOR_BLINK_DELAY ms
 
@@ -62,7 +66,6 @@ void calcrun(){
             lastBlinkTime = currentMillis;
         }
         
-       int potValue = analogRead(potPin);
 
         if (potValue < minPotValue) {
             mappedValue = 0;
@@ -72,7 +75,7 @@ void calcrun(){
 
         int speedchange = mappedValue - previousmapped;
         previousmapped = mappedValue;
-        std::cout<<"This is the degreeChange: "<< speedchange <<std::endl;
+        //std::cout<<"This is the degreeChange: "<< speedchange <<std::endl;
 
         // Move cursor only within the valid range
         if (speedchange > 5 && cursorIndex < equationbuffer.size() && (cursorPos + 7) < 153) {  //checks if the potentiometer changes in the positive direction and the cursor's index is less than equation length an cursor positoin is not at the screen edge
@@ -93,6 +96,15 @@ void calcrun(){
             drawCursor(); //draw new cursor position
             updateScreen(); //print the equation on the screen
         }
+
+        if (key == 'D' && !equationbuffer.empty() && cursorIndex > 0)
+        {
+            cursorDelete(); //deletes the characters in the memory buffer
+            cursorMoveback();
+            drawCursor();// visually moves the cursor back
+            updateScreen(); // updates the screen 
+        }
+
         if(key == 'E'){ // erase the characters inside the vector 
           equationbuffer.clear();
             xPos = 3;
@@ -127,7 +139,8 @@ void calcrun(){
             updateScreen();
         }
 
-         if(key == 'l'){ //log(
+        
+        if(key == 'l'){ //log(
             lastcursorPos = cursorPos;
             tft.fillRect(lastcursorPos,5,CURSOR_WIDTH,CURSOR_HEIGHT,ST7735_WHITE);
             cursorPos+= 28;
@@ -153,20 +166,118 @@ void calcrun(){
             drawCursor();
             updateScreen();
         }
-        
 
-        if(key == '('){
 
-            if(rightbracket)
-            {
-               key = '(';
-            }else{
-              key = ')';
+        if(key == 'Q'){ //log(
+            lastcursorPos = cursorPos;
+            tft.fillRect(lastcursorPos,5,CURSOR_WIDTH,CURSOR_HEIGHT,ST7735_WHITE);
+            cursorPos+= 35;
+            char temp[]= {'s','q','r', 't','('};
+           if(equationbuffer.size()==0){ // if its at zero
+                equationbuffer.push_back(temp[0]);
+                cursorIndex++;
+                equationbuffer.push_back(temp[1]);
+                cursorIndex++;
+                equationbuffer.push_back(temp[2]);
+                cursorIndex++;
+                equationbuffer.push_back(temp[3]);
+                cursorIndex++;
+                equationbuffer.push_back(temp[4]);
+                cursorIndex++;
+            }else{ //if the eqautionbuffersize is not at zero
+              for(int i =0; i < 6 ; i++){
+                equationbuffer.insert(equationbuffer.begin() + cursorIndex,temp[i]);
+                cursorIndex++;
+              }
             }
+
+
             std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
-            rightbracket = !rightbracket;
+            drawCursor();
+            updateScreen();
         }
 
+        if(key == 's'){ //log(
+            lastcursorPos = cursorPos;
+            tft.fillRect(lastcursorPos,5,CURSOR_WIDTH,CURSOR_HEIGHT,ST7735_WHITE);
+            cursorPos+= 28;
+            char temp[]= {'s','i','n','('};
+           if(equationbuffer.size()==0){ // if its at zero
+                equationbuffer.push_back(temp[0]);
+                cursorIndex++;
+                equationbuffer.push_back(temp[1]);
+                cursorIndex++;
+                equationbuffer.push_back(temp[2]);
+                cursorIndex++;
+                equationbuffer.push_back(temp[3]);
+                cursorIndex++;
+            }else{ //if the eqautionbuffersize is not at zero
+              for(int i =0; i < 4 ; i++){
+                equationbuffer.insert(equationbuffer.begin() + cursorIndex,temp[i]);
+                cursorIndex++;
+              }
+            }
+
+
+            std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+            drawCursor();
+            updateScreen();
+        }
+
+        if(key == 'c'){ //log(
+            lastcursorPos = cursorPos;
+            tft.fillRect(lastcursorPos,5,CURSOR_WIDTH,CURSOR_HEIGHT,ST7735_WHITE);
+            cursorPos+= 28;
+            char temp[]= {'c','o','s','('};
+           if(equationbuffer.size()==0){ // if its at zero
+                equationbuffer.push_back(temp[0]);
+                cursorIndex++;
+                equationbuffer.push_back(temp[1]);
+                cursorIndex++;
+                equationbuffer.push_back(temp[2]);
+                cursorIndex++;
+                equationbuffer.push_back(temp[3]);
+                cursorIndex++;
+            }else{ //if the eqautionbuffersize is not at zero
+              for(int i =0; i < 4 ; i++){
+                equationbuffer.insert(equationbuffer.begin() + cursorIndex,temp[i]);
+                cursorIndex++;
+              }
+            }
+
+
+            std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+            drawCursor();
+            updateScreen();
+        }
+
+        if(key == 't'){ //log(
+            lastcursorPos = cursorPos;
+            tft.fillRect(lastcursorPos,5,CURSOR_WIDTH,CURSOR_HEIGHT,ST7735_WHITE);
+            cursorPos+= 28;
+            char temp[]= {'t','a','n','('};
+           if(equationbuffer.size()==0){ // if its at zero
+                equationbuffer.push_back(temp[0]);
+                cursorIndex++;
+                equationbuffer.push_back(temp[1]);
+                cursorIndex++;
+                equationbuffer.push_back(temp[2]);
+                cursorIndex++;
+                equationbuffer.push_back(temp[3]);
+                cursorIndex++;
+            }else{ //if the eqautionbuffersize is not at zero
+              for(int i =0; i < 4 ; i++){
+                equationbuffer.insert(equationbuffer.begin() + cursorIndex,temp[i]);
+                cursorIndex++;
+              }
+            }
+
+
+            std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+            drawCursor();
+            updateScreen();
+        }
+    
         if(key == 'F'&& !equationbuffer.empty() && cursorIndex < equationbuffer.size()){
             cursorMoveForward();
             drawCursor(); //draw new cursor position
@@ -183,19 +294,17 @@ void calcrun(){
                 equationbuffer.push_back(temp[1]);
                 cursorIndex++;
             }else{ //if the eqautionbuffersize is not at zero
-              for(int i =0; i < 2 ; i++){
+              for(int i =0; i != 2 ; i++){
                 equationbuffer.insert(equationbuffer.begin() + cursorIndex,temp[i]);
                 cursorIndex++;
               }
             }
-
-
             std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
             drawCursor();
             updateScreen();
         }
 
-        if (key != 'z'&& key !='B' && key !='^' && key != 'E' && key != 'a' && key != '=' && key != 'l'&& key!='L'&& key != 'T'&& key != 'F') {
+        if (key != 'z' &&  key != 'Q' && key !='B' && key !='^' && key != 'E' && key != 'a' && key != '=' && key != 'l'&& key!='L'&& key != 'T'&& key != 'F' && key != 'D') {
             // Replace character at current cursor position
             if(cursorIndex >=equationbuffer.size()){
                 equationbuffer.push_back(key);
