@@ -1,12 +1,18 @@
 #include <iostream>
 #include <stdexcept>
 
+using namespace std;
+
 #define MAXBUFFER 100
+#define MAXEQUATIONS 10
 
 class CALCSTACK {
 private:
     double numberStack[MAXBUFFER];
     char operatorStack[MAXBUFFER];
+
+
+    
     int numberTop;
     int operatorTop;
 
@@ -16,8 +22,23 @@ public:
     int isEmpty(){
       if(numberTop== -1){
         return 0;
-      }else{
+      }else if( numberTop == 0)
+      {
         return 1;
+      }else{
+        return 2;
+      }
+    }
+
+
+
+    bool isOperatorEmpty()
+    {
+      if(operatorTop  == -1)
+      {
+        return true;
+      }else if (operatorTop  > -1){
+        return false;
       }
     }
 
@@ -38,6 +59,7 @@ public:
     double  popNumber() {
 
         return numberStack[numberTop--];
+
     }
 
     // Push an operator onto the operator stack
@@ -56,35 +78,69 @@ public:
 
     // Pop an operator from the operator stack
     char popOperator() {
-        return operatorStack[operatorTop--];
+      
+      return operatorStack[operatorTop--];
+
     }
 
     // Check if a character is a valid operator
-    bool isOperator(char ch) const {
-        return ch == '+' || ch == '-' || ch == 'x' || ch == '/' || ch == '('|| ch =='P'|| ch =='S'|| ch =='^'|| ch =='A'|| ch =='C'|| ch =='.'|| ch =='G'|| ch =='N'|| ch =='D'|| ch =='S';
+    bool isOperator(char ch){
+        switch(ch)
+        {
+          case '+': return true; break;
+          case '-': return true; break;
+          case '/': return true; break;
+          case 'x': return true; break;
+
+          default: 
+          return false;
+          break;
+        }
     }
 
     // Evaluate the current expression
+
+    double precedence( char value)
+    {
+        switch (value)
+        {
+        case '/': return 3; break;
+        case 'x': return 2; break;
+        case '+': return 1; break;
+        case '-': return 0; break;
+        
+        default:
+            return -1;
+            break;
+        }
+    }
+
     void evaluate() {
 
-        double  b = popNumber();
-        double a = popNumber();
-        char op = popOperator();
+            double  b = popNumber();
+            double a = popNumber();
+            char op = popOperator();
 
-        double  result;
-        switch (op) {
-        case '+': result = a + b; break;
-        case '-': result = a - b; break;
-        case 'x': result = a * b; break;
-        case '/':
-            if (b == 0) throw std::runtime_error("Division by zero");
-            result = a / b;
-            break;
-        default:
-            result = b;
-        }
-
-        pushNumber(result);
+            double  result;
+            switch (op) {
+            case '+': result = a + b;pushNumber(result); break;
+            case '-': result = a-b;pushNumber(result); break;
+            case 'x': result = a * b;pushNumber(result); break;
+            case '/':
+                if (b == 0)
+                { 
+                  throw std::runtime_error("Division by zero");
+                }
+                else
+                {
+                  result = a / b;
+                  pushNumber(result);
+                }
+                break;
+            default:
+                result = b;
+                pushNumber(result);
+            }
     }
 
 
