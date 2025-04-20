@@ -43,6 +43,27 @@ class cursorArrow
       level = 0;
     }
   }
+
+  void movegriddown() //to navigate down the tic tax to y axis grid 
+  {
+    level++;
+    if(level == 2)
+    {
+      screenstart++;
+      level = 0;
+    }
+  }
+
+  void movegridup() //to navigate up the tic tax to y axis grid 
+  {
+    if(level == 0)
+    {
+      level = 0;
+    }else if (level > 0){
+      level--;
+    }
+  }
+
   void decrease()
   { 
       

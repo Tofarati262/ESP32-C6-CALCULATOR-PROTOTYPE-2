@@ -25,11 +25,10 @@ int *lastMappedValueptr =&lastMappedValue ;
 // Display objects
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
 
-MenuItem menu[4] = {
+MenuItem menu[3] = {
     {"WIFI", 60, 9},
-    {"Weather", 56, 39},
-    {"Tik-Tak-Toe", 47, 69},
-    {"Calculator", 51, 99}
+    {"Calculator", 56, 39},
+    {"Tik-Tac-Toe", 47, 69},
 };
 
 
@@ -98,7 +97,7 @@ void drawmenu() {
       timer1 = millis();
 
         if(Read_EXIO(buttonPin) == 0){
-          if(selected == 3){ // when calculator is selected 
+          if(selected == 1){ // when calculator is selected 
             currentpage = 6;
             break;
           }else if(selected ==0 ){ // when wifi is selected
@@ -110,7 +109,7 @@ void drawmenu() {
           }
         }
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
           if (selected == i) {  // Highlight selected item in bold
              tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
               tft.setTextSize(1); // Make selected text bigger
@@ -128,14 +127,14 @@ void drawmenu() {
       // Handle menu navigation
         if (mappedValue > lastMappedValue+4 && (timer1-timer2 > 50)) {
           selected++;
-          if (selected > 3) {
+          if (selected > 2) {
               selected = 0;
           } 
         }
         if (mappedValue < lastMappedValue-4 && (timer1-timer2 > 50)) {
           selected--;
-          if (selected <1){
-            selected = 3;
+          if (selected <0){
+            selected = 2;
           }
         }
         lastMappedValue = mappedValue;
