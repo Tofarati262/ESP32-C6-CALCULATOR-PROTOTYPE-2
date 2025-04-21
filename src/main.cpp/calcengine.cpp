@@ -27,7 +27,7 @@ void drawCursor() { //blinks the cursor
 }
 
 void updateScreen() {
-  tft.fillRect(0, 0, 160, 14, ST7735_WHITE);  // Clear equation display area
+  tft.fillRect(0, ypos, 160, 14, ST7735_WHITE);  // Clear equation display area
   
   xPos = 3;  // Reset xPos before drawing characters to the start of the screen 
 
@@ -41,17 +41,58 @@ void updateScreen() {
   drawCursor();
 }
 
-void reinitcalcstack()
-{
-  calculator = CALCSTACK();
-}
-   
 void displayanswer()
 {
   int screenanswer = memorybuffer.answer();
   tft.setCursor(145, ypos+15);
   tft.setTextSize(1);
   tft.print(screenanswer);
+}
+
+void displayequations()
+{
+  for(int i = 0; i!= equationcounter ; i++)
+  {
+    std::vector <char> temp = memorybuffer.getEquation(i);
+
+    tft.fillRect(0, 5 + (40 * i), 160, 14, ST7735_WHITE);  // Clear equation display area
+  
+    int tempxPos = 3;  // Reset xPos before drawing characters to the start of the screen 
+
+    for (int j = screenstart; j < temp.size() && j < screenstart + MAX_CHARS; j++) { //prints equation from start of the screen to the end of the screen
+      tft.setCursor(tempxPos, 5 + (40 * i));
+      tft.setTextSize(1);
+      tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
+      tft.print(temp[j]);
+      tempxPos += 7; //increase the position then printing a number at the next position
+    }
+  }
+}
+
+int drawNewMargin()
+{
+  if(equationcounter < 3)
+  {
+    int marginindex = 3;
+    while(marginindex != 157)
+    {
+      tft.setCursor(marginindex, ypos + 30);
+      tft.print('-');
+      marginindex += 7;
+    }
+    cursorIndex = 0;
+    cursorPos = 3;
+    calculator = CALCSTACK();
+    ypos+=40;
+    equationbuffer.clear();
+    updateScreen();
+    if(equationcounter > 0)
+    {
+      displayequations();
+    }
+    return 1;
+  }
+  return 0;
 }
 
 
@@ -68,41 +109,14 @@ void calcrun(){
     int potValue = analogRead(potPin);
     // Blink cursor every CURSOR_BLINK_DELAY ms
 
-    if (currentMillis - lastBlinkTime >= CURSOR_BLINK_DELAY) {
-      cursorVisible = !cursorVisible;
-      drawCursor();
-      lastBlinkTime = currentMillis;
-    }
-    
-    //Maps Potentiometer Value
+    std::cout << "This is the equation count :" << equationcounter << std::endl;
 
-    if (potValue < minPotValue) {
-      mappedValue = 0;
-    } else {
-      mappedValue = map(potValue, 500, 4095, 0, 500);
-    }
-    int speedchange = mappedValue - previousmapped;
-    previousmapped = mappedValue;
-    //std::cout<<"This is the degreeChange: "<< speedchange <<std::endl;
-
-    // Move cursor only within the valid range
-    /*if (speedchange > 5 && cursorIndex < equationbuffer.size() && (cursorPos + 7) < 153) {  //checks if the potentiometer changes in the positive direction and the cursor's index is less than equation length an cursor positoin is not at the screen edge
-        cursorMoveForward();
-        drawCursor();// draws the cursor
-        updateScreen(); // updates the screen and writes the equation inside the buffer
-    } else if (speedchange < -10  && cursorIndex > 0) {
-        cursorMoveback();
-        drawCursor(); //draw new cursor position
-        updateScreen(); //print the equation on the screen
-    }*/
-
-    HandleKeys(key);
+  if (currentMillis - lastBlinkTime >= CURSOR_BLINK_DELAY) {
+    cursorVisible = !cursorVisible;
+    drawCursor();
+    lastBlinkTime = currentMillis;
   }
-}
-
-void HandleKeys(char key)
-{
-
+  
   if(key == 'B' && cursorIndex > 0)
   {   // deletes the characters and updates the screen
           //cursorDelete(); //backspace needs to 
@@ -113,13 +127,14 @@ void HandleKeys(char key)
   }
 
   if (key == 'D' && !equationbuffer.empty())
-      {
+  {
           cursorDelete(); //deletes the characters in the memory buffer
           drawCursor();// visually moves the cursor back
           updateScreen(); // updates the screen 
-      }
+  }
 
-      if(key == 'E'){ // erase the characters inside the vector 
+  if(key == 'E'){ // erase the characters inside the vector 
+        tft.drawRect(0, ypos, 160, 14, ST7735_WHITE);  // Input box
         equationbuffer.clear();
           xPos = 3;
           cursorIndex = 0;
@@ -322,22 +337,29 @@ void HandleKeys(char key)
   {
     int temp_num_count = 0;
     int temp_operator_count = 0;
+    double appendednumber = 0;
 
-    for(char number : equationbuffer)
+    temp_num_count = memorybuffer.countValues(equationbuffer).first;
+    temp_operator_count = memorybuffer.countValues(equationbuffer).second;
+
+    if(temp_num_count == 0)
     {
-    std::cout<< number<< std::endl;
+      std::cout << "FAILURE : SYNTAX ERROR" << std::endl;
+    }else if(temp_num_count == temp_operator_count)
+    {
+      std::cout << "FAILURE : SYNTAX ERROR" << std::endl;
     }
 
     for(char value : equationbuffer)
     {
       if(value >= '0' && value <= '9')
       {
-        calculator.pushNumber(value-'0');
-        temp_num_count++;
+        appendednumber = appendednumber * 10 +  (value -'0');
         std::cout <<"Pushed number:"  << value << "\n";
       }
       if (calculator.isOperator(value) == true)
       { 
+        calculator.pushNumber(appendednumber);
         if(calculator.isOperatorEmpty() == true)
         {
           calculator.pushOperator(value);
@@ -357,29 +379,23 @@ void HandleKeys(char key)
             temp_num_count      = 0; //reset the number count 
             std::cout << "evalauted :" << calculator.peekNumber() << "\n";
             calculator.pushOperator(value);
+            temp_operator_count++;
           }
         }
       }
     }
-
     //error handling 
-    if(temp_num_count == 0){
-      std::cout << "Error : Syntax" << std::endl;
-    }else if(temp_num_count == temp_operator_count)
-    {
-      std::cout << "Error : Syntax" << std::endl;
-    }else{
       while(calculator.isEmpty() > 1){
         calculator.evaluate();
       }
+
       int answer = calculator.peekNumber(); 
       std::cout << answer << std::endl;
       equationcounter++; // equation count increases 
       memorybuffer.pushequation(equationbuffer,answer);
-      displayanswer();
-      newequation(); //creates a new equation margin
+      displayanswer(); //displays answer
+      drawNewMargin(); //drawnewmargin
     }
-  }
 
   if (key != 'z' && key != 'm' && key != 'Q' && key !='B' && key !='^' && key != 'E' && key != 'a' && key != 's' && key != 'c' && key != 't' && key != '=' && key != 'l'&& key!='L'&& key != 'T'&& key != 'F' && key != 'D') {
       // Replace character at current cursor position
@@ -417,21 +433,7 @@ void HandleKeys(char key)
 
 
     updateScreen();
-      drawCursor();
+    drawCursor();
   }
-}
-
-void newequation()
-{
-  reinitcalcstack();
-  int marginindex = 3;
-
-  while(marginindex != 160)
-  {
-    tft.setCursor(marginindex, ypos + 18);
-    tft.print('-');
-    marginindex += 7;
   }
-
-  ypos+=20;
 }

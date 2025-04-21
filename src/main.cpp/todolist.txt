@@ -1,0 +1,8 @@
+
+i need to implement the remaining functions like sin() and cos()
+
+I need to implement an equation scroll feature
+
+I need to implement error handling 
+
+I need to implement a functions that appends numbers greater than 9  done
