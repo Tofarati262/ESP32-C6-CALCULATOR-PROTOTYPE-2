@@ -2,6 +2,7 @@
 #include "DisplayInit.h"
 #include "Exiomatrix.h"
 #include "iostream"
+#include <string>
 #include "ArithmeticStack.h"
 #include <vector>
 #include "calcBuffer.h"
@@ -43,10 +44,14 @@ void updateScreen() {
 
 void displayanswer()
 {
-  int screenanswer = memorybuffer.answer();
-  tft.setCursor(145, ypos+15);
+
+  int answers = memorybuffer.answer();
+  std::string  screenanswer = std::to_string(answers);
+  int length = screenanswer.length();
+  
+  tft.setCursor(145 - length * 7, ypos+15);
   tft.setTextSize(1);
-  tft.print(screenanswer);
+  tft.print(answers);
 }
 
 void displayequations()
@@ -108,8 +113,6 @@ void calcrun(){
     unsigned long currentMillis = millis();
     int potValue = analogRead(potPin);
     // Blink cursor every CURSOR_BLINK_DELAY ms
-
-    std::cout << "This is the equation count :" << equationcounter << std::endl;
 
   if (currentMillis - lastBlinkTime >= CURSOR_BLINK_DELAY) {
     cursorVisible = !cursorVisible;
@@ -342,6 +345,8 @@ void calcrun(){
     temp_num_count = memorybuffer.countValues(equationbuffer).first;
     temp_operator_count = memorybuffer.countValues(equationbuffer).second;
 
+    equationbuffer = memorybuffer.Specialfunctions(equationbuffer);
+
     if(temp_num_count == 0)
     {
       std::cout << "FAILURE : SYNTAX ERROR" << std::endl;
@@ -359,7 +364,11 @@ void calcrun(){
       }
       if (calculator.isOperator(value) == true)
       { 
+
         calculator.pushNumber(appendednumber);
+        std::cout <<"Pushed number:"  << appendednumber << "\n";
+        appendednumber = 0;
+
         if(calculator.isOperatorEmpty() == true)
         {
           calculator.pushOperator(value);
@@ -384,6 +393,7 @@ void calcrun(){
         }
       }
     }
+    calculator.pushNumber(appendednumber);
     //error handling 
       while(calculator.isEmpty() > 1){
         calculator.evaluate();

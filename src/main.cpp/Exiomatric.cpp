@@ -23,47 +23,6 @@ char hexaKeys[7][5] = {
 //  F factorial display mechanics, ^ raised to power display mechanics
 
 
-//Q is the square root done
-//B is moving back done 
-//F is forward done
-//O for switching the calc off  not done
-
-
-//L for Ln()   done
-// l for log() done 
-//( ) done
-//E Erase all memory done
-
-
-//D for backspace done
-//7  done
-// 8 done
-//9 done
-
-//+ done
-//4 done
-//5 done
-//6 done
-//- done
-
-//% done
-//1 done
-//2 done
-//3 done 
-//* done
-
-
-//m mode for rad or degs 
-//^done
-//0done
-//.done
-//=done
-
-//s sin done
-//c cos done
-//t tan done
-//!done
-//e esc button
 
 void settup() {
 
