@@ -45,11 +45,11 @@ void updateScreen() {
 void displayanswer()
 {
 
-  int answers = memorybuffer.answer();
+  double answers = memorybuffer.answer();
   std::string  screenanswer = std::to_string(answers);
   int length = screenanswer.length();
   
-  tft.setCursor(145 - length * 7, ypos+15);
+  tft.setCursor(155- length - 4  * 7, ypos+15);
   tft.setTextSize(1);
   tft.print(answers);
 }
@@ -340,12 +340,18 @@ void calcrun(){
   {
     int temp_num_count = 0;
     int temp_operator_count = 0;
-    double appendednumber = 0;
-
+    double appendednumber = 0.0;
+    bool decimalseen = false;
+    double divisor = 10.0;
     temp_num_count = memorybuffer.countValues(equationbuffer).first;
     temp_operator_count = memorybuffer.countValues(equationbuffer).second;
 
-    equationbuffer = memorybuffer.Specialfunctions(equationbuffer);
+
+    //scan for decimal
+
+    vector <char> newequationbuffer = equationbuffer;
+
+    newequationbuffer = memorybuffer.Specialfunctions(newequationbuffer);
 
     if(temp_num_count == 0)
     {
@@ -355,19 +361,37 @@ void calcrun(){
       std::cout << "FAILURE : SYNTAX ERROR" << std::endl;
     }
 
-    for(char value : equationbuffer)
+
+
+    for(char value : newequationbuffer)
     {
+        if (value == '.') {
+          decimalseen = true;
+          continue;
+        }
+
+
       if(value >= '0' && value <= '9')
       {
-        appendednumber = appendednumber * 10 +  (value -'0');
+
+        if (!decimalseen) {
+          appendednumber = appendednumber * 10 +  (value -'0');
+        } else {
+          appendednumber +=(value -'0') / divisor;
+          divisor *= 10;
+        }
+        
         std::cout <<"Pushed number:"  << value << "\n";
       }
+
       if (calculator.isOperator(value) == true)
       { 
 
         calculator.pushNumber(appendednumber);
         std::cout <<"Pushed number:"  << appendednumber << "\n";
         appendednumber = 0;
+        divisor = 10;
+        decimalseen = false;
 
         if(calculator.isOperatorEmpty() == true)
         {
@@ -399,7 +423,7 @@ void calcrun(){
         calculator.evaluate();
       }
 
-      int answer = calculator.peekNumber(); 
+      double answer = calculator.peekNumber(); 
       std::cout << answer << std::endl;
       equationcounter++; // equation count increases 
       memorybuffer.pushequation(equationbuffer,answer);

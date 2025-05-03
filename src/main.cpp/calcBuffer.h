@@ -10,7 +10,7 @@ using namespace std;
 class calcBuffer
 {
 private:
-    vector<pair<vector<char>,int>> equationholder;    
+    vector<pair<vector<char> , double>> equationholder;    
 public:
 
 unsigned long long  factorialcalc(int *ptrvalue)
@@ -24,7 +24,7 @@ unsigned long long  factorialcalc(int *ptrvalue)
     return returnvalue;
 }
     
-    void pushequation( vector<char> equation, int answer)
+    void pushequation( vector<char> equation, double answer)
     {
       equationholder.push_back({equation,answer});
     }
@@ -48,7 +48,7 @@ unsigned long long  factorialcalc(int *ptrvalue)
       }
     }
 
-    int answer()
+    double answer()
     {
         auto& answer = equationholder.back().second;
         cout << answer << endl;
@@ -219,6 +219,7 @@ unsigned long long  factorialcalc(int *ptrvalue)
 
         //sqrt
 
+        
         }else if (i + 4 < equation.size() && equation[i] == 's' && equation[i + 1] == 'q' && equation[i + 2] == 'r' && equation[i + 3] == 't' && equation[i + 4] == '(')
         {
             j = i + 5;
