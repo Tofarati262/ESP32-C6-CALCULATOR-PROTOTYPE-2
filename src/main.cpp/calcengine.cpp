@@ -6,6 +6,7 @@
 #include "ArithmeticStack.h"
 #include <vector>
 #include "calcBuffer.h"
+#include "CALCERROR.h"
 
 bool calcenginerun = false;
 bool calcresult = false;
@@ -16,6 +17,7 @@ std::vector<char>equationbuffer;  // Stores the equation input
 int equationLength = 0;  // Tracks how many characters have been entered
 CALCSTACK calculator;
 calcBuffer memorybuffer;
+Error err;
 
 int ypos = 5;
 
@@ -355,10 +357,13 @@ void calcrun(){
 
     if(temp_num_count == 0)
     {
-      std::cout << "FAILURE : SYNTAX ERROR" << std::endl;
-    }else if(temp_num_count == temp_operator_count)
+      err.display_error("SYNTAX");
+    }else if(temp_num_count == temp_operator_count )
     {
-      std::cout << "FAILURE : SYNTAX ERROR" << std::endl;
+      err.display_error("SYNTAX");
+    }else if(temp_operator_count > temp_num_count )
+    {
+      err.display_error("SYNTAX");
     }
 
 
