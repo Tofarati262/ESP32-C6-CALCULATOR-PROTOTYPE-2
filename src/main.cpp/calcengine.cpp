@@ -11,7 +11,6 @@
 bool calcenginerun = false;
 bool calcresult = false;
 bool *calcresultptr = &calcresult; 
-bool rightbracket = true;
 int equationcounter = 0 ;
 std::vector<char>equationbuffer;  // Stores the equation input
 int equationLength = 0;  // Tracks how many characters have been entered
@@ -46,7 +45,6 @@ void updateScreen() {
 
 void displayanswer()
 {
-
   double answers = memorybuffer.answer();
   std::string  screenanswer = std::to_string(answers);
   int length = screenanswer.length();
@@ -351,9 +349,7 @@ void calcrun(){
 
     //scan for decimal
 
-    vector <char> newequationbuffer = equationbuffer;
 
-    newequationbuffer = memorybuffer.Specialfunctions(newequationbuffer);
 
     if(temp_num_count == 0)
     {
@@ -364,77 +360,80 @@ void calcrun(){
     }else if(temp_operator_count > temp_num_count )
     {
       err.display_error("SYNTAX");
-    }
+    }else{
 
-
-
-    for(char value : newequationbuffer)
-    {
-        if (value == '.') {
-          decimalseen = true;
-          continue;
-        }
-
-
-      if(value >= '0' && value <= '9')
+      vector <char> newequationbuffer = equationbuffer;
+      newequationbuffer = memorybuffer.Specialfunctions(newequationbuffer);
+  
+      for(char value : newequationbuffer)
       {
+          if (value == '.') {
+            decimalseen = true;
+            continue;
+          }
 
-        if (!decimalseen) {
-          appendednumber = appendednumber * 10 +  (value -'0');
-        } else {
-          appendednumber +=(value -'0') / divisor;
-          divisor *= 10;
+
+        if(value >= '0' && value <= '9')
+        {
+
+          if (!decimalseen) {
+            appendednumber = appendednumber * 10 +  (value -'0');
+          } else {
+            appendednumber +=(value -'0') / divisor;
+            divisor *= 10;
+          }
+          
+          std::cout <<"Pushed number:"  << value << "\n";
         }
-        
-        std::cout <<"Pushed number:"  << value << "\n";
-      }
 
-      if (calculator.isOperator(value) == true)
-      { 
+        if (calculator.isOperator(value) == true)
+        { 
 
-        calculator.pushNumber(appendednumber);
-        std::cout <<"Pushed number:"  << appendednumber << "\n";
-        appendednumber = 0;
-        divisor = 10;
-        decimalseen = false;
+          calculator.pushNumber(appendednumber);
+          std::cout <<"Pushed number:"  << appendednumber << "\n";
+          appendednumber = 0;
+          divisor = 10;
+          decimalseen = false;
 
-        if(calculator.isOperatorEmpty() == true)
-        {
-          calculator.pushOperator(value);
-          temp_operator_count++;
-          std::cout << "Pushed operator: "<< value << "\n";
-        }else if(calculator.isOperatorEmpty() == false)
-        {
-          if(calculator.precedence(value) > calculator.precedence(calculator.peekOperator()))
+          if(calculator.isOperatorEmpty() == true)
           {
             calculator.pushOperator(value);
             temp_operator_count++;
             std::cout << "Pushed operator: "<< value << "\n";
-          }else if (calculator.precedence(value) <= calculator.precedence(calculator.peekOperator()))
+          }else if(calculator.isOperatorEmpty() == false)
           {
-            calculator.evaluate();
-            temp_operator_count = 0; //reset the operator count 
-            temp_num_count      = 0; //reset the number count 
-            std::cout << "evalauted :" << calculator.peekNumber() << "\n";
-            calculator.pushOperator(value);
-            temp_operator_count++;
+            if(calculator.precedence(value) > calculator.precedence(calculator.peekOperator()))
+            {
+              calculator.pushOperator(value);
+              temp_operator_count++;
+              std::cout << "Pushed operator: "<< value << "\n";
+            }else if (calculator.precedence(value) <= calculator.precedence(calculator.peekOperator()))
+            {
+              calculator.evaluate();
+              temp_operator_count = 0; //reset the operator count 
+              temp_num_count      = 0; //reset the number count 
+              std::cout << "evalauted :" << calculator.peekNumber() << "\n";
+              calculator.pushOperator(value);
+              temp_operator_count++;
+            }
           }
         }
       }
-    }
-    calculator.pushNumber(appendednumber);
-    //error handling 
+
+      calculator.pushNumber(appendednumber);
+    
       while(calculator.isEmpty() > 1){
         calculator.evaluate();
       }
 
       double answer = calculator.peekNumber(); 
       std::cout << answer << std::endl;
-      equationcounter++; // equation count increases 
+      equationcounter++;                                               // equation count increases 
       memorybuffer.pushequation(equationbuffer,answer);
-      displayanswer(); //displays answer
-      drawNewMargin(); //drawnewmargin
+      displayanswer();                                               //displays answer
+      drawNewMargin();                                              //drawnewmargin
     }
+  }
 
   if (key != 'z' && key != 'm' && key != 'Q' && key !='B' && key !='^' && key != 'E' && key != 'a' && key != 's' && key != 'c' && key != 't' && key != '=' && key != 'l'&& key!='L'&& key != 'T'&& key != 'F' && key != 'D') {
       // Replace character at current cursor position
