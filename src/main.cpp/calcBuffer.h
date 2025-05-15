@@ -55,33 +55,43 @@ unsigned long long  factorialcalc(int *ptrvalue)
         return answer;
     }
 
-    vector<char> getEquation(int index)
+    pair<vector<char>,double> getEquation(int index)
     {
-      return equationholder[index].first;
+      return {equationholder[index].first, equationholder[index].second};
     }
 
-    pair<int ,int> countValues (vector <char> equations)
-    {
-      int numcount = 0;
-      int operatorcount = 0;
+pair<int ,int> countValues (vector <char> equation)
+{
+    int numCount = 0;
+    int operatorCount = 0;
 
+    std::string token;
+    for (size_t i = 0; i < equation.size(); ++i) {
+        char c = equation[i];
 
-      for( char value : equations)
-      {
-        std::cout<< value << std::endl;
-        if(value >= '0' && value <= '9')
-        {
-          numcount++;
+        if (std::isdigit(c) || c == '.') {
+            token += c;
+        } else {
+            // End of a number
+            if (!token.empty()) {
+                ++numCount;
+                token.clear();
+            }
+
+            // Check if it's an operator
+            if (c == '+' || c == '-' || c == '/' || c == 'X' || c == '*') {
+                ++operatorCount;
+            }
         }
-
-        if(value == 'X' || value == '/' || value == '-' || value == '+')
-        {
-          operatorcount++;
-        }
-      }
-
-      return{numcount, operatorcount};
     }
+
+    // If equation ends with a number
+    if (!token.empty()) {
+        ++numCount;
+    }
+
+    return {numCount, operatorCount};
+}
 
     std::vector<char> Specialfunctions(std::vector<char> equation) {
     double angle = 0;

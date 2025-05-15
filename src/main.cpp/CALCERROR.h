@@ -11,26 +11,15 @@ class Error
 
     void write_options()
     {
-        tft.setCursor(10, 30);
+        tft.setCursor(10, 50);
         tft.setTextSize(1);
         tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
 
         tft.print("1:");
 
-        tft.setCursor(40, 30);
+        tft.setCursor(40, 50);
         tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
-        tft.print("Quit");
-
-
-        tft.setCursor(10, 60);
-        tft.setTextSize(1);
-        tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
-
-        tft.print("2:");
-
-        tft.setCursor(40, 60);
-        tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
-        tft.print("Goto");
+        tft.print("Continue");
     }
 
     int display_error( string errormessage)
@@ -38,7 +27,7 @@ class Error
       tft.fillScreen(ST7735_WHITE);
       char key;
 
-      while((key = loopy()) != '1' && (key = loopy()) != '2'){
+      while((key = loopy()) != '1'){
 
         if(errormessage == "DOMAIN")
         {
@@ -71,13 +60,7 @@ class Error
 
       }
 
-      if(key == '1')
-      {
 
-      }else if (key == '2')
-      {
-        
-      }
         
 
         tft.fillScreen(ST7735_WHITE);
