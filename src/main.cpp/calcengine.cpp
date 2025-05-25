@@ -11,13 +11,14 @@
 bool CursorEnable = true;
 bool calcenginerun = false;
 int equationshifter = 0;
-int cursorIndex = 0;
-int selectedEquationIndex = 0;
+int selectedEquationIndex = -1;
+bool selectedstate = false;
+int previousEquationIndex = 0;
 bool calcresult = false;
 bool *calcresultptr = &calcresult; 
-int equationcounter = 0 ;
-std::vector<char>equationbuffer;  // Stores the equation input
-int equationLength = 0;  // Tracks how many characters have been entered
+int equationcounter = 0;
+std::vector<char>equationbuffer;
+int equationLength = 0;
 CALCSTACK calculator;
 calcBuffer memorybuffer;
 Potentiometer pot3;
@@ -25,89 +26,74 @@ Error err;
 
 int ypos = 5;
 
-void drawCursor() { //blinks the cursor
-  if (cursorVisible) {
-    tft.fillRect(cursorPos, ypos, CURSOR_WIDTH, CURSOR_HEIGHT, ST7735_BLACK);
-  } else {
-    tft.fillRect(cursorPos, ypos, CURSOR_WIDTH, CURSOR_HEIGHT, ST7735_WHITE);
+void drawCursor() {
+
+  if(CursorEnable == true)
+  {
+    if (cursorVisible) {
+      tft.fillRect(cursorPos, ypos, CURSOR_WIDTH, CURSOR_HEIGHT, ST7735_BLACK);
+    } else {
+      tft.fillRect(cursorPos, ypos, CURSOR_WIDTH, CURSOR_HEIGHT, ST7735_WHITE);
+    }
   }
+
 }
 
 void updateScreen() {
-  tft.fillRect(0, ypos, 160, 14, ST7735_WHITE);  // Clear equation display area
-  
-  xPos = 3;  // Reset xPos before drawing characters to the start of the screen 
-
-  for (int i = screenstart; i < equationbuffer.size() && i < screenstart + MAX_CHARS; i++) { //prints equation from start of the screen to the end of the screen
+  tft.fillRect(0, ypos, 160, 14, ST7735_WHITE);
+  xPos = 3;
+  for (int i = screenstart; i < equationbuffer.size() && i < screenstart + MAX_CHARS; i++) {
     tft.setCursor(xPos, ypos);
     tft.setTextSize(1);
     tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
     tft.print(equationbuffer[i]);
-    xPos += 7; //increase the position then printing a number at the next position
+    xPos += 7;
   }
   drawCursor();
 }
 
-void displayanswer()
-{
+void displayanswer() {
   double answers = memorybuffer.answer();
-  std::string  screenanswer = std::to_string(answers);
+  std::string screenanswer = std::to_string(answers);
   int length = screenanswer.length();
-  
-  tft.setCursor(155- length - 4  * 7, ypos+15);
+  tft.setCursor(155 - length - 4 * 7, ypos + 15);
   tft.setTextSize(1);
   tft.print(answers);
 }
 
-void displayequations()
-{
+void displayequations() {
+  int displayCount = std::min(3, equationcounter - equationshifter);
+  for (int i = 0; i < displayCount; i++) {
+    int actualIndex = i + equationshifter;
+    auto [equation, answer] = memorybuffer.getEquation(actualIndex);
 
-  int k  = 0;
-  for(int i = 0; i!= equationcounter - equationshifter ; i++)
-  {
+    uint16_t bgColor = (actualIndex == selectedEquationIndex && selectedstate == true) ? ST7735_RED : ST7735_WHITE;
+    uint16_t textColor = ST7735_BLACK;
 
-    uint16_t bgColor, textColor;
-
-    if (i == selectedEquationIndex) {
-      bgColor = ST7735_BLUE;
-      textColor = ST7735_BLACK;
-    } else {
-      bgColor = ST7735_WHITE;
-      textColor = ST7735_BLACK;
-    }
-
-    k = i + equationshifter;
-    std::vector <char> temp = memorybuffer.getEquation(k).first;
-    double answers = memorybuffer.getEquation(k).second;
-    std::string  screenanswer = std::to_string(answers);
-    int length = screenanswer.length();
-    
-
-    tft.fillRect(0, 5 + (40 * i), 160, 14, ST7735_WHITE);  // Clear equation display area
-  
-    int tempxPos = 3;  // Reset xPos before drawing characters to the start of the screen 
-
-    for (int j = screenstart; j < temp.size() && j < screenstart + MAX_CHARS; j++) { //prints equation from start of the screen to the end of the screen
+    tft.fillRect(0, 5 + (40 * i), 160, 14, ST7735_WHITE);
+    int tempxPos = 3;
+    for (int j = screenstart; j < equation.size() && j < screenstart + MAX_CHARS; j++) {
       tft.setCursor(tempxPos, 5 + (40 * i));
       tft.setTextSize(1);
       tft.setTextColor(textColor, bgColor);
-      tft.print(temp[j]);
-      tempxPos += 7; //increase the position then printing a number at the next position
-
-      tft.setCursor(155- length - 4  * 7, (40 * i)+20);
-      tft.setTextSize(1);
-      tft.print(answers);
+      tft.print(equation[j]);
+      tempxPos += 7;
     }
+    std::string screenanswer = std::to_string(answer);
+    int length = screenanswer.length();
+    tft.setCursor(155 - length - 4 * 7, (40 * i) + 20);
+    tft.fillRect(105, (40 * i) + 20, 50, 11, ST7735_WHITE);
+    tft.setTextColor(textColor, ST7735_WHITE);
+    tft.setTextSize(1);
+    tft.print(answer);
   }
 }
 
-int drawNewMargin()
-{
-  if(equationcounter < 3)
-  {
+
+int drawNewMargin() {
+  if (equationcounter < 3) {
     int marginindex = 3;
-    while(marginindex != 157)
-    {
+    while (marginindex != 157) {
       tft.setCursor(marginindex, ypos + 30);
       tft.print('-');
       marginindex += 7;
@@ -115,23 +101,24 @@ int drawNewMargin()
     cursorIndex = 0;
     cursorPos = 3;
     calculator = CALCSTACK();
-    ypos+=40;
+    ypos += 40;
     equationbuffer.clear();
     updateScreen();
     displayequations();
     return 1;
-  }else if (equationcounter == 3){
+  } else {
     cursorIndex = 0;
     cursorPos = 3;
     calculator = CALCSTACK();
     equationbuffer.clear();
-    equationshifter++;
+    equationshifter = equationcounter - 2;
+    selectedEquationIndex = equationcounter - 1;
     updateScreen();
     displayequations();
     return 0;
   }
-  return 0;
 }
+
 
 
 void calcrun(){
@@ -143,32 +130,40 @@ void calcrun(){
   {
       
     char key = loopy();  // Get key input
-    cursorIndex = equationcounter;
     unsigned long currentMillis = millis();
     int potValue = pot3.getPotValue();
+
+    const int maxVisibleEquations = 3;
 
     if (equationcounter > 0) {
       int potValue = pot3.getPotValue();
 
-      if (potValue > prevpotValue + 30 && selectedEquationIndex < equationcounter - 1) {
+      // Scroll down
+      if (key == 'u' && selectedEquationIndex < equationcounter - 1) {
         selectedEquationIndex++;
 
-        // If we move to index 3, shift display down (show equations 1–3)
-        if (selectedEquationIndex == 3) {
-          equationshifter = 1;
+        // If selected is out of view at bottom, shift down
+        if (selectedEquationIndex >= equationshifter + maxVisibleEquations) {
+          equationshifter++;
         }
 
+        CursorEnable = false;
+        selectedstate = true;
         displayequations();
         prevpotValue = potValue;
-      } 
-      else if (potValue < prevpotValue - 30 && selectedEquationIndex > 0) {
+      }
+
+      // Scroll up
+      else if (key == 'd' && selectedEquationIndex > 0) {
         selectedEquationIndex--;
 
-        // If we move back to index 2 from 3, shift display up (show equations 0–2)
-        if (selectedEquationIndex == 2) {
-          equationshifter = 0;
+        // If selected is out of view at top, shift up
+        if (selectedEquationIndex < equationshifter) {
+          equationshifter--;
         }
 
+        selectedstate = true;
+        CursorEnable = false;
         displayequations();
         prevpotValue = potValue;
       }
@@ -228,7 +223,7 @@ void calcrun(){
 
             lastcursorPos = cursorPos;
             tft.fillRect(lastcursorPos,5,CURSOR_WIDTH,CURSOR_HEIGHT,ST7735_WHITE);
-            std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+            std::cout <<"This is the cursor index: "<<cursorIndex <<"\n";
             cursorPos+= 21;
             drawCursor();
             updateScreen();
@@ -257,7 +252,7 @@ void calcrun(){
             }
 
 
-            std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+            std::cout <<"This is the cursor index: "<<cursorIndex <<"\n";
             drawCursor();
             updateScreen();
     }
@@ -287,7 +282,7 @@ void calcrun(){
             }
 
 
-            std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+            std::cout <<"This is the cursor index: "<<cursorIndex <<"\n";
             drawCursor();
             updateScreen();
     }
@@ -314,7 +309,7 @@ void calcrun(){
             }
 
 
-            std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+            std::cout <<"This is the cursor index: "<<cursorIndex <<"\n";
             drawCursor();
             updateScreen();
     }
@@ -341,7 +336,7 @@ void calcrun(){
       }
 
 
-      std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+      std::cout <<"This is the cursor index: "<<cursorIndex <<"\n";
       drawCursor();
       updateScreen();
     }
@@ -368,7 +363,7 @@ void calcrun(){
       }
 
 
-      std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+      std::cout <<"This is the cursor index: "<<cursorIndex <<"\n";
       drawCursor();
       updateScreen();
     }
@@ -394,12 +389,12 @@ void calcrun(){
             cursorIndex++;
           }
         }
-        std::cout <<"This is the cursor index: "<<cursorIndex <<std::endl;
+        std::cout <<"This is the cursor index: "<<cursorIndex <<"\n";
         drawCursor();
         updateScreen();
     }
 
-    if(key == '=' && !equationbuffer.empty() && equationcounter < 4)
+    if(key == '=' && !equationbuffer.empty() && equationcounter < 10)
     {
       int temp_num_count = 0;
       int temp_operator_count = 0;
@@ -490,14 +485,14 @@ void calcrun(){
         }
 
         double answer = calculator.peekNumber(); 
-        std::cout << answer << std::endl;
+        std::cout << answer << "\n";
         equationcounter++;                                               // equation count increases 
         memorybuffer.pushequation(equationbuffer,answer);
         drawNewMargin();                                              //drawnewmargin
       }
     }
 
-    if (key != 'z' && key != 'm' && key != 'Q' && key !='B' && key !='^' && key != 'E' && key != 'a' && key != 's' && key != 'c' && key != 't' && key != '=' && key != 'l'&& key!='L'&& key != 'T'&& key != 'F' && key != 'D') 
+    if (key != 'z' && key != 'm' && key != 'Q' && key !='B' && key !='^' && key != 'E' && key != 'a' && key != 's' && key != 'c' && key != 't' && key != '=' && key != 'l'&& key!='L'&& key != 'T'&& key != 'F' && key != 'D' && key != 'd' && key != 'u') 
     {
         // Replace character at current cursor position
       if(cursorIndex >=equationbuffer.size()){
@@ -517,12 +512,12 @@ void calcrun(){
       // Scroll screen if necessary
       if (equationLength > MAX_CHARS) {
         screenstart++;
-        std::cout <<"This is the screenstart : "<< screenstart <<std::endl;
+        std::cout <<"This is the screenstart : "<< screenstart <<"\n";
       }
 
-      std::cout <<"This is the pos: "<<cursorPos <<std::endl;
-      std::cout <<"This is the equationlength: " <<equationLength <<std::endl;
-      std::cout <<"This is the index: "<<cursorIndex <<std::endl;
+      std::cout <<"This is the pos: "<<cursorPos <<"\n";
+      std::cout <<"This is the equationlength: " <<equationLength <<"\n";
+      std::cout <<"This is the index: "<<cursorIndex <<"\n";
 
       // Increase equation length only if adding at the end
 

@@ -7,11 +7,8 @@
 
 button functionality : not done
     //() functionality not done
-    //% not done
-    //m not done
     //^ not done
     //e not done
-    I need to implement an equation scroll feature
     I need to implement error handling 
 
 Complete Functionality: done
@@ -19,3 +16,4 @@ Complete Functionality: done
     I need to implement a functions that appends numbers greater than 9  done
     //! done
     //Q  done 
+    I need to implement an equation scroll feature
