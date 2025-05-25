@@ -1,6 +1,4 @@
 #include <string.h>
-#include "esp32-hal.h"
-#include "esp32-hal-gpio.h"
 #include "DisplayInit.h"
 #include "Exiomatrix.h"
 #include "ArithmeticStack.h"

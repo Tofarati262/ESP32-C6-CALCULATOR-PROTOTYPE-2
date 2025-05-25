@@ -11,59 +11,18 @@ const int numCols = sizeof(colpins) / sizeof(colpins[0]); // Calculate number of
 
 // Define key mapping
 char hexaKeys[7][5] = {
-    {'B', 'F', 'Q', 'O', 'M'}, // Row 1: Clear, Mode, Recall, Equals
-    {'L','l','(',')','E'},
-    {'D','7', '8','9','/'},
-    { '+','4','5','6','-'},
-    {'%', '1', '2','3','x'},
-    {'m','^', '0', '.','='},
+    {'B','u' ,'F', 'D', 'O'}, // Row 1: Clear, Mode, Recall, Equals
+    {'L','d','l','(',')'},
     {'s','c','t','!','e'},
+    {'Q','7', '8','9','/'},
+    {'+','4','5','6','-'},
+    {'E','1', '2','3','x'},
+    {' ','^', '0', '.','='},
 };    
 // need to add e , b ,a ,= , s,math,G,N,D,T,F,Mode,pie constant // need to draw a hex bit encoded image
 //  F factorial display mechanics, ^ raised to power display mechanics
 
 
-//Q is the square root done
-//B is moving back done 
-//F is forward done
-//O for switching the calc off  not done
-
-
-//L for Ln()   done
-// l for log() done 
-//( ) done
-//E Erase all memory done
-
-
-//D for backspace done
-//7  done
-// 8 done
-//9 done
-
-//+ done
-//4 done
-//5 done
-//6 done
-//- done
-
-//% done
-//1 done
-//2 done
-//3 done 
-//* done
-
-
-//m mode for rad or degs 
-//^done
-//0done
-//.done
-//=done
-
-//s sin done
-//c cos done
-//t tan done
-//!done
-//e esc button
 
 void settup() {
 
