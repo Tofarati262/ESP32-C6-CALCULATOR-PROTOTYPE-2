@@ -98,46 +98,67 @@ pair<int ,int> countValues (vector <char> equation)
     int j = 0;
 
     for (int i = 0; i < equation.size(); i++) {
-        // sin
-        if (i + 3 < equation.size() && equation[i] == 's' && equation[i + 1] == 'i' && equation[i + 2] == 'n' && equation[i + 3] == '(') {
-            j = i + 4;
-            std::string numberStr;
 
-            while (j < equation.size() && (isdigit(equation[j]) || equation[j] == '.')) {
-                numberStr += equation[j];
+        //e
+        if(equation[i] == 'e'){
+            std::string resultstr = "2.71828";
+            equation.erase(equation.begin() + i);
+            equation.insert(equation.begin() + i,resultstr.begin(), resultstr.end() );
+            i = -1;
+        }
+
+        // sin
+
+        else if (i + 3 < equation.size() && equation[i] == 's' && equation[i + 1] == 'i' && equation[i + 2] == 'n' && equation[i + 3] == '(') {
+            j = i + 4;
+            int openParens = 1;
+            std::vector<char> innerVec;
+
+            while (j < equation.size() && openParens > 0) {
+                if (equation[j] == '(') openParens++;
+                else if (equation[j] == ')') openParens--;
+
+                if (openParens > 0) {
+                    innerVec.push_back(equation[j]);
+                }
                 j++;
             }
 
-            if (j >= equation.size() || equation[j] != ')') {
-                std::cout << "FAILURE: Expected closing parenthesis for sin\n";
-                return equation;
-            }
+            innerVec = Specialfunctions(innerVec); // Recursive eval
+            std::string innerStr(innerVec.begin(), innerVec.end());
 
-            angle = std::stod(numberStr);
+            CALCSTACK nested_equation;
+            angle = nested_equation.EvaluateExpression(innerStr); // NEW: Handles arithmetic
             double result = sin(angle * M_PI / 180.0);
             std::string resultStr = std::to_string(result);
 
-            equation.erase(equation.begin() + i, equation.begin() + j + 1);
+            equation.erase(equation.begin() + i, equation.begin() + j);
             equation.insert(equation.begin() + i, resultStr.begin(), resultStr.end());
-            i = -1; // restart loop
+            i = -1;
         }
 
         // cos
+
         else if (i + 3 < equation.size() && equation[i] == 'c' && equation[i + 1] == 'o' && equation[i + 2] == 's' && equation[i + 3] == '(') {
             j = i + 4;
-            std::string numberStr;
+            int openParens = 1;
+            std::vector<char> innerVec;
 
-            while (j < equation.size() && (isdigit(equation[j]) || equation[j] == '.')) {
-                numberStr += equation[j];
+            while (j < equation.size() && openParens > 0) {
+                if (equation[j] == '(') openParens++;
+                else if (equation[j] == ')') openParens--;
+
+                if (openParens > 0) {
+                    innerVec.push_back(equation[j]);
+                }
                 j++;
             }
 
-            if (j >= equation.size() || equation[j] != ')') {
-                std::cout << "FAILURE: Expected closing parenthesis for cos\n";
-                return equation;
-            }
+            innerVec = Specialfunctions(innerVec); // Recursive eval
+            std::string innerStr(innerVec.begin(), innerVec.end());
 
-            angle = std::stod(numberStr);
+            CALCSTACK nested_equation;
+            angle = nested_equation.EvaluateExpression(innerStr); // NEW: Handles arithmetic
             double result = cos(angle * M_PI / 180.0);
             std::string resultStr = std::to_string(result);
 
@@ -147,21 +168,27 @@ pair<int ,int> countValues (vector <char> equation)
         }
 
         // tan
+
         else if (i + 3 < equation.size() && equation[i] == 't' && equation[i + 1] == 'a' && equation[i + 2] == 'n' && equation[i + 3] == '(') {
             j = i + 4;
-            std::string numberStr;
+            int openParens = 1;
+            std::vector<char> innerVec;
 
-            while (j < equation.size() && (isdigit(equation[j]) || equation[j] == '.')) {
-                numberStr += equation[j];
+            while (j < equation.size() && openParens > 0) {
+                if (equation[j] == '(') openParens++;
+                else if (equation[j] == ')') openParens--;
+
+                if (openParens > 0) {
+                    innerVec.push_back(equation[j]);
+                }
                 j++;
             }
 
-            if (j >= equation.size() || equation[j] != ')') {
-                std::cout << "FAILURE: Expected closing parenthesis for tan\n";
-                return equation;
-            }
+            innerVec = Specialfunctions(innerVec); // Recursive eval
+            std::string innerStr(innerVec.begin(), innerVec.end());
 
-            angle = std::stod(numberStr);
+            CALCSTACK nested_equation;
+            angle = nested_equation.EvaluateExpression(innerStr); // NEW: Handles arithmetic
             double result = tan(angle * M_PI / 180.0);
             std::string resultStr = std::to_string(result);
 
@@ -171,21 +198,28 @@ pair<int ,int> countValues (vector <char> equation)
         }
 
         // ln
+
         else if (i + 2 < equation.size() && equation[i] == 'l' && equation[i + 1] == 'n' && equation[i + 2] == '(') {
             j = i + 3;
-            std::string numberStr;
+            int openParens = 1;
+            std::vector<char> innerVec;
 
-            while (j < equation.size() && (isdigit(equation[j]) || equation[j] == '.')) {
-                numberStr += equation[j];
+            while (j < equation.size() && openParens > 0) {
+                if (equation[j] == '(') openParens++;
+                else if (equation[j] == ')') openParens--;
+
+                if (openParens > 0) {
+                    innerVec.push_back(equation[j]);
+                }
                 j++;
             }
 
-            if (j >= equation.size() || equation[j] != ')') {
-                std::cout << "FAILURE: Expected closing parenthesis for ln\n";
-                return equation;
-            }
+            innerVec = Specialfunctions(innerVec); // Recursive eval
+            std::string innerStr(innerVec.begin(), innerVec.end());
 
-            angle = std::stod(numberStr);
+            CALCSTACK nested_equation;
+            angle = nested_equation.EvaluateExpression(innerStr); // NEW: Handles arithmetic
+
             if (angle <= 0) {
                 std::cout << "ERROR: DOMAIN OUT OF BOUNDS for ln\n";
                 return equation;
@@ -200,21 +234,27 @@ pair<int ,int> countValues (vector <char> equation)
         }
 
         // log (assumed base 10)
+
         else if (i + 3 < equation.size() && equation[i] == 'l' && equation[i + 1] == 'o' && equation[i + 2] == 'g' && equation[i + 3] == '(') {
             j = i + 4;
-            std::string numberStr;
+            int openParens = 1;
+            std::vector<char> innerVec;
 
-            while (j < equation.size() && (isdigit(equation[j]) || equation[j] == '.')) {
-                numberStr += equation[j];
+            while (j < equation.size() && openParens > 0) {
+                if (equation[j] == '(') openParens++;
+                else if (equation[j] == ')') openParens--;
+
+                if (openParens > 0) {
+                    innerVec.push_back(equation[j]);
+                }
                 j++;
             }
 
-            if (j >= equation.size() || equation[j] != ')') {
-                std::cout << "FAILURE: Expected closing parenthesis for log\n";
-                return equation;
-            }
+            innerVec = Specialfunctions(innerVec); // Recursive eval
+            std::string innerStr(innerVec.begin(), innerVec.end());
 
-            angle = std::stod(numberStr);
+            CALCSTACK nested_equation;
+            angle = nested_equation.EvaluateExpression(innerStr); // NEW: Handles arithmetic
             if (angle <= 0) {
                 std::cout << "ERROR: DOMAIN OUT OF BOUNDS for log\n";
                 return equation;
@@ -226,26 +266,31 @@ pair<int ,int> countValues (vector <char> equation)
             equation.erase(equation.begin() + i, equation.begin() + j + 1);
             equation.insert(equation.begin() + i, resultStr.begin(), resultStr.end());
             i = -1;
+        }
 
         //sqrt
 
-        
-        }else if (i + 4 < equation.size() && equation[i] == 's' && equation[i + 1] == 'q' && equation[i + 2] == 'r' && equation[i + 3] == 't' && equation[i + 4] == '(')
+        else if (i + 4 < equation.size() && equation[i] == 's' && equation[i + 1] == 'q' && equation[i + 2] == 'r' && equation[i + 3] == 't' && equation[i + 4] == '(')
         {
             j = i + 5;
-            std::string numberStr;
+            int openParens = 1;
+            std::vector<char> innerVec;
 
-            while (j < equation.size() && (isdigit(equation[j]) || equation[j] == '.')) {
-                numberStr += equation[j];
+            while (j < equation.size() && openParens > 0) {
+                if (equation[j] == '(') openParens++;
+                else if (equation[j] == ')') openParens--;
+
+                if (openParens > 0) {
+                    innerVec.push_back(equation[j]);
+                }
                 j++;
             }
 
-            if (j >= equation.size() || equation[j] != ')') {
-                std::cout << "FAILURE: Expected closing parenthesis for log\n";
-                return equation;
-            }
+            innerVec = Specialfunctions(innerVec); // Recursive eval
+            std::string innerStr(innerVec.begin(), innerVec.end());
 
-            angle = std::stod(numberStr);
+            CALCSTACK nested_equation;
+            angle = nested_equation.EvaluateExpression(innerStr); // NEW: Handles arithmetic
             if (angle <= 0) {
                 std::cout << "ERROR: DOMAIN OUT OF BOUNDS for log\n";
                 return equation;

@@ -1,5 +1,8 @@
 #include <iostream>
 #include <stdexcept>
+#include <sstream>
+#include <stack>
+#include <map>
 
 using namespace std;
 
@@ -91,6 +94,7 @@ public:
           case '-': return true; break;
           case '/': return true; break;
           case 'x': return true; break;
+          case '^': return true; break; 
 
           default: 
           return false;
@@ -104,6 +108,8 @@ public:
     {
         switch (value)
         {
+        
+        case '^': return 4; break;
         case '/': return 3; break;
         case 'x': return 2; break;
         case '+': return 1; break;
@@ -123,6 +129,7 @@ public:
 
             double  result;
             switch (op) {
+            case '^': result = pow(a,b); pushNumber(result); break;
             case '+': result = a + b;pushNumber(result); break;
             case '-': result = a-b;pushNumber(result); break;
             case 'x': result = a * b;pushNumber(result); break;
@@ -143,21 +150,47 @@ public:
             }
     }
 
+    //recursive function 
 
-    int countDecimalPlaces(double number) {
-    int count = 0;
-    
-    // Check if the number is already an integer
-    if (number == (int)number) {
+    double EvaluateExpression(const std::string& expr) {
+    std::istringstream input(expr);
+    std::stack<double> values;
+    std::stack<char> ops;
+    std::map<char, int> precedence = {{'+', 1}, {'-', 1}, {'*', 2}, {'/', 2}};
+
+    auto apply_op = [](double a, double b, char op) -> double {
+        switch(op) {
+            case '+': return a + b;
+            case '-': return a - b;
+            case '*': return a * b;
+            case '/': return a / b;
+        }
         return 0;
+    };
+
+    double num;
+    char op;
+    while (input >> num) {
+        values.push(num);
+        while (input >> op) {
+            while (!ops.empty() && precedence[ops.top()] >= precedence[op]) {
+                double b = values.top(); values.pop();
+                double a = values.top(); values.pop();
+                char prev_op = ops.top(); ops.pop();
+                values.push(apply_op(a, b, prev_op));
+            }
+            ops.push(op);
+            break;
+        }
     }
 
-    // Loop to count the digits after the decimal point
-    while (number != (int)number) {
-        number *= 10;
-        count++;
+    while (!ops.empty()) {
+        double b = values.top(); values.pop();
+        double a = values.top(); values.pop();
+        char prev_op = ops.top(); ops.pop();
+        values.push(apply_op(a, b, prev_op));
     }
 
-    return count;
-    }
+    return values.top();
+}
 };

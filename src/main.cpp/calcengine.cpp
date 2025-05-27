@@ -373,26 +373,6 @@ void calcrun(){
         drawCursor(); //draw new cursor position
         updateScreen(); //print the equation on the screen
     }
-        
-    if(key == '^'){
-        lastcursorPos = cursorPos;
-        cursorPos+= 14;
-        char temp[]= {'^','('};
-        if(equationbuffer.size()==0){ // if its at zero
-            equationbuffer.push_back(temp[0]);
-            cursorIndex++;
-            equationbuffer.push_back(temp[1]);
-            cursorIndex++;
-        }else{ //if the eqautionbuffersize is not at zero
-          for(int i =0; i != 2 ; i++){
-            equationbuffer.insert(equationbuffer.begin() + cursorIndex,temp[i]);
-            cursorIndex++;
-          }
-        }
-        std::cout <<"This is the cursor index: "<<cursorIndex <<"\n";
-        drawCursor();
-        updateScreen();
-    }
 
     if(key == '=' && !equationbuffer.empty() && equationcounter < 10)
     {
@@ -421,6 +401,8 @@ void calcrun(){
       }else{
 
         vector <char> newequationbuffer = equationbuffer;
+
+        //scans for special functions and calculates their values then appends them to the equation
         newequationbuffer = memorybuffer.Specialfunctions(newequationbuffer);
     
         for(char value : newequationbuffer)
@@ -492,7 +474,7 @@ void calcrun(){
       }
     }
 
-    if (key != 'z' && key != 'm' && key != 'Q' && key !='B' && key !='^' && key != 'E' && key != 'a' && key != 's' && key != 'c' && key != 't' && key != '=' && key != 'l'&& key!='L'&& key != 'T'&& key != 'F' && key != 'D' && key != 'd' && key != 'u') 
+    if (key != 'z' && key != 'm' && key != 'Q' && key !='B' && key != 'E' && key != 'a' && key != 's' && key != 'c' && key != 't' && key != '=' && key != 'l'&& key!='L'&& key != 'T'&& key != 'F' && key != 'D' && key != 'd' && key != 'u') 
     {
         // Replace character at current cursor position
       if(cursorIndex >=equationbuffer.size()){
