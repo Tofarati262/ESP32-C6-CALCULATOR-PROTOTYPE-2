@@ -189,6 +189,15 @@ pair<int ,int> countValues (vector <char> equation)
 
             CALCSTACK nested_equation;
             angle = nested_equation.EvaluateExpression(innerStr); // NEW: Handles arithmetic
+
+            Error displayerr;
+
+            if (angle == 90) {
+                std::cout << "ERROR: DOMAIN OUT OF BOUNDS for log\n";
+                displayerr.display_error("DOMAIN");
+                return equation;
+            }
+
             double result = tan(angle * M_PI / 180.0);
             std::string resultStr = std::to_string(result);
 
@@ -220,8 +229,11 @@ pair<int ,int> countValues (vector <char> equation)
             CALCSTACK nested_equation;
             angle = nested_equation.EvaluateExpression(innerStr); // NEW: Handles arithmetic
 
+            Error displayerr;
+
             if (angle <= 0) {
                 std::cout << "ERROR: DOMAIN OUT OF BOUNDS for ln\n";
+                displayerr.display_error("DOMAIN");
                 return equation;
             }
 
@@ -255,8 +267,12 @@ pair<int ,int> countValues (vector <char> equation)
 
             CALCSTACK nested_equation;
             angle = nested_equation.EvaluateExpression(innerStr); // NEW: Handles arithmetic
+
+            Error displayerr;
+
             if (angle <= 0) {
                 std::cout << "ERROR: DOMAIN OUT OF BOUNDS for log\n";
+                displayerr.display_error("DOMAIN");
                 return equation;
             }
 
@@ -290,9 +306,13 @@ pair<int ,int> countValues (vector <char> equation)
             std::string innerStr(innerVec.begin(), innerVec.end());
 
             CALCSTACK nested_equation;
-            angle = nested_equation.EvaluateExpression(innerStr); // NEW: Handles arithmetic
+            angle = nested_equation.EvaluateExpression(innerStr); // NEW: Handles arithmetic\
+
+            Error displayerr;
+
             if (angle <= 0) {
                 std::cout << "ERROR: DOMAIN OUT OF BOUNDS for log\n";
+                displayerr.display_error("DOMAIN");
                 return equation;
             }
 

@@ -7,7 +7,8 @@
 using namespace std;
 class Error
 {
-    public:
+
+    private:
 
     void write_options()
     {
@@ -20,6 +21,47 @@ class Error
         tft.setCursor(40, 50);
         tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
         tft.print("Continue");
+    }
+
+    public:
+
+
+
+    bool findErrors(int *num_count  , int *operator_count, vector <char> *equation)
+    {
+    
+      CALCSTACK checking;
+    
+      for(int i =0 ; i < equation->size() ; i++)
+      {
+        char current = (*equation)[i];
+        char next = (*equation)[i + 1];
+
+        if (checking.isOperator(current) && checking.isOperator(next)) {
+            display_error("SYNTAX");
+            return true;
+        }
+
+      }
+
+      if(num_count == 0)
+      {
+        display_error("SYNTAX");
+        return true;
+      }else if(num_count == operator_count )
+      {
+        display_error("SYNTAX");
+        return true;
+      }else if(operator_count > num_count )
+      {
+        display_error("SYNTAX");
+        return true;
+      }
+
+
+        
+
+        return false;
     }
 
     int display_error( string errormessage)

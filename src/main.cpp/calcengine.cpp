@@ -381,25 +381,15 @@ void calcrun(){
       double appendednumber = 0.0;
       bool decimalseen = false;
       double divisor = 10.0;
+
       temp_num_count = memorybuffer.countValues(equationbuffer).first;
       temp_operator_count = memorybuffer.countValues(equationbuffer).second;
 
 
       //scan for decimal
 
-
-
-      if(temp_num_count == 0)
+      if(err.findErrors(&temp_num_count, &temp_operator_count, &equationbuffer)== false);
       {
-        err.display_error("SYNTAX");
-      }else if(temp_num_count == temp_operator_count )
-      {
-        err.display_error("SYNTAX");
-      }else if(temp_operator_count > temp_num_count )
-      {
-        err.display_error("SYNTAX");
-      }else{
-
         vector <char> newequationbuffer = equationbuffer;
 
         //scans for special functions and calculates their values then appends them to the equation
