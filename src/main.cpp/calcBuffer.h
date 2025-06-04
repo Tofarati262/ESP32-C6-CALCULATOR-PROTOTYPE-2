@@ -4,6 +4,7 @@
 #include<iostream>
 #include <cmath>
 #include <string>
+#include "CALCERROR.h"
 
 
 using namespace std;
@@ -71,11 +72,17 @@ pair<int ,int> countValues (vector <char> equation)
 
         if (std::isdigit(c) || c == '.') {
             token += c;
+        
         } else {
             // End of a number
             if (!token.empty()) {
                 ++numCount;
                 token.clear();
+            }
+
+            if(c == 'e')
+            {
+                numCount++;
             }
 
             // Check if it's an operator
@@ -124,6 +131,17 @@ pair<int ,int> countValues (vector <char> equation)
                 j++;
             }
 
+            if(openParens > 0)
+            {
+                Error displayerr;
+                displayerr.display_error("SYNTAX");
+                string error_type = "error";
+                std::vector <char> temperr (error_type.begin(), error_type.end());
+                equation = temperr;
+
+                return equation;
+            }
+
             innerVec = Specialfunctions(innerVec); // Recursive eval
             std::string innerStr(innerVec.begin(), innerVec.end());
 
@@ -154,6 +172,17 @@ pair<int ,int> countValues (vector <char> equation)
                 j++;
             }
 
+            if(openParens > 0)
+            {
+                Error displayerr;
+                displayerr.display_error("SYNTAX");
+                string error_type = "error";
+                std::vector <char> temperr (error_type.begin(), error_type.end());
+                equation = temperr;
+
+                return equation;
+            }
+
             innerVec = Specialfunctions(innerVec); // Recursive eval
             std::string innerStr(innerVec.begin(), innerVec.end());
 
@@ -162,9 +191,11 @@ pair<int ,int> countValues (vector <char> equation)
             double result = cos(angle * M_PI / 180.0);
             std::string resultStr = std::to_string(result);
 
-            equation.erase(equation.begin() + i, equation.begin() + j + 1);
+            equation.erase(equation.begin() + i, equation.begin() + j);
             equation.insert(equation.begin() + i, resultStr.begin(), resultStr.end());
             i = -1;
+
+            cout << "completed cos calculations" << "\n";
         }
 
         // tan
@@ -184,26 +215,41 @@ pair<int ,int> countValues (vector <char> equation)
                 j++;
             }
 
+            if(openParens > 0)
+            {
+                Error displayerr;
+                displayerr.display_error("SYNTAX");
+                string error_type = "error";
+                std::vector <char> temperr (error_type.begin(), error_type.end());
+                equation = temperr;
+
+                return equation;
+            }
+
             innerVec = Specialfunctions(innerVec); // Recursive eval
             std::string innerStr(innerVec.begin(), innerVec.end());
 
             CALCSTACK nested_equation;
             angle = nested_equation.EvaluateExpression(innerStr); // NEW: Handles arithmetic
 
-            Error displayerr;
+              
 
             if (angle == 90) {
+                Error displayerr;
                 std::cout << "ERROR: DOMAIN OUT OF BOUNDS for log\n";
                 displayerr.display_error("DOMAIN");
-                return equation;
+                string error_type = "error";
+                std::vector <char> temperr (error_type.begin(), error_type.end());
+                equation = temperr;
+            }else{
+                double result = tan(angle * M_PI / 180.0);
+                std::string resultStr = std::to_string(result);
+
+                equation.erase(equation.begin() + i, equation.begin() + j);
+                equation.insert(equation.begin() + i, resultStr.begin(), resultStr.end());
+                i = -1;
+
             }
-
-            double result = tan(angle * M_PI / 180.0);
-            std::string resultStr = std::to_string(result);
-
-            equation.erase(equation.begin() + i, equation.begin() + j + 1);
-            equation.insert(equation.begin() + i, resultStr.begin(), resultStr.end());
-            i = -1;
         }
 
         // ln
@@ -223,26 +269,39 @@ pair<int ,int> countValues (vector <char> equation)
                 j++;
             }
 
+            if(openParens > 0)
+            {
+                Error displayerr;
+                displayerr.display_error("SYNTAX");
+                string error_type = "error";
+                std::vector <char> temperr (error_type.begin(), error_type.end());
+                equation = temperr;
+
+                return equation;
+            }
+
             innerVec = Specialfunctions(innerVec); // Recursive eval
             std::string innerStr(innerVec.begin(), innerVec.end());
 
             CALCSTACK nested_equation;
             angle = nested_equation.EvaluateExpression(innerStr); // NEW: Handles arithmetic
 
-            Error displayerr;
+            
 
             if (angle <= 0) {
-                std::cout << "ERROR: DOMAIN OUT OF BOUNDS for ln\n";
+                Error displayerr;
+                std::cout << "ERROR: DOMAIN OUT OF BOUNDS for log\n";
                 displayerr.display_error("DOMAIN");
-                return equation;
+                string error_type = "error";
+                std::vector <char> temperr (error_type.begin(), error_type.end());
+                equation = temperr;
+            }else{
+                double result = log(angle); // ln is natural log
+                std::string resultStr = std::to_string(result);
+                equation.erase(equation.begin() + i, equation.begin() + j);
+                equation.insert(equation.begin() + i, resultStr.begin(), resultStr.end());
+                i = -1;
             }
-
-            double result = log(angle); // ln is natural log
-            std::string resultStr = std::to_string(result);
-
-            equation.erase(equation.begin() + i, equation.begin() + j + 1);
-            equation.insert(equation.begin() + i, resultStr.begin(), resultStr.end());
-            i = -1;
         }
 
         // log (assumed base 10)
@@ -262,26 +321,40 @@ pair<int ,int> countValues (vector <char> equation)
                 j++;
             }
 
+            if(openParens > 0)
+            {
+                Error displayerr;
+                displayerr.display_error("SYNTAX");
+                string error_type = "error";
+                std::vector <char> temperr (error_type.begin(), error_type.end());
+                equation = temperr;
+
+                return equation;
+            }
+
+
             innerVec = Specialfunctions(innerVec); // Recursive eval
             std::string innerStr(innerVec.begin(), innerVec.end());
 
             CALCSTACK nested_equation;
             angle = nested_equation.EvaluateExpression(innerStr); // NEW: Handles arithmetic
 
-            Error displayerr;
-
             if (angle <= 0) {
+                
+                Error displayerr;
                 std::cout << "ERROR: DOMAIN OUT OF BOUNDS for log\n";
                 displayerr.display_error("DOMAIN");
-                return equation;
+                string error_type = "error";
+                std::vector <char> temperr (error_type.begin(), error_type.end());
+                equation = temperr;
+            }else{
+                double result = log10(angle); // common log
+                std::string resultStr = std::to_string(result);
+
+                equation.erase(equation.begin() + i, equation.begin() + j);
+                equation.insert(equation.begin() + i, resultStr.begin(), resultStr.end());
+                i = -1;
             }
-
-            double result = log10(angle); // common log
-            std::string resultStr = std::to_string(result);
-
-            equation.erase(equation.begin() + i, equation.begin() + j + 1);
-            equation.insert(equation.begin() + i, resultStr.begin(), resultStr.end());
-            i = -1;
         }
 
         //sqrt
@@ -302,26 +375,40 @@ pair<int ,int> countValues (vector <char> equation)
                 j++;
             }
 
+            if(openParens > 0)
+            {
+                Error displayerr;
+                displayerr.display_error("SYNTAX");
+                string error_type = "error";
+                std::vector <char> temperr (error_type.begin(), error_type.end());
+                equation = temperr;
+
+                return equation;
+            }
+
             innerVec = Specialfunctions(innerVec); // Recursive eval
             std::string innerStr(innerVec.begin(), innerVec.end());
 
             CALCSTACK nested_equation;
             angle = nested_equation.EvaluateExpression(innerStr); // NEW: Handles arithmetic\
 
-            Error displayerr;
 
             if (angle <= 0) {
+                Error displayerr;
                 std::cout << "ERROR: DOMAIN OUT OF BOUNDS for log\n";
                 displayerr.display_error("DOMAIN");
-                return equation;
+                string error_type = "error";
+                std::vector <char> temperr (error_type.begin(), error_type.end());
+                equation = temperr;
+            }else{
+
+                double result = sqrt(angle); // common log
+                std::string resultStr = std::to_string(result);
+
+                equation.erase(equation.begin() + i, equation.begin() + j);
+                equation.insert(equation.begin() + i, resultStr.begin(), resultStr.end());
+                i = -1;
             }
-
-            double result = sqrt(angle); // common log
-            std::string resultStr = std::to_string(result);
-
-            equation.erase(equation.begin() + i, equation.begin() + j + 1);
-            equation.insert(equation.begin() + i, resultStr.begin(), resultStr.end());
-            i = -1;
         }else if (equation[i] == '!') {
             std::string value;
             int j = i - 1;
@@ -333,7 +420,12 @@ pair<int ,int> countValues (vector <char> equation)
             }
 
             if (value.empty()) {
-                std::cout << "Syntax Error" << std::endl;
+                Error displayerr;
+                displayerr.display_error("SYNTAX");
+                string error_type = "error";
+                std::vector <char> temperr (error_type.begin(), error_type.end());
+                equation = temperr;
+
                 return equation;
             }
 
@@ -343,20 +435,26 @@ pair<int ,int> countValues (vector <char> equation)
                 unsigned long long result = factorialcalc(&number);
     
                 // Erase number and '!' from equation
-                equation.erase(equation.begin() + j + 1, equation.begin() + i + 1);
+                equation.erase(equation.begin() + j, equation.begin() + i);
     
                 // Insert result back
                 std::string resultStr = std::to_string(result);
-                equation.insert(equation.begin() + j + 1, resultStr.begin(), resultStr.end());
+                equation.insert(equation.begin() + j, resultStr.begin(), resultStr.end());
     
                 return equation; // Only one factorial processed at a time
             }else{
+                Error displayerr;
                 std::cout << "Value is too big" << std::endl;
-                return equation;
+                displayerr.display_error("DOMAIN");
+                string error_type = "error";
+                std::vector <char> temperr (error_type.begin(), error_type.end());
+                equation = temperr;
             }
         }
     }
 
+    
+    cout << "exited special functions and the equation is: " << "\n";
     return equation;
   }
 };

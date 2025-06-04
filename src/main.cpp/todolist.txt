@@ -6,7 +6,10 @@
 
 
 button functionality : not done
-    I need to implement error handling 
+//fix margin not showing with syntax error
+//fix up equation parsing bugs
+//clean up ui
+
 
 Complete Functionality: done
     i need to implement the remaining functions like sin() and cos()
@@ -17,5 +20,9 @@ Complete Functionality: done
     //^ not done
     //() functionality not done
     //e not done
+    //I need to implement error handling
+    //check domain error flag for special functions
+    //fix margin not showing with domain error
+    //make sure the equation scroll stops user input and when at the end it turns to user input cursor
 
 

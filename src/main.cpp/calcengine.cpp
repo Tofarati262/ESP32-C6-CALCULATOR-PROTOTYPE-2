@@ -8,6 +8,7 @@
 #include "calcBuffer.h"
 #include "CALCERROR.h"
 
+int maxVisibleEquations = 3;
 bool CursorEnable = true;
 bool calcenginerun = false;
 int equationshifter = 0;
@@ -52,14 +53,6 @@ void updateScreen() {
   drawCursor();
 }
 
-void displayanswer() {
-  double answers = memorybuffer.answer();
-  std::string screenanswer = std::to_string(answers);
-  int length = screenanswer.length();
-  tft.setCursor(155 - length - 4 * 7, ypos + 15);
-  tft.setTextSize(1);
-  tft.print(answers);
-}
 
 void displayequations() {
   int displayCount = std::min(3, equationcounter - equationshifter);
@@ -105,6 +98,7 @@ int drawNewMargin() {
     equationbuffer.clear();
     updateScreen();
     displayequations();
+    cout << "drew new margin" << "\n";
     return 1;
   } else {
     cursorIndex = 0;
@@ -115,10 +109,31 @@ int drawNewMargin() {
     selectedEquationIndex = equationcounter - 1;
     updateScreen();
     displayequations();
+    cout << "drew new margin" << "\n";
     return 0;
   }
 }
 
+
+void updateMargin()
+{
+ 
+
+  if(equationcounter > 0)
+  {
+    int refreshmarginindex = 3;
+    while (refreshmarginindex != 157) {
+      tft.setCursor(refreshmarginindex, 35);
+      tft.print('-');
+      if(equationcounter > 1)
+      {
+        tft.setCursor(refreshmarginindex, 75);
+      tft.print('-');
+      }
+      refreshmarginindex += 7;
+    }
+  }
+}
 
 
 void calcrun(){
@@ -133,15 +148,24 @@ void calcrun(){
     unsigned long currentMillis = millis();
     int potValue = pot3.getPotValue();
 
-    const int maxVisibleEquations = 3;
+
 
     if (equationcounter > 0) {
       int potValue = pot3.getPotValue();
 
+      
+
+      if (key == 'd' && selectedEquationIndex - equationshifter ==  2) {
+        CursorEnable = true;
+        selectedstate = false;
+      }
+
       // Scroll down
-      if (key == 'u' && selectedEquationIndex < equationcounter - 1) {
+      if (key == 'd' && selectedEquationIndex <= equationcounter - 1) {
         selectedEquationIndex++;
 
+        std::cout << "This is the selected index: "<<selectedEquationIndex<< "\n";
+        std::cout << "This is the equation shifter index: " <<equationshifter << "\n";
         // If selected is out of view at bottom, shift down
         if (selectedEquationIndex >= equationshifter + maxVisibleEquations) {
           equationshifter++;
@@ -149,13 +173,19 @@ void calcrun(){
 
         CursorEnable = false;
         selectedstate = true;
+
+        tft.fillRect(3,80,160,40,ST7735_WHITE);
+
         displayequations();
         prevpotValue = potValue;
       }
 
       // Scroll up
-      else if (key == 'd' && selectedEquationIndex > 0) {
+      else if (key == 'u' && selectedEquationIndex > 0) {
         selectedEquationIndex--;
+
+        std::cout << "This is the selected index: "<<  selectedEquationIndex<< "\n";
+        std::cout << "This is the equation shifter index: " <<equationshifter << "\n";
 
         // If selected is out of view at top, shift up
         if (selectedEquationIndex < equationshifter) {
@@ -177,24 +207,26 @@ void calcrun(){
       drawCursor();
       lastBlinkTime = currentMillis;
     }
-  
-    if(key == 'B' && cursorIndex > 0)
-    {   // deletes the characters and updates the screen
-            //cursorDelete(); //backspace needs to 
-            //reduce the cursor index and decrement the cursorpos all done in the called function
-            cursorMoveback();
-            drawCursor(); //draw new cursor position
-            updateScreen(); //print the equation on the screen
-    }
+    
+    if(CursorEnable == true){
 
-    if (key == 'D' && !equationbuffer.empty())
-    {
-            cursorDelete(); //deletes the characters in the memory buffer
-            drawCursor();// visually moves the cursor back
-            updateScreen(); // updates the screen 
-    }
+      if(key == 'B' && cursorIndex > 0)
+      {   // deletes the characters and updates the screen
+              //cursorDelete(); //backspace needs to 
+              //reduce the cursor index and decrement the cursorpos all done in the called function
+              cursorMoveback();
+              drawCursor(); //draw new cursor position
+              updateScreen(); //print the equation on the screen
+      }
+    
+      if (key == 'D' && !equationbuffer.empty())
+      {
+              cursorDelete(); //deletes the characters in the memory buffer
+              drawCursor();// visually moves the cursor back
+              updateScreen(); // updates the screen 
+      }
 
-    if(key == 'E'){ // erase the characters inside the vector 
+      if(key == 'E'){ // erase the characters inside the vector 
           tft.drawRect(0, ypos, 160, 14, ST7735_WHITE);  // Input box
           equationbuffer.clear();
             xPos = 3;
@@ -202,9 +234,9 @@ void calcrun(){
               cursorPos = 3;
             drawCursor(); //draw new cursor position
             updateScreen(); //print out the empty screen
-    }
-        
-    if(key == 'L'){ //ln(
+      }
+
+      if(key == 'L'){ //ln(
             char temp[] = {'l','n','('};
             if(equationbuffer.size()==0){ // if its at zero
                 equationbuffer.push_back(temp[0]);
@@ -227,10 +259,9 @@ void calcrun(){
             cursorPos+= 21;
             drawCursor();
             updateScreen();
-    }
+      }
 
-        
-    if(key == 'l'){ //log(
+      if(key == 'l'){ //log(
             lastcursorPos = cursorPos;
             tft.fillRect(lastcursorPos,5,CURSOR_WIDTH,CURSOR_HEIGHT,ST7735_WHITE);
             cursorPos+= 28;
@@ -255,10 +286,9 @@ void calcrun(){
             std::cout <<"This is the cursor index: "<<cursorIndex <<"\n";
             drawCursor();
             updateScreen();
-    }
+      }
 
-
-    if(key == 'Q'){ //log(
+      if(key == 'Q'){ //sqrt(
             lastcursorPos = cursorPos;
             tft.fillRect(lastcursorPos,5,CURSOR_WIDTH,CURSOR_HEIGHT,ST7735_WHITE);
             cursorPos+= 35;
@@ -287,7 +317,7 @@ void calcrun(){
             updateScreen();
     }
 
-    if(key == 's'){ //log(
+    if(key == 's'){ //sin(
             lastcursorPos = cursorPos;
             tft.fillRect(lastcursorPos,5,CURSOR_WIDTH,CURSOR_HEIGHT,ST7735_WHITE);
             cursorPos+= 28;
@@ -314,7 +344,7 @@ void calcrun(){
             updateScreen();
     }
 
-    if(key == 'c'){ //log(
+    if(key == 'c'){ //cos(
       lastcursorPos = cursorPos;
       tft.fillRect(lastcursorPos,5,CURSOR_WIDTH,CURSOR_HEIGHT,ST7735_WHITE);
       cursorPos+= 28;
@@ -341,7 +371,7 @@ void calcrun(){
       updateScreen();
     }
 
-    if(key == 't'){ //log(
+    if(key == 't'){ //tan(
       lastcursorPos = cursorPos;
       tft.fillRect(lastcursorPos,5,CURSOR_WIDTH,CURSOR_HEIGHT,ST7735_WHITE);
       cursorPos+= 28;
@@ -372,96 +402,6 @@ void calcrun(){
         cursorMoveForward();
         drawCursor(); //draw new cursor position
         updateScreen(); //print the equation on the screen
-    }
-
-    if(key == '=' && !equationbuffer.empty() && equationcounter < 10)
-    {
-      int temp_num_count = 0;
-      int temp_operator_count = 0;
-      double appendednumber = 0.0;
-      bool decimalseen = false;
-      double divisor = 10.0;
-
-      temp_num_count = memorybuffer.countValues(equationbuffer).first;
-      temp_operator_count = memorybuffer.countValues(equationbuffer).second;
-
-
-      //scan for decimal
-
-      if(err.findErrors(&temp_num_count, &temp_operator_count, &equationbuffer)== false);
-      {
-        vector <char> newequationbuffer = equationbuffer;
-
-        //scans for special functions and calculates their values then appends them to the equation
-        newequationbuffer = memorybuffer.Specialfunctions(newequationbuffer);
-    
-        for(char value : newequationbuffer)
-        {
-            if (value == '.') {
-              decimalseen = true;
-              continue;
-            }
-
-
-          if(value >= '0' && value <= '9')
-          {
-
-            if (!decimalseen) {
-              appendednumber = appendednumber * 10 +  (value -'0');
-            } else {
-              appendednumber +=(value -'0') / divisor;
-              divisor *= 10;
-            }
-            
-            std::cout <<"Pushed number:"  << value << "\n";
-          }
-
-          if (calculator.isOperator(value) == true)
-          { 
-
-            calculator.pushNumber(appendednumber);
-            std::cout <<"Pushed number:"  << appendednumber << "\n";
-            appendednumber = 0;
-            divisor = 10;
-            decimalseen = false;
-
-            if(calculator.isOperatorEmpty() == true)
-            {
-              calculator.pushOperator(value);
-              temp_operator_count++;
-              std::cout << "Pushed operator: "<< value << "\n";
-            }else if(calculator.isOperatorEmpty() == false)
-            {
-              if(calculator.precedence(value) > calculator.precedence(calculator.peekOperator()))
-              {
-                calculator.pushOperator(value);
-                temp_operator_count++;
-                std::cout << "Pushed operator: "<< value << "\n";
-              }else if (calculator.precedence(value) <= calculator.precedence(calculator.peekOperator()))
-              {
-                calculator.evaluate();
-                temp_operator_count = 0; //reset the operator count 
-                temp_num_count      = 0; //reset the number count 
-                std::cout << "evalauted :" << calculator.peekNumber() << "\n";
-                calculator.pushOperator(value);
-                temp_operator_count++;
-              }
-            }
-          }
-        }
-
-        calculator.pushNumber(appendednumber);
-      
-        while(calculator.isEmpty() > 1){
-          calculator.evaluate();
-        }
-
-        double answer = calculator.peekNumber(); 
-        std::cout << answer << "\n";
-        equationcounter++;                                               // equation count increases 
-        memorybuffer.pushequation(equationbuffer,answer);
-        drawNewMargin();                                              //drawnewmargin
-      }
     }
 
     if (key != 'z' && key != 'm' && key != 'Q' && key !='B' && key != 'E' && key != 'a' && key != 's' && key != 'c' && key != 't' && key != '=' && key != 'l'&& key!='L'&& key != 'T'&& key != 'F' && key != 'D' && key != 'd' && key != 'u') 
@@ -505,6 +445,121 @@ void calcrun(){
 
        updateScreen();
     }
+ 
+
+  }
+
+    if(key == '=' && !equationbuffer.empty() && equationcounter < 10)
+    {
+      int temp_num_count = 0;
+      int temp_operator_count = 0;
+      double appendednumber = 0.0;
+      bool decimalseen = false;
+      double divisor = 10.0;
+
+      temp_num_count = memorybuffer.countValues(equationbuffer).first;
+      temp_operator_count = memorybuffer.countValues(equationbuffer).second;
+
+
+      //scan for decimal
+
+      if(err.findErrors(temp_num_count, temp_operator_count, equationbuffer) == false)
+      {
+
+        std::cout << "Did not find any errors" << "\n";
+        
+        vector <char> newequationbuffer = equationbuffer;
+
+        //scans for special functions and calculates their values then appends them to the equation
+        newequationbuffer = memorybuffer.Specialfunctions(newequationbuffer);
+
+        std::string status(newequationbuffer.begin(), newequationbuffer.end());
+
+        if(status == "error")
+        {
+          updateScreen();
+          updateMargin();
+          displayequations();
+          continue;
+        }else{
+    
+          for(char value : newequationbuffer)
+          {
+            
+            if (value == '.') {
+              decimalseen = true;
+              continue;
+            }
+
+
+            if(value >= '0' && value <= '9')
+            {
+
+              if (!decimalseen) {
+                appendednumber = appendednumber * 10 +  (value -'0');
+              } else {
+                appendednumber +=(value -'0') / divisor;
+                divisor *= 10;
+              }
+              
+              std::cout <<"Pushed number:"  << value << "\n";
+            }
+
+            if (calculator.isOperator(value) == true)
+            { 
+
+              calculator.pushNumber(appendednumber);
+              std::cout <<"Pushed number:"  << appendednumber << "\n";
+              appendednumber = 0;
+              divisor = 10;
+              decimalseen = false;
+
+              if(calculator.isOperatorEmpty() == true)
+              {
+                calculator.pushOperator(value);
+                temp_operator_count++;
+                std::cout << "Pushed operator: "<< value << "\n";
+              }else if(calculator.isOperatorEmpty() == false)
+              {
+                if(calculator.precedence(value) > calculator.precedence(calculator.peekOperator()))
+                {
+                  calculator.pushOperator(value);
+                  temp_operator_count++;
+                  std::cout << "Pushed operator: "<< value << "\n";
+                }else if (calculator.precedence(value) <= calculator.precedence(calculator.peekOperator()))
+                {
+                  calculator.evaluate();
+                  temp_operator_count = 0; //reset the operator count 
+                  temp_num_count      = 0; //reset the number count 
+                  std::cout << "evalauted :" << calculator.peekNumber() << "\n";
+                  calculator.pushOperator(value);
+                  temp_operator_count++;
+                }
+              }
+            }
+          }
+
+          calculator.pushNumber(appendednumber);
+        
+          while(calculator.isEmpty() > 1){
+            calculator.evaluate();
+          }
+
+          double answer = calculator.peekNumber(); 
+          std::cout << answer << "\n";
+          equationcounter++;                                               // equation count increases 
+          memorybuffer.pushequation(equationbuffer,answer);
+          drawNewMargin();                                              //drawnewmargin
+          
+          std::cout << "evaluated the answer" << "\n";
+        }
+      }else{
+        updateScreen();
+        updateMargin();
+        displayequations();
+      }
+    }
+
     
   }
 }

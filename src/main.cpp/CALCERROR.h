@@ -3,6 +3,7 @@
 
 #include "DisplayInit.h"
 #include <string>
+#include <algorithm>
 
 using namespace std;
 class Error
@@ -23,48 +24,69 @@ class Error
         tft.print("Continue");
     }
 
+    bool isdigits(char value)
+    {
+
+      return value >= '0' && value <= '9';
+      
+    }
+
     public:
 
 
 
-    bool findErrors(int *num_count  , int *operator_count, vector <char> *equation)
+    bool findErrors(int num_count  , int operator_count, vector <char> equation)
     {
     
       CALCSTACK checking;
     
-      for(int i =0 ; i < equation->size() ; i++)
+      for(int i =0 ; i < equation.size() - 1; i++)
       {
-        char current = (*equation)[i];
-        char next = (*equation)[i + 1];
+        char current = equation[i];
+        char next = equation[i + 1];
 
-        if (checking.isOperator(current) && checking.isOperator(next)) {
-            display_error("SYNTAX");
-            return true;
+        if (checking.isOperator(current) == true && checking.isOperator(next) == true) {
+
+          display_error("SYNTAX");
+          std::cout << "Executed: double operator\n";
+          return true;
+        }
+
+        if (isdigits(current) == true && (checking.isOperator(next) == false && next != ')')) {
+
+          display_error("SYNTAX");
+          std::cout << "Digit followed " << current << " by invalid number "<< next << "\n";
+          return true;
         }
 
       }
+       
 
       if(num_count == 0)
       {
         display_error("SYNTAX");
+        cout << "Error check 1 triggered" << "\n";
         return true;
+
       }else if(num_count == operator_count )
       {
         display_error("SYNTAX");
+        cout << "Error check 2 triggered" << "\n";
         return true;
+
       }else if(operator_count > num_count )
       {
         display_error("SYNTAX");
+        cout << "Error check 3 triggered" << "\n";
         return true;
+
       }
 
-
-        
-
-        return false;
+      return false;
     }
 
-    int display_error( string errormessage)
+    
+    void display_error( string errormessage)
     {
       tft.fillScreen(ST7735_WHITE);
       char key;
@@ -105,8 +127,7 @@ class Error
 
         
 
-        tft.fillScreen(ST7735_WHITE);
-        return 0;
+      tft.fillScreen(ST7735_WHITE);
     }
 };
 

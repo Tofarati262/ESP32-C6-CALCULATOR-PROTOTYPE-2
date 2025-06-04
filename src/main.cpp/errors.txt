@@ -1,0 +1,18 @@
+Fixed bugs
+
+88(5) = 885 
+
+ln( = syntax error --> crashes the program
+tan( = syntax error --> crashes the program
+sin( = syntax error --> crashes the program
+cos( = syntax error --> crashes the program
+
+5e = 52.72
+ln( = syntax error --> crashes the program
+sqrt( =syntax error --> crashes the program
+
+
+Bugs that have not been fixed
+
+Button Navigation bug not working when there is only one equation
+-> you basically cant retype and equation after exiting 

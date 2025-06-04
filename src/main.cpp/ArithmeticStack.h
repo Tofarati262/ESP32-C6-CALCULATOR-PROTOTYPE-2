@@ -156,14 +156,15 @@ public:
     std::istringstream input(expr);
     std::stack<double> values;
     std::stack<char> ops;
-    std::map<char, int> precedence = {{'+', 1}, {'-', 1}, {'*', 2}, {'/', 2}};
+    std::map<char, int> precedence = {{'+', 1}, {'-', 1}, {'*', 2}, {'/', 2}, {'^',3}};
 
     auto apply_op = [](double a, double b, char op) -> double {
         switch(op) {
             case '+': return a + b;
             case '-': return a - b;
-            case '*': return a * b;
+            case 'x': return a * b;
             case '/': return a / b;
+            case '^': return pow(a,b);
         }
         return 0;
     };
