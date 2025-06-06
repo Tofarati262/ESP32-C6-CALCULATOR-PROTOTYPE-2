@@ -11,9 +11,15 @@ using namespace std;
 class calcBuffer
 {
 private:
-    vector<pair<vector<char> , double>> equationholder;    
+    vector<pair<vector<char> , double>> equationholder; 
+ 
 public:
+    std::vector <pair<int,int>> positions = {{3, 5},{3,45},{3,85}} ;  
 
+int Size()
+{
+    return equationholder.size();
+}
 unsigned long long  factorialcalc(int *ptrvalue)
 {
     unsigned long long  returnvalue = 1;
@@ -61,7 +67,7 @@ unsigned long long  factorialcalc(int *ptrvalue)
       return {equationholder[index].first, equationholder[index].second};
     }
 
-pair<int ,int> countValues (vector <char> equation)
+    pair<int ,int> countValues (vector <char> equation)
 {
     int numCount = 0;
     int operatorCount = 0;
@@ -85,8 +91,16 @@ pair<int ,int> countValues (vector <char> equation)
                 numCount++;
             }
 
+            if(c == '-' && (i == 0 || equation[i-1] == '(' ))
+            {
+                continue;
+            }else if ( i > 0  && c == '-')
+            {
+              ++operatorCount;
+            }
+
             // Check if it's an operator
-            if (c == '+' || c == '-' || c == '/' || c == 'X' || c == '*') {
+            if (c == '+' || c == '/' || c == 'X' || c == '^') {
                 ++operatorCount;
             }
         }
@@ -457,6 +471,88 @@ pair<int ,int> countValues (vector <char> equation)
     cout << "exited special functions and the equation is: " << "\n";
     return equation;
   }
+
+
+    double StringToDouble(std::string number)
+    {
+        double returndouble = 0;           //  initialize to 0
+        double divisor = 10;
+        int i = 0;
+
+        std::vector<char> convertednumber(number.begin(), number.end());
+
+        if (convertednumber[0] == '-')     //  handle negative numbers
+        {
+            int j = 1;                     //  start after the '-' sign
+            bool isDecimal = false;
+
+            while (j < convertednumber.size())
+            {
+                if (convertednumber[j] == '.')
+                {
+                    isDecimal = true;
+                    j++;
+                    continue;
+                }
+
+                if (convertednumber[j] >= '0' && convertednumber[j] <= '9')
+                {
+                    if (!isDecimal)
+                    {
+                        returndouble *= 10;
+                        returndouble += convertednumber[j] - '0';
+                    }
+                    else
+                    {
+                        returndouble += (convertednumber[j] - '0') / divisor;
+                        divisor *= 10;
+                    }
+                }
+
+                j++;
+            }
+
+            return -returndouble; //  apply negative sign
+        }
+        else if (convertednumber[0] >= '0' && convertednumber[0] <= '9')
+        {
+            int j = 0;
+            bool isDecimal = false;
+
+            while (j < convertednumber.size())
+            {
+                if (convertednumber[j] == '.')
+                {
+                    isDecimal = true;
+                    j++;
+                    continue;
+                }
+
+                if (convertednumber[j] >= '0' && convertednumber[j] <= '9')
+                {
+                    if (!isDecimal)
+                    {
+                        returndouble *= 10;
+                        returndouble += convertednumber[j] - '0';
+                    }
+                    else
+                    {
+                        returndouble += (convertednumber[j] - '0') / divisor;
+                        divisor *= 10;
+                    }
+                }
+
+                j++;
+            }
+
+            return returndouble;
+        }
+
+        return 0; // fallback return in case input is invalid
+    }
+
+
+
 };
 
 #endif

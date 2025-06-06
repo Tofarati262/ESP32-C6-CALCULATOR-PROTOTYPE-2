@@ -24,9 +24,9 @@ int *lastMappedValueptr =&lastMappedValue ;
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
 
 MenuItem menu[3] = {
-    {"WIFI", 60, 9},
-    {"Calculator", 56, 39},
-    {"Tik-Tac-Toe", 47, 69},
+    {"WIFI", 7, 29},
+    {"Calculator", 7, 59},
+    {"Tik-Tac-Toe", 7, 89},
 };
 
 
@@ -34,6 +34,7 @@ MenuItem menu[3] = {
 void cleanscreen(){
     tft.fillScreen(ST7735_WHITE);
 }
+
 // Initialize displays and setup
 void setupDisplay() {
     Serial.begin(9600);
@@ -86,57 +87,73 @@ void drawmenu() {
     Mode_EXIO(buttonPin, 1);
     // Continuously loop until the user performs an action
     Potentiometer potentiometer1;
+    int LastSelected;
+
+    tft.setCursor(50,1);
+    tft.setTextColor(ST7735_BLACK,ST7735_WHITE);
+    tft.print("Applications");
+
+    tft.drawRect(5, menu[0].y - 5, 150, 15, ST7735_BLACK);
+    tft.drawRect(5, menu[1].y - 5, 150, 15, ST7735_BLACK);
+    tft.drawRect(5, menu[2].y - 5, 150, 15, ST7735_BLACK);
 
     while (true) { 
-      Serial.print(selected);       
-        // Read potentiometer to update mappedValue
+      
+      // Read potentiometer to update mappedValue
+
+
+
+      if(Read_EXIO(buttonPin) == 0){
+        if(selected == 1){ // when calculator is selected 
+          currentpage = 6;
+          break;
+        }else if(selected ==0 ){ // when wifi is selected
+          currentpage = 3;
+          break;
+        }else if(selected == 2){
+          currentpage = 5;
+          break;
+        }
+      }
+
+      
       mappedValue = potentiometer1.getPotValue();
 
       timer1 = millis();
 
-        if(Read_EXIO(buttonPin) == 0){
-          if(selected == 1){ // when calculator is selected 
-            currentpage = 6;
-            break;
-          }else if(selected ==0 ){ // when wifi is selected
-            currentpage = 3;
-            break;
-          }else if(selected == 2){
-            currentpage = 5;
-            break;
-          }
-        }
+      tft.setCursor(130,  menu[selected].y);
+      tft.print("<--");
 
-        for (int i = 0; i < 3; i++) {
-          if (selected == i) {  // Highlight selected item in bold
-             tft.setTextColor(ST7735_WHITE, ST7735_BLACK);
-              tft.setTextSize(1); // Make selected text bigger
-              tft.setCursor(menu[i].x, menu[i].y); 
-              tft.print(menu[i].name);
-          }
-          if(selected != i){  // Normal text for unselected items
-              tft.setTextColor(ST7735_BLACK, ST7735_WHITE);
-              tft.setTextSize(1);
-              tft.setCursor(menu[i].x, menu[i].y);
-              tft.print(menu[i].name);
-          }
-        }
-        
-      // Handle menu navigation
-        if (mappedValue > lastMappedValue+4 && (timer1-timer2 > 50)) {
-          selected++;
-          if (selected > 2) {
-              selected = 0;
-          } 
-        }
-        if (mappedValue < lastMappedValue-4 && (timer1-timer2 > 50)) {
-          selected--;
-          if (selected <0){
-            selected = 2;
-          }
-        }
-        lastMappedValue = mappedValue;
-        timer2 = timer1;
+      tft.setCursor(130,  menu[LastSelected].y);
+      tft.print("    ");
+
+      tft.setTextSize(1); // Make selected text bigger
+      tft.setCursor(menu[0].x, menu[0].y); 
+      tft.print(menu[0].name);
+      tft.setCursor(menu[1].x, menu[1].y); 
+      tft.print(menu[1].name);
+      tft.setCursor(menu[2].x, menu[2].y); 
+      tft.print(menu[2].name);
+      
+    // Handle menu navigation
+    if (mappedValue > lastMappedValue +5  && (timer1-timer2 > 10)) {
+      LastSelected = selected;
+      selected++;
+      if (selected > 2) {
+          selected = 0;
+      } 
+    }
+
+    if (mappedValue < lastMappedValue-5 && (timer1-timer2 > 10)) {
+      LastSelected = selected;
+      selected--;
+      if (selected <0){
+        selected = 2;
+      }
+    }
+
+    lastMappedValue = mappedValue;
+    timer2 = timer1;
   }
 }
 

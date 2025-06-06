@@ -30,6 +30,7 @@ class cursorArrow
 {
   private:
   int level = 0;
+  int CalcLeveln= -1;
   public:
   int screenstart = 0;
   int pages;
@@ -43,6 +44,32 @@ class cursorArrow
       level = 0;
     }
   }
+
+
+  void calcIncrease()
+  {
+     level++;
+    if(level == 2 && screenstart < pages / 3)
+    {
+      screenstart++;
+      level = 0;
+    }
+  }
+
+  void calcDecrease()
+  {
+    if (level == 0 && screenstart >= 1)
+    {
+      level = 0;
+      screenstart--;
+    }else if (level > 0)
+    {
+      level--;
+    }
+
+  }
+
+
 
   void movegriddown() //to navigate down the tic tax to y axis grid 
   {

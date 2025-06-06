@@ -109,11 +109,11 @@ public:
         switch (value)
         {
         
-        case '^': return 4; break;
-        case '/': return 3; break;
+        case '^': return 3; break;
+        case '/': return 2; break;
         case 'x': return 2; break;
         case '+': return 1; break;
-        case '-': return 0; break;
+        case '-': return 1; break;
         
         default:
             return -1;
@@ -126,6 +126,10 @@ public:
             double  b = popNumber();
             double a = popNumber();
             char op = popOperator();
+
+            std::cout << "This is the value of a: " << a << "\n";
+            std::cout << "This is the value of b: " << b << "\n";
+            std::cout << "This is the value of the operator: " << op << "\n";
 
             double  result;
             switch (op) {
@@ -148,6 +152,8 @@ public:
                 result = b;
                 pushNumber(result);
             }
+
+             std::cout << "This is the result: " << result << "\n";
     }
 
     //recursive function 

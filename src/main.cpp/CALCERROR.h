@@ -52,8 +52,15 @@ class Error
           return true;
         }
 
-        if (isdigits(current) == true && (checking.isOperator(next) == false && next != ')')) {
+        if (isdigits(current) == true && (checking.isOperator(next) == false && next != ')' && next != '.' && isdigits(next) == false)) {
 
+          display_error("SYNTAX");
+          std::cout << "Digit followed " << current << " by invalid number "<< next << "\n";
+          return true;
+        }
+
+        if(current == '.' && next == '.')
+        {
           display_error("SYNTAX");
           std::cout << "Digit followed " << current << " by invalid number "<< next << "\n";
           return true;

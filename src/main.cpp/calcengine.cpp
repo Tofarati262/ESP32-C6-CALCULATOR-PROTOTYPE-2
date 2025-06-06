@@ -8,6 +8,8 @@
 #include "calcBuffer.h"
 #include "CALCERROR.h"
 
+unsigned long lastEqualsPress = 0;
+const unsigned long debounceDelay = 300; // milliseconds
 int maxVisibleEquations = 3;
 bool CursorEnable = true;
 bool calcenginerun = false;
@@ -149,11 +151,16 @@ void calcrun(){
     int potValue = pot3.getPotValue();
 
 
+    if(selectedEquationIndex > memorybuffer.Size()-1)
+    {
+      CursorEnable = true;
+      selectedstate = false;
+    }
+
 
     if (equationcounter > 0) {
       int potValue = pot3.getPotValue();
 
-      
 
       if (key == 'd' && selectedEquationIndex - equationshifter ==  2) {
         CursorEnable = true;
@@ -449,41 +456,160 @@ void calcrun(){
 
   }
 
-    if(key == '=' && !equationbuffer.empty() && equationcounter < 10)
+    if(key == '=' && !equationbuffer.empty() && equationcounter < 20)
     {
-      int temp_num_count = 0;
-      int temp_operator_count = 0;
-      double appendednumber = 0.0;
-      bool decimalseen = false;
-      double divisor = 10.0;
 
-      temp_num_count = memorybuffer.countValues(equationbuffer).first;
-      temp_operator_count = memorybuffer.countValues(equationbuffer).second;
+      using namespace std;
+      unsigned long currentTime = millis();
+      if (currentTime - lastEqualsPress > debounceDelay) {
+        lastEqualsPress = currentTime;
+        int temp_num_count = 0;
+        int temp_operator_count = 0;
+        bool decimalseen = false;
+        double divisor = 10.0;
+
+        temp_num_count = memorybuffer.countValues(equationbuffer).first;
+        temp_operator_count = memorybuffer.countValues(equationbuffer).second;
 
 
-      //scan for decimal
+        //scan for decimal
 
-      if(err.findErrors(temp_num_count, temp_operator_count, equationbuffer) == false)
-      {
+        std::cout<< "This is the number count : " << temp_num_count << "\n";
+        std::cout<< "This is the operator count : " << temp_operator_count << "\n";
 
-        std::cout << "Did not find any errors" << "\n";
-        
-        vector <char> newequationbuffer = equationbuffer;
-
-        //scans for special functions and calculates their values then appends them to the equation
-        newequationbuffer = memorybuffer.Specialfunctions(newequationbuffer);
-
-        std::string status(newequationbuffer.begin(), newequationbuffer.end());
-
-        if(status == "error")
+        if(err.findErrors(temp_num_count, temp_operator_count, equationbuffer) == false)
         {
+
+          
+          
+          vector <char> newequationbuffer = equationbuffer;
+
+          //scans for special functions and calculates their values then appends them to the equation
+          newequationbuffer = memorybuffer.Specialfunctions(newequationbuffer);
+
+          std::string status(newequationbuffer.begin(), newequationbuffer.end());
+
+          if(status == "error")
+          {
+
+            std::cout << "Found errors" << "\n";
+
+            updateScreen();
+            updateMargin();
+            displayequations();
+            continue;
+          }else{
+
+            std::cout << "Did not find any errors" << "\n";
+            
+            std::cout << "This is the size of the equation: "<< newequationbuffer.size() << "\n";
+
+            std::string appendednumber = "";
+
+            for(int i = 0 ; i < newequationbuffer.size(); i++)
+            {
+              char ch = newequationbuffer[i];
+
+              if(newequationbuffer[i] == '-' && (i == 0 || newequationbuffer[i-1] == '('))
+              {
+                appendednumber = "-";
+                int j = i + 1;
+
+                while(j < newequationbuffer.size())
+                {
+                  char next_ch = newequationbuffer[j];
+                  if((next_ch >= '0' && next_ch <= '9') || next_ch == '.')
+                  {
+                    appendednumber += next_ch;
+                    j++;
+                  }else{
+                    break;
+                  }             
+                }
+
+                i = j - 1;
+
+                cout << "This is the value after the loop: " << newequationbuffer[i] << "\n";
+                calculator.pushNumber(memorybuffer.StringToDouble(appendednumber));
+                cout << "This is the appended number : " << appendednumber << "\n";
+                appendednumber = "";
+
+              }
+              
+              else if ((newequationbuffer[i] >= '0'&&  newequationbuffer[i]  <= '9') || newequationbuffer[i] == '.')
+              {
+                int j = i;
+                appendednumber = "";
+
+                while(j < newequationbuffer.size())
+                {
+                  char temp_ch = newequationbuffer[j];
+                  if((temp_ch >= '0' && temp_ch <= '9') || temp_ch == '.')
+                  {
+                    appendednumber += temp_ch;
+                    j++;
+                  }else{
+                    break;
+                  }
+                }
+              
+                i = j - 1;
+                cout << "This is the value after the loop: " << newequationbuffer[i] << "\n";
+                calculator.pushNumber(memorybuffer.StringToDouble(appendednumber));                
+                std::cout << "This is the appended number : "  << appendednumber << "\n"; // converts string to double then pushes the number to the stack
+
+                appendednumber = "";
+
+
+              }else if(ch == '(')
+              {
+                calculator.pushOperator(ch); // pushes the opening parenthesis to the operator stack 
+              }else if (ch == ')')
+              {
+                while(calculator.isOperatorEmpty()==false && calculator.peekOperator() != '(')
+                {
+                  calculator.evaluate(); // evaluate numbers in the stack when the closing bracket is not found 
+                }
+
+                if(calculator.isOperatorEmpty() == false && calculator.peekOperator() == '(')  //pops the  opening bracket when it is found 
+                {
+                  calculator.popOperator();
+                }
+              }
+              else if(calculator.isOperator(ch) == true) // finds an operator 
+              {
+                calculator.pushOperator(ch); // then pushes the less significant operator 
+
+                std::cout << "This is the pushed operator  : "  << ch << "\n"; // converts string to double then pushes the number to the stack
+              }
+            }   
+
+            
+            while(calculator.isEmpty() > 1){
+              calculator.evaluate();
+            }
+
+            double answer = calculator.peekNumber(); 
+            equationcounter++;                                               // equation count increases 
+            memorybuffer.pushequation(equationbuffer,answer);
+            drawNewMargin();                                              //drawnewmargin
+            std::cout << "evaluated the answer" << answer << "\n";
+            
+          }
+        }else{
           updateScreen();
           updateMargin();
           displayequations();
-          continue;
-        }else{
+        }
+      }
+
     
-          for(char value : newequationbuffer)
+    }
+  }
+}
+
+/*
+  for(char value : newequationbuffer)
           {
             
             if (value == '.') {
@@ -505,6 +631,25 @@ void calcrun(){
               std::cout <<"Pushed number:"  << value << "\n";
             }
 
+            if(value == '(')
+            {
+              decimalseen = false;
+              calculator.pushOperator(value);
+            }
+
+            if(value == ')')
+            {
+              decimalseen = false;
+              while (calculator.isOperatorEmpty() == false && calculator.peekOperator() != '(')
+              {
+                calculator.evaluate();
+              }
+              if(calculator.isOperatorEmpty() == false)
+              {
+                calculator.popOperator();
+              };
+            }
+
             if (calculator.isOperator(value) == true)
             { 
 
@@ -519,7 +664,7 @@ void calcrun(){
                 calculator.pushOperator(value);
                 temp_operator_count++;
                 std::cout << "Pushed operator: "<< value << "\n";
-              }else if(calculator.isOperatorEmpty() == false)
+              }else if(calculator.isOperatorEmpty() == false && calculator.peekOperator() != '(' )
               {
                 if(calculator.precedence(value) > calculator.precedence(calculator.peekOperator()))
                 {
@@ -540,7 +685,8 @@ void calcrun(){
           }
 
           calculator.pushNumber(appendednumber);
-        
+          
+
           while(calculator.isEmpty() > 1){
             calculator.evaluate();
           }
@@ -552,14 +698,9 @@ void calcrun(){
           drawNewMargin();                                              //drawnewmargin
           
           std::cout << "evaluated the answer" << "\n";
-        }
-      }else{
-        updateScreen();
-        updateMargin();
-        displayequations();
-      }
-    }
-
-    
-  }
-}
+          
+          
+          
+          
+          
+          */
